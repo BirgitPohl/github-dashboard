@@ -1,0 +1,34 @@
+version: 1
+frontend:
+  phases:
+    preBuild:
+      commands:
+        - aws --version
+        - nvm install 22
+        - nvm use 22
+        - node -v
+        - npm -v
+        - rm -rf node_modules
+        - npm i
+    build:
+      commands:
+        - set -e
+        - export BUILD_FAILED=false
+        - |
+          npm run build || BUILD_FAILED=true
+    postBuild:
+      commands:
+        - |
+          if [ "${BUILD_FAILED}" = "true" ]; then
+            echo "🚨 Build failed — notifying Teams"
+            exit 1
+          else
+            echo "✅ Build succeeded"
+          fi
+  artifacts:
+    baseDirectory: .output/public
+    files:
+      - "**/*"
+  cache:
+    paths:
+      - node_modules/**/*
