@@ -6,6 +6,7 @@
         <div class="nav-links">
           <NuxtLink to="/" class="nav-link">Workflows</NuxtLink>
           <NuxtLink to="/repositories" class="nav-link">Repositories</NuxtLink>
+          <NuxtLink to="/pull-requests" class="nav-link">Pull Requests</NuxtLink>
           <NuxtLink to="/projects" class="nav-link">Project Boards</NuxtLink>
         </div>
       </div>
@@ -69,8 +70,8 @@
 }
 
 .nav-link.router-link-active {
-  color: #3b82f6;
-  background: #eff6ff;
+  color: #1d4ed8;
+  background: #dbeafe;
 }
 
 .main-content {
