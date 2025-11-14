@@ -39,7 +39,13 @@ const workflows = computed(() => {
 <template>
   <div class="dashboard">
     <div class="header">
-      <h1>GitHub Workflows</h1>
+      <TypographyHeader 
+        :level="1" 
+        size="3xl" 
+        variant="primary"
+      >
+        GitHub Workflows
+      </TypographyHeader>
       <p>Monitor workflows across all repositories</p>
     </div>
 
@@ -50,7 +56,14 @@ const workflows = computed(() => {
 
     <div v-else-if="error" class="error">
       <div class="error-box">
-        <h3>Error</h3>
+        <TypographyHeader 
+          :level="3" 
+          size="lg" 
+          variant="primary"
+          class="error-title"
+        >
+          Error
+        </TypographyHeader>
         <p>{{ error.message || error || 'Failed to load workflows' }}</p>
       </div>
     </div>
@@ -65,7 +78,13 @@ const workflows = computed(() => {
       </div>
 
       <div v-if="workflows.length === 0" class="empty-state">
-        <h3>No workflows found</h3>
+        <TypographyHeader 
+          :level="3" 
+          size="lg" 
+          variant="secondary"
+        >
+          No workflows found
+        </TypographyHeader>
         <p>This repository doesn't have any workflows.</p>
       </div>
     </div>
@@ -80,13 +99,6 @@ const workflows = computed(() => {
 .header {
   max-width: 1200px;
   margin: 0 auto 48px auto;
-}
-
-.header h1 {
-  font-size: 30px;
-  font-weight: bold;
-  color: #111827;
-  margin-bottom: 8px;
 }
 
 .header p {
@@ -136,10 +148,8 @@ const workflows = computed(() => {
   max-width: 400px;
 }
 
-.error-box h3 {
+.error-box .error-title {
   color: #dc2626;
-  font-weight: 600;
-  margin-bottom: 8px;
 }
 
 .error-box p {
@@ -162,13 +172,6 @@ const workflows = computed(() => {
 .empty-state {
   text-align: center;
   padding: 80px 0;
-}
-
-.empty-state h3 {
-  font-size: 18px;
-  font-weight: 600;
-  color: #111827;
-  margin-bottom: 8px;
 }
 
 .empty-state p {
