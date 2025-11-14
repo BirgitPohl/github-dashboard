@@ -27,7 +27,7 @@ useHead({
   ]
 })
 
-const { data, error, pending: loading } = await useFetch<{ workflows: Workflow[] }>('/api/workflows')
+const { data, error, pending: loading, refresh } = await useFetch<{ workflows: Workflow[] }>('/api/workflows')
 const workflows = computed(() => {
   // Sort workflows by newest first (updated_at)
   return (data.value?.workflows || []).sort((a, b) => {
@@ -55,17 +55,10 @@ const workflows = computed(() => {
     </div>
 
     <div v-else-if="error" class="error">
-      <div class="error-box">
-        <TypographyHeader 
-          :level="3" 
-          size="lg" 
-          variant="primary"
-          class="error-title"
-        >
-          Error
-        </TypographyHeader>
-        <p>{{ error.message || error || 'Failed to load workflows' }}</p>
-      </div>
+      <ErrorBoxErrorBox 
+        :error="error"
+        @retry="refresh"
+      />
     </div>
 
     <div v-else class="content">
@@ -138,23 +131,6 @@ const workflows = computed(() => {
   display: flex;
   justify-content: center;
   padding: 80px 0;
-}
-
-.error-box {
-  background-color: #fef2f2;
-  border: 1px solid #fecaca;
-  border-radius: 8px;
-  padding: 24px;
-  max-width: 400px;
-}
-
-.error-box .error-title {
-  color: #dc2626;
-}
-
-.error-box p {
-  color: #dc2626;
-  font-size: 14px;
 }
 
 .content {
