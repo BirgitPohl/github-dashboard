@@ -250,18 +250,11 @@ watch(selectedState, () => {
 
       <!-- Error State -->
       <div v-else-if="error" class="error">
-        <TypographyHeader 
-          :level="3" 
-          size="lg" 
-          variant="primary"
-          class="error-title"
-        >
-          Failed to load pull requests
-        </TypographyHeader>
-        <p>{{ error }}</p>
-        <button class="retry-button" @click="refresh()">
-          Try Again
-        </button>
+        <ErrorBoxErrorBox 
+          :error="error"
+          title="Failed to load pull requests"
+          @retry="refresh"
+        />
       </div>
 
       <!-- Pull Requests List -->
@@ -499,10 +492,6 @@ watch(selectedState, () => {
   text-align: center;
 }
 
-.error .error-title {
-  color: #dc2626;
-}
-
 .loading-spinner {
   width: 40px;
   height: 40px;
@@ -517,20 +506,7 @@ watch(selectedState, () => {
   to { transform: rotate(360deg); }
 }
 
-.retry-button {
-  padding: 10px 20px;
-  background: #dc2626;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-weight: 500;
-  cursor: pointer;
-  margin-top: 16px;
-}
 
-.retry-button:hover {
-  background: #b91c1c;
-}
 
 .pull-requests-list {
   background: white;

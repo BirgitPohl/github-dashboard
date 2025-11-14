@@ -27,7 +27,7 @@ interface Repository {
   tech_stack: string[]
 }
 
-const { data: repositories, pending, error } = await useFetch<Repository[]>('/api/repositories')
+const { data: repositories, pending, error, refresh } = await useFetch<Repository[]>('/api/repositories')
 
 // Category stats
 const categoryStats = computed(() => {
@@ -74,15 +74,11 @@ const totalStats = computed(() => {
 
     <!-- Error State -->
     <div v-else-if="error" class="error-state">
-      <TypographyHeader 
-        :level="3" 
-        size="lg" 
-        variant="primary"
-        class="error-title"
-      >
-        Failed to load repositories
-      </TypographyHeader>
-      <p>{{ error }}</p>
+      <ErrorBoxErrorBox 
+        :error="error"
+        title="Failed to load repositories"
+        @retry="refresh"
+      />
     </div>
 
     <!-- Content -->
@@ -207,18 +203,9 @@ const totalStats = computed(() => {
 }
 
 .error-state {
-  text-align: center;
+  display: flex;
+  justify-content: center;
   padding: 60px 20px;
-  color: #ef4444;
-}
-
-.error-state .error-title {
-  color: #dc2626;
-}
-
-.error-state p {
-  margin: 0;
-  font-size: 14px;
 }
 
 .stats-overview {

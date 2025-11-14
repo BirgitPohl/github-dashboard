@@ -18,7 +18,7 @@ interface Project {
   items_count: number
 }
 
-const { data: projects, pending, error } = await useFetch<Project[]>('/api/projects')
+const { data: projects, pending, error, refresh } = await useFetch<Project[]>('/api/projects')
 
 // Total stats
 const totalStats = computed(() => {
@@ -52,16 +52,13 @@ const totalStats = computed(() => {
 
     <!-- Error State -->
     <div v-else-if="error" class="error-state">
-      <TypographyHeader 
-        :level="3" 
-        size="lg" 
-        variant="primary"
-        class="error-title"
-      >
-        Failed to load project boards
-      </TypographyHeader>
+      <ErrorBoxErrorBox 
+        :error="error"
+        title="Failed to load project boards"
+        @retry="refresh"
+      />
+      
       <div class="error-details">
-        <p>{{ error.data?.message || error.message || 'Unknown error occurred' }}</p>
         
         <!-- Special handling for scope errors -->
         <div v-if="error.statusCode === 403" class="scope-error">
@@ -200,15 +197,13 @@ const totalStats = computed(() => {
 }
 
 .error-state {
-  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   padding: 60px 20px;
-  color: #ef4444;
   max-width: 600px;
   margin: 0 auto;
-}
-
-.error-state .error-title {
-  color: #dc2626;
+  gap: 24px;
 }
 
 .error-details p {

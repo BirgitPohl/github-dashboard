@@ -86,7 +86,7 @@ useHead({
   title: 'Project Board Details - GitHub Dashboard'
 })
 
-const { data: project, pending, error } = useFetch<ProjectDetails>(`/api/projects/${projectId}`, {
+const { data: project, pending, error, refresh } = useFetch<ProjectDetails>(`/api/projects/${projectId}`, {
   server: false
 })
 
@@ -177,17 +177,16 @@ const showStatusColumn = computed(() => statusOptions.value.length > 1)
 
     <!-- Error State -->
     <div v-else-if="error" class="error-state">
-      <TypographyHeader 
-        :level="3" 
-        size="lg" 
-        variant="primary"
-        class="error-title"
+      <ErrorBoxErrorBox 
+        :error="error"
+        title="Failed to load project board"
+        @retry="refresh"
       >
-        Failed to load project board
-      </TypographyHeader>
-      <p>{{ error.data?.message || error.message || 'Unknown error occurred' }}</p>
-      <p>Project ID: {{ projectId }}</p>
-      <NuxtLink to="/projects" class="back-link">← Back to Project Boards</NuxtLink>
+        <template #actions>
+          <p>Project ID: {{ projectId }}</p>
+          <NuxtLink to="/projects" class="back-link">← Back to Project Boards</NuxtLink>
+        </template>
+      </ErrorBoxErrorBox>
     </div>
 
     <!-- Content -->
@@ -313,20 +312,7 @@ const showStatusColumn = computed(() => statusOptions.value.length > 1)
   font-size: 16px;
 }
 
-.error-state h3 {
-  color: #ef4444;
-  margin: 0 0 8px 0;
-  font-size: 20px;
-}
 
-.error-state .error-title {
-  color: #dc2626;
-}
-
-.error-state p {
-  color: #6b7280;
-  margin: 0 0 16px 0;
-}
 
 .back-link {
   color: #2563eb;
