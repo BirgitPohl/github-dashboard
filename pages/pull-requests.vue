@@ -152,7 +152,14 @@ watch(selectedState, () => {
   <div class="pull-requests-page">
     <div class="container">
       <div class="page-header">
-        <h1 class="page-title">Pull Requests</h1>
+        <TypographyHeader 
+          :level="1" 
+          size="3xl" 
+          variant="primary"
+          class="page-title"
+        >
+          Pull Requests
+        </TypographyHeader>
         <p class="page-description">
           Overview of pull requests across all repositories
         </p>
@@ -243,7 +250,14 @@ watch(selectedState, () => {
 
       <!-- Error State -->
       <div v-else-if="error" class="error">
-        <h3>Failed to load pull requests</h3>
+        <TypographyHeader 
+          :level="3" 
+          size="lg" 
+          variant="primary"
+          class="error-title"
+        >
+          Failed to load pull requests
+        </TypographyHeader>
         <p>{{ error }}</p>
         <button class="retry-button" @click="refresh()">
           Try Again
@@ -253,7 +267,13 @@ watch(selectedState, () => {
       <!-- Pull Requests List -->
       <div v-else-if="filteredPullRequests.length > 0" class="pull-requests-list">
         <div class="list-header">
-          <h2>{{ filteredPullRequests.length }} Pull Request{{ filteredPullRequests.length !== 1 ? 's' : '' }}</h2>
+          <TypographyHeader 
+            :level="2" 
+            size="xl" 
+            variant="primary"
+          >
+            {{ filteredPullRequests.length }} Pull Request{{ filteredPullRequests.length !== 1 ? 's' : '' }}
+          </TypographyHeader>
         </div>
 
         <div class="pr-list">
@@ -274,11 +294,16 @@ watch(selectedState, () => {
             </div>
 
             <div class="pr-content">
-              <h3 class="pr-title">
+              <TypographyHeader 
+                :level="3" 
+                size="md" 
+                variant="primary"
+                class="pr-title"
+              >
                 <a :href="pr.html_url" target="_blank" rel="noopener noreferrer">
                   {{ pr.title }}
                 </a>
-              </h3>
+              </TypographyHeader>
               
               <div class="pr-meta">
                 <div class="pr-author">
@@ -332,7 +357,13 @@ watch(selectedState, () => {
 
       <!-- Empty State -->
       <div v-else class="empty-state">
-        <h3>No pull requests found</h3>
+        <TypographyHeader 
+          :level="3" 
+          size="lg" 
+          variant="secondary"
+        >
+          No pull requests found
+        </TypographyHeader>
         <p>
           {{ selectedState === 'open' ? 'No open pull requests' : 
              selectedState === 'closed' ? 'No closed pull requests' : 
@@ -466,6 +497,10 @@ watch(selectedState, () => {
   border-radius: 12px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   text-align: center;
+}
+
+.error .error-title {
+  color: #dc2626;
 }
 
 .loading-spinner {

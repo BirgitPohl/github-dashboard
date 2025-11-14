@@ -34,7 +34,13 @@ const totalStats = computed(() => {
 <template>
   <div class="projects-page">
     <header class="page-header">
-      <h1>GitHub Project Boards</h1>
+      <TypographyHeader 
+        :level="1" 
+        size="3xl" 
+        variant="primary"
+      >
+        GitHub Project Boards
+      </TypographyHeader>
       <p>Organization project boards and planning tools</p>
     </header>
 
@@ -46,13 +52,26 @@ const totalStats = computed(() => {
 
     <!-- Error State -->
     <div v-else-if="error" class="error-state">
-      <h3>Failed to load project boards</h3>
+      <TypographyHeader 
+        :level="3" 
+        size="lg" 
+        variant="primary"
+        class="error-title"
+      >
+        Failed to load project boards
+      </TypographyHeader>
       <div class="error-details">
         <p>{{ error.data?.message || error.message || 'Unknown error occurred' }}</p>
         
         <!-- Special handling for scope errors -->
         <div v-if="error.statusCode === 403" class="scope-error">
-          <h4>🔑 Token Scope Issue</h4>
+          <TypographyHeader 
+            :level="4" 
+            size="md" 
+            variant="primary"
+          >
+            🔑 Token Scope Issue
+          </TypographyHeader>
           <p>Your GitHub token needs additional permissions to access Project Boards.</p>
           <div class="scope-instructions">
             <p><strong>To fix this:</strong></p>
@@ -91,7 +110,13 @@ const totalStats = computed(() => {
 
       <!-- Projects Grid -->
       <div class="projects-section">
-        <h2>All Project Boards</h2>
+        <TypographyHeader 
+          :level="2" 
+          size="xl" 
+          variant="primary"
+        >
+          All Project Boards
+        </TypographyHeader>
         <div class="projects-grid">
           <ProjectCard 
             v-for="project in projects" 
@@ -105,7 +130,13 @@ const totalStats = computed(() => {
     <!-- Empty State -->
     <div v-else-if="projects && projects.length === 0" class="empty-state">
       <div class="empty-icon">📋</div>
-      <h3>No Project Boards Found</h3>
+      <TypographyHeader 
+        :level="3" 
+        size="lg" 
+        variant="secondary"
+      >
+        No Project Boards Found
+      </TypographyHeader>
       <p>This organization doesn't have any GitHub Project Boards yet.</p>
       <a 
         :href="`https://github.com/orgs/Oracommit/projects`" 
@@ -176,9 +207,8 @@ const totalStats = computed(() => {
   margin: 0 auto;
 }
 
-.error-state h3 {
-  margin: 0 0 16px 0;
-  font-size: 20px;
+.error-state .error-title {
+  color: #dc2626;
 }
 
 .error-details p {

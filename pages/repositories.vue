@@ -56,7 +56,13 @@ const totalStats = computed(() => {
 <template>
   <div class="repositories-page">
     <header class="page-header">
-      <h1>Repositories Dashboard</h1>
+      <TypographyHeader 
+        :level="1" 
+        size="3xl" 
+        variant="primary"
+      >
+        Repositories Dashboard
+      </TypographyHeader>
       <p>Overview of all repositories and their details</p>
     </header>
 
@@ -68,7 +74,14 @@ const totalStats = computed(() => {
 
     <!-- Error State -->
     <div v-else-if="error" class="error-state">
-      <h3>Failed to load repositories</h3>
+      <TypographyHeader 
+        :level="3" 
+        size="lg" 
+        variant="primary"
+        class="error-title"
+      >
+        Failed to load repositories
+      </TypographyHeader>
       <p>{{ error }}</p>
     </div>
 
@@ -103,7 +116,13 @@ const totalStats = computed(() => {
 
       <!-- Category Distribution -->
       <div class="category-overview">
-        <h2>Repository Categories</h2>
+        <TypographyHeader 
+          :level="2" 
+          size="xl" 
+          variant="primary"
+        >
+          Repository Categories
+        </TypographyHeader>
         <div class="category-grid">
           <div 
             v-for="(count, category) in categoryStats" 
@@ -118,7 +137,13 @@ const totalStats = computed(() => {
 
       <!-- Repositories Grid -->
       <div class="repositories-section">
-        <h2>All Repositories</h2>
+        <TypographyHeader 
+          :level="2" 
+          size="xl" 
+          variant="primary"
+        >
+          All Repositories
+        </TypographyHeader>
         <div class="repositories-grid">
           <RepositoryCard 
             v-for="repository in repositories" 
@@ -187,9 +212,8 @@ const totalStats = computed(() => {
   color: #ef4444;
 }
 
-.error-state h3 {
-  margin: 0 0 8px 0;
-  font-size: 20px;
+.error-state .error-title {
+  color: #dc2626;
 }
 
 .error-state p {

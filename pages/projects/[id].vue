@@ -177,7 +177,14 @@ const showStatusColumn = computed(() => statusOptions.value.length > 1)
 
     <!-- Error State -->
     <div v-else-if="error" class="error-state">
-      <h3>Failed to load project board</h3>
+      <TypographyHeader 
+        :level="3" 
+        size="lg" 
+        variant="primary"
+        class="error-title"
+      >
+        Failed to load project board
+      </TypographyHeader>
       <p>{{ error.data?.message || error.message || 'Unknown error occurred' }}</p>
       <p>Project ID: {{ projectId }}</p>
       <NuxtLink to="/projects" class="back-link">← Back to Project Boards</NuxtLink>
@@ -195,7 +202,14 @@ const showStatusColumn = computed(() => statusOptions.value.length > 1)
             <span class="breadcrumb-current">{{ project.title }}</span>
           </div>
 
-          <h1 class="project-title">{{ project.title }}</h1>
+          <TypographyHeader 
+            :level="1" 
+            size="3xl" 
+            variant="primary"
+            class="project-title"
+          >
+            {{ project.title }}
+          </TypographyHeader>
           <p v-if="project.shortDescription" class="project-description">{{ project.shortDescription }}</p>
 
           <div class="project-meta">
@@ -237,7 +251,14 @@ const showStatusColumn = computed(() => statusOptions.value.length > 1)
           <div v-if="currentView && currentView.groupByFields && currentView.groupByFields.length > 0">
             <div v-for="group in groupedItems" :key="group.name" class="group-section">
               <div class="group-header">
-                <h4 class="group-title">{{ group.name }}</h4>
+                <TypographyHeader 
+                  :level="4" 
+                  size="md" 
+                  variant="primary"
+                  class="group-title"
+                >
+                  {{ group.name }}
+                </TypographyHeader>
                 <span class="group-count">{{ group.count }} items</span>
               </div>
 
@@ -296,6 +317,10 @@ const showStatusColumn = computed(() => statusOptions.value.length > 1)
   color: #ef4444;
   margin: 0 0 8px 0;
   font-size: 20px;
+}
+
+.error-state .error-title {
+  color: #dc2626;
 }
 
 .error-state p {
