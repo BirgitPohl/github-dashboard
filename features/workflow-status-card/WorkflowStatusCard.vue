@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { computed } from 'vue'
-
 interface Workflow {
   id: string
   workflow_id: number
@@ -22,94 +20,17 @@ const props = defineProps<{
   workflow: Workflow
 }>()
 
-const statusConfig = computed(() => {
-  const state = props.workflow.state?.toLowerCase() || 'unknown'
-  const status = props.workflow.status?.toLowerCase() || ''
-
-  // Check status/conclusion first (this is the actual run result)
-  if (status.includes('failure') || status.includes('error') || status.includes('failed')) {
-    return {
-      color: '#ef4444', // Red
-      textColor: 'text-red-700',
-      bgColor: '#fef2f2', // Light red background
-      borderColor: '#ef4444',
-      icon: '✗',
-      label: 'Failed'
-    }
-  } else if (status.includes('success')) {
-    return {
-      color: '#10b981', // Green
-      textColor: 'text-green-700',
-      bgColor: '#f0fdf4', // Light green background
-      borderColor: '#10b981',
-      icon: '✓',
-      label: 'Success'
-    }
-  } else if (status.includes('cancelled')) {
-    return {
-      color: '#f59e0b', // Amber
-      textColor: 'text-amber-700',
-      bgColor: '#fffbeb', // Light amber background
-      borderColor: '#f59e0b',
-      icon: '○',
-      label: 'Cancelled'
-    }
-  } else if (status.includes('in_progress') || status.includes('queued')) {
-    return {
-      color: '#3b82f6', // Blue
-      textColor: 'text-blue-700',
-      bgColor: '#eff6ff', // Light blue background
-      borderColor: '#3b82f6',
-      icon: '◐',
-      label: 'Running'
-    }
-  } else if (status.includes('skipped')) {
-    return {
-      color: '#6b7280', // Gray
-      textColor: 'text-gray-700',
-      bgColor: '#f9fafb', // Light gray background
-      borderColor: '#6b7280',
-      icon: '−',
-      label: 'Skipped'
-    }
-  } else if (state === 'disabled') {
-    return {
-      color: '#6b7280', // Gray
-      textColor: 'text-gray-700',
-      bgColor: '#f9fafb', // Light gray background
-      borderColor: '#6b7280',
-      icon: '○',
-      label: 'Disabled'
-    }
-  } else if (state === 'active' && status.includes('completed')) {
-    return {
-      color: '#10b981', // Green
-      textColor: 'text-green-700',
-      bgColor: '#f0fdf4', // Light green background
-      borderColor: '#10b981',
-      icon: '✓',
-      label: 'Passed'
-    }
-  } else {
-    return {
-      color: '#6b7280', // Gray
-      textColor: 'text-gray-700',
-      bgColor: '#f9fafb', // Light gray background
-      borderColor: '#6b7280',
-      icon: '●',
-      label: status || state || 'Unknown'
-    }
-  }
-})
-
+const { getStatusConfig } = useWorkflowStatusCard()
 const { formatTimeAgoSimple } = useDateTime()
+
+const statusConfig = computed(() => getStatusConfig(props.workflow))
 const timeAgo = computed(() => formatTimeAgoSimple(props.workflow.updated_at))
 </script>
 
 <template>
-  <div 
+  <div
     class="workflow-card"
-    :style="{ 
+    :style="{
       backgroundColor: statusConfig.bgColor,
       borderColor: statusConfig.borderColor
     }"
@@ -117,7 +38,7 @@ const timeAgo = computed(() => formatTimeAgoSimple(props.workflow.updated_at))
     <!-- Status and Name -->
     <div class="card-header">
       <div class="status-row">
-        <div 
+        <div
           class="status-dot"
           :style="{ backgroundColor: statusConfig.color }"
         />
@@ -137,14 +58,14 @@ const timeAgo = computed(() => formatTimeAgoSimple(props.workflow.updated_at))
     <div class="card-details">
       <div class="detail-row">
         <span>Status:</span>
-        <span 
+        <span
           class="status-text"
           :style="{ color: statusConfig.color }"
         >
           {{ statusConfig.label }}
         </span>
       </div>
-      
+
       <div class="detail-row">
         <span>Last run:</span>
         <span>{{ timeAgo }}</span>
@@ -163,7 +84,7 @@ const timeAgo = computed(() => formatTimeAgoSimple(props.workflow.updated_at))
 
     <!-- Action -->
     <div class="card-action">
-      <a 
+      <a
         :href="workflow.html_url"
         target="_blank"
         class="view-link"
@@ -290,33 +211,5 @@ const timeAgo = computed(() => formatTimeAgoSimple(props.workflow.updated_at))
   padding: 2px 6px;
   border-radius: 4px;
   font-size: 12px;
-}
-
-.branches-section {
-  margin-top: 12px;
-  padding-top: 12px;
-  border-top: 1px solid #f3f4f6;
-}
-
-.branches-label {
-  color: #6b7280;
-  font-size: 12px;
-  display: block;
-  margin-bottom: 6px;
-}
-
-.branches-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
-}
-
-.branch-tag {
-  background: #e5e7eb;
-  color: #374151;
-  padding: 2px 8px;
-  border-radius: 12px;
-  font-size: 11px;
-  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
 }
 </style>
