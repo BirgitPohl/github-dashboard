@@ -33,11 +33,6 @@ const totalStats = computed(() => {
 
 <template>
   <div class="projects-page">
-    <PageHeader
-      title="GitHub Project Boards"
-      description="Organization project boards and planning tools"
-    />
-
     <!-- Loading State -->
     <div v-if="pending" class="loading-state">
       <LoadingSpinner message="Loading projects..." />

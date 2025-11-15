@@ -118,11 +118,6 @@ const stats = computed(() => pullRequestsData.value?.stats || {
 <template>
   <div class="pull-requests-page">
     <div class="container">
-      <PageHeader
-        title="Pull Requests"
-        description="Overview of pull requests across all repositories"
-      />
-
       <!-- Stats Cards -->
       <div v-if="!pending" class="stats-grid">
         <StatsCard

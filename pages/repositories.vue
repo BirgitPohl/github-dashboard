@@ -55,11 +55,6 @@ const totalStats = computed(() => {
 
 <template>
   <div class="repositories-page">
-    <PageHeader
-      title="Repositories Dashboard"
-      description="Overview of all repositories and their details"
-    />
-
     <!-- Loading State -->
     <div v-if="pending" class="loading-state">
       <LoadingSpinner message="Loading repositories..." />

@@ -38,11 +38,6 @@ const workflows = computed(() => {
 
 <template>
   <div class="dashboard">
-    <PageHeader
-      title="GitHub Workflows"
-      description="Monitor workflows across all repositories"
-    />
-
     <div v-if="loading" class="loading">
       <LoadingSpinner message="Loading workflows..." />
     </div>
