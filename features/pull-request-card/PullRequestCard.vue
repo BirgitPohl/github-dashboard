@@ -101,11 +101,12 @@ const cardClasses = computed(() => {
 
       <div class="pr-card__meta">
         <div class="pr-card__author">
-          <img
+          <UserAvatar
             :src="pullRequest.user.avatar_url"
             :alt="pullRequest.user.login"
-            class="author-avatar"
-          >
+            :tooltip="pullRequest.user.login"
+            size="sm"
+          />
           <span class="author-name">{{ pullRequest.user.login }}</span>
         </div>
 
@@ -134,14 +135,14 @@ const cardClasses = computed(() => {
       <div v-if="pullRequest.assignees.length > 0" class="pr-card__assignees">
         <span class="assignees-label">Assigned to:</span>
         <div class="assignees-list">
-          <img
+          <UserAvatar
             v-for="assignee in pullRequest.assignees"
             :key="assignee.login"
             :src="assignee.avatar_url"
             :alt="assignee.login"
-            :title="assignee.login"
-            class="assignee-avatar"
-          >
+            :tooltip="assignee.login"
+            size="md"
+          />
         </div>
       </div>
     </div>
@@ -225,12 +226,6 @@ const cardClasses = computed(() => {
   gap: 8px;
 }
 
-.author-avatar {
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-}
-
 .pr-card__branch-info {
   display: flex;
   align-items: center;
@@ -276,12 +271,6 @@ const cardClasses = computed(() => {
 .assignees-list {
   display: flex;
   gap: 4px;
-}
-
-.assignee-avatar {
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
 }
 
 /* State-specific styling */
