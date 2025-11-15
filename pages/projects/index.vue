@@ -116,24 +116,15 @@ const totalStats = computed(() => {
     </div>
 
     <!-- Empty State -->
-    <div v-else-if="projects && projects.length === 0" class="empty-state">
-      <div class="empty-icon">📋</div>
-      <TypographyHeader 
-        :level="3" 
-        size="lg" 
-        variant="secondary"
-      >
-        No Project Boards Found
-      </TypographyHeader>
-      <p>This organization doesn't have any GitHub Project Boards yet.</p>
-      <a 
-        :href="`https://github.com/orgs/Oracommit/projects`" 
-        target="_blank"
-        class="create-project-link"
-      >
-        Create First Project Board →
-      </a>
-    </div>
+    <EmptyState
+      v-else-if="projects && projects.length === 0"
+      icon="📋"
+      title="No Project Boards Found"
+      message="This organization doesn't have any GitHub Project Boards yet."
+      action-label="Create First Project Board →"
+      action-url="https://github.com/orgs/Oracommit/projects"
+      :action-external="true"
+    />
   </div>
 </template>
 
@@ -236,43 +227,6 @@ const totalStats = computed(() => {
   flex-wrap: wrap;
   gap: 20px;
   justify-content: center;
-}
-
-.empty-state {
-  text-align: center;
-  padding: 80px 20px;
-}
-
-.empty-icon {
-  font-size: 48px;
-  margin-bottom: 16px;
-}
-
-.empty-state h3 {
-  font-size: 20px;
-  font-weight: 600;
-  color: #111827;
-  margin: 0 0 8px 0;
-}
-
-.empty-state p {
-  color: #6b7280;
-  margin: 0 0 20px 0;
-}
-
-.create-project-link {
-  color: #2563eb;
-  text-decoration: none;
-  font-weight: 500;
-  padding: 8px 16px;
-  border: 1px solid #2563eb;
-  border-radius: 6px;
-  transition: all 0.2s ease;
-}
-
-.create-project-link:hover {
-  background: #2563eb;
-  color: white;
 }
 
 @media (max-width: 768px) {

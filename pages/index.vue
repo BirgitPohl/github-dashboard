@@ -63,16 +63,11 @@ const workflows = computed(() => {
         />
       </div>
 
-      <div v-if="workflows.length === 0" class="empty-state">
-        <TypographyHeader 
-          :level="3" 
-          size="lg" 
-          variant="secondary"
-        >
-          No workflows found
-        </TypographyHeader>
-        <p>This repository doesn't have any workflows.</p>
-      </div>
+      <EmptyState
+        v-if="workflows.length === 0"
+        title="No workflows found"
+        message="This repository doesn't have any workflows."
+      />
     </div>
   </div>
 </template>
@@ -109,14 +104,5 @@ const workflows = computed(() => {
   flex-wrap: wrap;
   gap: 24px;
   justify-content: flex-start;
-}
-
-.empty-state {
-  text-align: center;
-  padding: 80px 0;
-}
-
-.empty-state p {
-  color: #6b7280;
 }
 </style>

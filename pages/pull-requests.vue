@@ -352,20 +352,13 @@ watch(selectedState, () => {
       </div>
 
       <!-- Empty State -->
-      <div v-else class="empty-state">
-        <TypographyHeader 
-          :level="3" 
-          size="lg" 
-          variant="secondary"
-        >
-          No pull requests found
-        </TypographyHeader>
-        <p>
-          {{ selectedState === 'open' ? 'No open pull requests' : 
-             selectedState === 'closed' ? 'No closed pull requests' : 
-             'No pull requests match your current filters' }}
-        </p>
-      </div>
+      <EmptyState
+        v-else
+        title="No pull requests found"
+        :message="selectedState === 'open' ? 'No open pull requests' :
+                  selectedState === 'closed' ? 'No closed pull requests' :
+                  'No pull requests match your current filters'"
+      />
     </div>
   </div>
 </template>
@@ -449,7 +442,7 @@ watch(selectedState, () => {
   cursor: not-allowed;
 }
 
-.loading, .error, .empty-state {
+.loading, .error {
   background: white;
   padding: 64px 32px;
   border-radius: 12px;
