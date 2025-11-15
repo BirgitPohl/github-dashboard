@@ -245,13 +245,13 @@ const showRefreshIndicator = computed(() => shouldShowRefreshIndicator(!!pullReq
       <!-- Pull Requests List -->
       <div v-if="filteredPullRequests.length > 0" class="pull-requests-list">
         <div class="list-header">
-          <TypographyHeader 
-            :level="2" 
-            size="xl" 
+          <Header
+            :level="2"
+            size="xl"
             variant="primary"
           >
             {{ filteredPullRequests.length }} Pull Request{{ filteredPullRequests.length !== 1 ? 's' : '' }}
-          </TypographyHeader>
+          </Header>
         </div>
 
         <div class="pr-list">

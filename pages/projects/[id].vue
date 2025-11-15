@@ -201,14 +201,14 @@ const showStatusColumn = computed(() => statusOptions.value.length > 1)
             ]"
           />
 
-          <TypographyHeader 
-            :level="1" 
-            size="3xl" 
+          <Header
+            :level="1"
+            size="3xl"
             variant="primary"
             class="project-title"
           >
             {{ project.title }}
-          </TypographyHeader>
+          </Header>
           <p v-if="project.shortDescription" class="project-description">{{ project.shortDescription }}</p>
 
           <div class="project-meta">
@@ -249,14 +249,14 @@ const showStatusColumn = computed(() => statusOptions.value.length > 1)
           <div v-if="currentView && currentView.groupByFields && currentView.groupByFields.length > 0">
             <div v-for="group in groupedItems" :key="group.name" class="group-section">
               <div class="group-header">
-                <TypographyHeader 
-                  :level="4" 
-                  size="md" 
+                <Header
+                  :level="4"
+                  size="md"
                   variant="primary"
                   class="group-title"
                 >
                   {{ group.name }}
-                </TypographyHeader>
+                </Header>
                 <span class="group-count">{{ group.count }} items</span>
               </div>
 

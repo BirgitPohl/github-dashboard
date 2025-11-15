@@ -113,13 +113,13 @@ const showRefreshIndicator = computed(() => shouldShowRefreshIndicator(!!reposit
 
       <!-- Category Distribution -->
       <div class="category-overview">
-        <TypographyHeader 
-          :level="2" 
-          size="xl" 
+        <Header
+          :level="2"
+          size="xl"
           variant="primary"
         >
           Repository Categories
-        </TypographyHeader>
+        </Header>
         <div class="category-grid">
           <div 
             v-for="(count, category) in categoryStats" 
@@ -134,13 +134,13 @@ const showRefreshIndicator = computed(() => shouldShowRefreshIndicator(!!reposit
 
       <!-- Repositories Grid -->
       <div class="repositories-section">
-        <TypographyHeader 
-          :level="2" 
-          size="xl" 
+        <Header
+          :level="2"
+          size="xl"
           variant="primary"
         >
           All Repositories
-        </TypographyHeader>
+        </Header>
         <div class="repositories-grid">
           <RepositoryCard 
             v-for="repository in repositories" 

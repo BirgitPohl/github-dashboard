@@ -85,13 +85,13 @@ const showRefreshIndicator = computed(() => shouldShowRefreshIndicator(!!project
 
       <!-- Projects Grid -->
       <div class="projects-section">
-        <TypographyHeader 
-          :level="2" 
-          size="xl" 
+        <Header
+          :level="2"
+          size="xl"
           variant="primary"
         >
           All Project Boards
-        </TypographyHeader>
+        </Header>
         <div class="projects-grid">
           <ProjectCard 
             v-for="project in projects" 
@@ -124,13 +124,13 @@ const showRefreshIndicator = computed(() => shouldShowRefreshIndicator(!!project
       <div class="error-details">
         <!-- Special handling for scope errors -->
         <div v-if="error.statusCode === 403" class="scope-error">
-          <TypographyHeader
+          <Header
             :level="4"
             size="md"
             variant="primary"
           >
             🔑 Token Scope Issue
-          </TypographyHeader>
+          </Header>
           <p>Your GitHub token needs additional permissions to access Project Boards.</p>
           <div class="scope-instructions">
             <p><strong>To fix this:</strong></p>
