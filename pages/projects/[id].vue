@@ -171,8 +171,7 @@ const showStatusColumn = computed(() => statusOptions.value.length > 1)
   <div class="project-detail-page">
     <!-- Loading State -->
     <div v-if="pending" class="loading-state">
-      <div class="loading-spinner" />
-      <p>Loading project board...</p>
+      <LoadingSpinner message="Loading project board..." />
     </div>
 
     <!-- Error State -->
@@ -237,8 +236,7 @@ const showStatusColumn = computed(() => statusOptions.value.length > 1)
       <!-- Items Table -->
       <div class="items-section">
         <div v-if="viewItemsState?.loading" class="loading-items">
-          <div class="loading-spinner" />
-          <p>Loading view items...</p>
+          <LoadingSpinner size="sm" message="Loading view items..." />
         </div>
 
         <div v-else-if="filteredItems.length === 0" class="empty-items">
@@ -290,26 +288,6 @@ const showStatusColumn = computed(() => statusOptions.value.length > 1)
 .loading-state, .error-state {
   text-align: center;
   padding: 60px 20px;
-}
-
-.loading-spinner {
-  width: 40px;
-  height: 40px;
-  border: 3px solid #e5e7eb;
-  border-top: 3px solid #3b82f6;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin: 0 auto 16px;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-.loading-state p {
-  color: #6b7280;
-  font-size: 16px;
 }
 
 
@@ -421,16 +399,6 @@ const showStatusColumn = computed(() => statusOptions.value.length > 1)
   justify-content: center;
   padding: 60px 20px;
   color: #6b7280;
-}
-
-.loading-items .loading-spinner {
-  width: 32px;
-  height: 32px;
-  border: 3px solid #e5e7eb;
-  border-top: 3px solid #3b82f6;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin-bottom: 16px;
 }
 
 .group-section {

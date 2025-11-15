@@ -244,8 +244,7 @@ watch(selectedState, () => {
 
       <!-- Loading State -->
       <div v-if="pending" class="loading">
-        <div class="loading-spinner" />
-        <p>Loading pull requests...</p>
+        <LoadingSpinner message="Loading pull requests..." />
       </div>
 
       <!-- Error State -->
@@ -490,20 +489,6 @@ watch(selectedState, () => {
   border-radius: 12px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   text-align: center;
-}
-
-.loading-spinner {
-  width: 40px;
-  height: 40px;
-  border: 4px solid #f3f4f6;
-  border-left: 4px solid #3b82f6;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin: 0 auto 16px;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
 }
 
 

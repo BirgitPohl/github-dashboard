@@ -50,8 +50,7 @@ const workflows = computed(() => {
     </div>
 
     <div v-if="loading" class="loading">
-      <div class="spinner" />
-      <span>Loading workflows...</span>
+      <LoadingSpinner message="Loading workflows..." />
     </div>
 
     <div v-else-if="error" class="error">
@@ -105,24 +104,6 @@ const workflows = computed(() => {
   justify-content: center;
   align-items: center;
   padding: 80px 0;
-  gap: 12px;
-}
-
-.spinner {
-  width: 24px;
-  height: 24px;
-  border: 2px solid #111827;
-  border-top: 2px solid transparent;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
-.loading span {
-  color: #6b7280;
 }
 
 .error {

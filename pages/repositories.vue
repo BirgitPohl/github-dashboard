@@ -68,8 +68,7 @@ const totalStats = computed(() => {
 
     <!-- Loading State -->
     <div v-if="pending" class="loading-state">
-      <div class="loading-spinner" />
-      <p>Loading repositories...</p>
+      <LoadingSpinner message="Loading repositories..." />
     </div>
 
     <!-- Error State -->
@@ -180,26 +179,6 @@ const totalStats = computed(() => {
 .loading-state {
   text-align: center;
   padding: 60px 20px;
-}
-
-.loading-spinner {
-  width: 40px;
-  height: 40px;
-  border: 3px solid #e5e7eb;
-  border-top: 3px solid #3b82f6;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin: 0 auto 16px;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-.loading-state p {
-  color: #6b7280;
-  font-size: 16px;
 }
 
 .error-state {
