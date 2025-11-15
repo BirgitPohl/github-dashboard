@@ -96,6 +96,8 @@
 </template>
 
 <script setup lang="ts">
+import { useProjectItemsTable } from './useProjectItemsTable'
+
 interface ProjectItem {
   id: string
   type: 'ISSUE' | 'PULL_REQUEST' | 'DRAFT_ISSUE'
