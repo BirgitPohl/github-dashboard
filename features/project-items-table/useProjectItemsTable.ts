@@ -3,8 +3,6 @@
  * Provides helper functions for formatting and displaying project items
  */
 export const useProjectItemsTable = () => {
-  const { formatDate } = useDateTime()
-
   /**
    * Get icon emoji for item type
    */
@@ -44,7 +42,6 @@ export const useProjectItemsTable = () => {
   return {
     getTypeIcon,
     getTypeText,
-    getStateColor,
-    formatDate
+    getStateColor
   }
 }

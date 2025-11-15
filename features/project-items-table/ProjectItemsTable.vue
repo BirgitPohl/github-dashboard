@@ -129,7 +129,8 @@ const props = withDefaults(defineProps<Props>(), {
   showStatus: false
 })
 
-const { getTypeIcon, getTypeText, getStateColor, formatDate } = useProjectItemsTable()
+const { getTypeIcon, getTypeText, getStateColor } = useProjectItemsTable()
+const { formatDate } = useDateTime()
 </script>
 
 <style scoped>
