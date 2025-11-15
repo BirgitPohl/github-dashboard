@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { ProjectCard } from '../../features/project-card'
+
 definePageMeta({
   name: 'ProjectsOverview'
 })
