@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { useProjectGrouping } from '../../composables/useProjectGrouping'
-import { useProjectFilters } from '../../composables/useProjectFilters'
-import ProjectFilters from '../../components/ProjectFilters.vue'
-import ProjectItemsTable from '../../components/ProjectItemsTable.vue'
+import { useProjectFilters } from '../../features/project-filters/useProjectFilters'
+import ProjectFilters from '../../features/project-filters/ProjectFilters.vue'
+import ProjectItemsTable from '../../features/project-items-table/ProjectItemsTable.vue'
 
 definePageMeta({
   name: 'ProjectBoardDetail'
