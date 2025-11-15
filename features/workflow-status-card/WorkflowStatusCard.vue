@@ -28,15 +28,12 @@ const timeAgo = computed(() => formatTimeAgoSimple(props.workflow.updated_at))
 </script>
 
 <template>
-  <div
-    class="workflow-card"
-    :style="{
-      backgroundColor: statusConfig.bgColor,
-      borderColor: statusConfig.borderColor
-    }"
+  <BaseCard
+    width="300px"
+    :border-color="statusConfig.borderColor"
+    :bg-color="statusConfig.bgColor"
   >
-    <!-- Status and Name -->
-    <div class="card-header">
+    <template #header>
       <div class="status-row">
         <div
           class="status-dot"
@@ -52,38 +49,38 @@ const timeAgo = computed(() => formatTimeAgoSimple(props.workflow.updated_at))
           </p>
         </div>
       </div>
-    </div>
+    </template>
 
-    <!-- Details -->
-    <div class="card-details">
-      <div class="detail-row">
-        <span>Status:</span>
-        <span
-          class="status-text"
-          :style="{ color: statusConfig.color }"
-        >
-          {{ statusConfig.label }}
-        </span>
+    <template #body>
+      <div class="card-details">
+        <div class="detail-row">
+          <span>Status:</span>
+          <span
+            class="status-text"
+            :style="{ color: statusConfig.color }"
+          >
+            {{ statusConfig.label }}
+          </span>
+        </div>
+
+        <div class="detail-row">
+          <span>Last run:</span>
+          <span>{{ timeAgo }}</span>
+        </div>
+
+        <div class="detail-row">
+          <span>Branch:</span>
+          <span class="branch-name">{{ workflow.branch }}</span>
+        </div>
+
+        <div class="detail-row">
+          <span>Run #:</span>
+          <span>{{ workflow.run_number }}</span>
+        </div>
       </div>
+    </template>
 
-      <div class="detail-row">
-        <span>Last run:</span>
-        <span>{{ timeAgo }}</span>
-      </div>
-
-      <div class="detail-row">
-        <span>Branch:</span>
-        <span class="branch-name">{{ workflow.branch }}</span>
-      </div>
-
-      <div class="detail-row">
-        <span>Run #:</span>
-        <span>{{ workflow.run_number }}</span>
-      </div>
-    </div>
-
-    <!-- Action -->
-    <div class="card-action">
+    <template #bottom>
       <a
         :href="workflow.html_url"
         target="_blank"
@@ -91,29 +88,11 @@ const timeAgo = computed(() => formatTimeAgoSimple(props.workflow.updated_at))
       >
         View Details →
       </a>
-    </div>
-  </div>
+    </template>
+  </BaseCard>
 </template>
 
 <style scoped>
-.workflow-card {
-  background: white; /* Will be overridden by inline style */
-  border: 2px solid #e5e7eb; /* Will be overridden by inline style */
-  border-radius: 8px;
-  padding: 20px;
-  width: 250px;
-  flex-shrink: 0;
-  transition: all 0.2s ease;
-}
-
-.workflow-card:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.card-header {
-  margin-bottom: 16px;
-}
-
 .status-row {
   display: flex;
   align-items: flex-start;
@@ -185,11 +164,6 @@ const timeAgo = computed(() => formatTimeAgoSimple(props.workflow.updated_at))
 
 .status-text {
   font-weight: 600;
-}
-
-.card-action {
-  padding-top: 16px;
-  border-top: 1px solid #f3f4f6;
 }
 
 .view-link {
