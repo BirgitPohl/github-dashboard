@@ -25,111 +25,90 @@ const createdAgo = computed(() => formatTimeAgoDetailed(props.project.createdAt)
 </script>
 
 <template>
-  <div
-    class="project-card"
-    :style="{
-      backgroundColor: statusConfig.bgColor,
-      borderColor: statusConfig.borderColor
-    }"
+  <BaseCard
+    width="300px"
+    :border-color="statusConfig.borderColor"
+    :bg-color="statusConfig.bgColor"
   >
-    <!-- Header -->
-    <div class="card-header">
-      <div class="project-info">
-        <div class="project-title">
-          <span class="status-icon">{{ statusConfig.icon }}</span>
-          <h3 class="project-name">
-            <NuxtLink :to="`/projects/${project.id}`" class="project-link">
-              {{ project.title }}
-            </NuxtLink>
-          </h3>
-          <span
-            class="status-badge"
-            :style="{
-              backgroundColor: statusConfig.color + '20',
-              color: statusConfig.color
-            }"
-          >
-            {{ statusConfig.label }}
-          </span>
-        </div>
-        <p v-if="project.shortDescription" class="project-description">
-          {{ project.shortDescription }}
-        </p>
-      </div>
-    </div>
-
-    <!-- Stats -->
-    <div class="project-stats">
-      <div class="stat-item">
-        <span class="stat-icon">📋</span>
-        <span class="stat-label">Items:</span>
-        <span class="stat-value">{{ project.items.totalCount }}</span>
-      </div>
-    </div>
-
-    <!-- Details -->
-    <div class="project-details">
-      <div class="detail-row">
-        <span>Status:</span>
+    <template #header>
+      <div class="project-title">
+        <span class="status-icon">{{ statusConfig.icon }}</span>
+        <h3 class="project-name">
+          <NuxtLink :to="`/projects/${project.id}`" class="project-link">
+            {{ project.title }}
+          </NuxtLink>
+        </h3>
         <span
-          class="status-text"
-          :style="{ color: statusConfig.color }"
+          class="status-badge"
+          :style="{
+            backgroundColor: statusConfig.color + '20',
+            color: statusConfig.color
+          }"
         >
           {{ statusConfig.label }}
         </span>
       </div>
+      <p v-if="project.shortDescription" class="project-description">
+        {{ project.shortDescription }}
+      </p>
+    </template>
 
-      <div class="detail-row">
-        <span>Updated:</span>
-        <span>{{ timeAgo }}</span>
+    <template #body>
+      <!-- Stats -->
+      <div class="project-stats">
+        <div class="stat-item">
+          <span class="stat-icon">📋</span>
+          <span class="stat-label">Items:</span>
+          <span class="stat-value">{{ project.items.totalCount }}</span>
+        </div>
       </div>
 
-      <div class="detail-row">
-        <span>Created:</span>
-        <span>{{ createdAgo }}</span>
-      </div>
-    </div>
+      <!-- Details -->
+      <div class="project-details">
+        <div class="detail-row">
+          <span>Status:</span>
+          <span
+            class="status-text"
+            :style="{ color: statusConfig.color }"
+          >
+            {{ statusConfig.label }}
+          </span>
+        </div>
 
-    <!-- Action -->
-    <div class="card-action">
-      <NuxtLink
-        :to="`/projects/${project.id}`"
-        class="view-link primary-link"
-      >
-        View Project Board
-      </NuxtLink>
-      <a
-        :href="project.url"
-        target="_blank"
-        class="github-link"
-        title="Open on GitHub"
-      >
-        GitHub →
-      </a>
-    </div>
-  </div>
+        <div class="detail-row">
+          <span>Updated:</span>
+          <span>{{ timeAgo }}</span>
+        </div>
+
+        <div class="detail-row">
+          <span>Created:</span>
+          <span>{{ createdAgo }}</span>
+        </div>
+      </div>
+    </template>
+
+    <template #bottom>
+      <div class="card-action">
+        <NuxtLink
+          :to="`/projects/${project.id}`"
+          class="view-link primary-link"
+        >
+          View Project Board
+        </NuxtLink>
+        <a
+          :href="project.url"
+          target="_blank"
+          class="github-link"
+          title="Open on GitHub"
+        >
+          GitHub →
+        </a>
+      </div>
+    </template>
+  </BaseCard>
 </template>
 
 <style scoped>
-.project-card {
-  background: white;
-  border: 2px solid #e5e7eb;
-  border-radius: 8px;
-  padding: 20px;
-  width: 320px;
-  flex-shrink: 0;
-  transition: all 0.2s ease;
-}
-
-.project-card:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  transform: translateY(-2px);
-}
-
-.card-header {
-  margin-bottom: 16px;
-}
-
 .project-title {
   display: flex;
   align-items: center;
@@ -240,8 +219,6 @@ const createdAgo = computed(() => formatTimeAgoDetailed(props.project.createdAt)
 }
 
 .card-action {
-  padding-top: 12px;
-  border-top: 1px solid #f3f4f6;
   display: flex;
   gap: 12px;
   align-items: center;
