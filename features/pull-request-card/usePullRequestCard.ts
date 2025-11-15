@@ -75,10 +75,21 @@ export const usePullRequestCard = () => {
     return 'Closed'
   }
 
+  /**
+   * Get border color based on PR state
+   */
+  const getStateBorderColor = (pr: PullRequest): string => {
+    if (pr.merged_at) return '#8b5cf6'
+    if (pr.state === 'open' && pr.draft) return '#f59e0b'
+    if (pr.state === 'open') return '#10b981'
+    return '#ef4444'
+  }
+
   return {
     formatTimeAgo,
     getStateClass,
     getStateIcon,
-    getStateLabel
+    getStateLabel,
+    getStateBorderColor
   }
 }

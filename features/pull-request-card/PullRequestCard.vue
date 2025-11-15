@@ -61,11 +61,11 @@ const props = withDefaults(defineProps<Props>(), {
   class: ''
 })
 
-const { formatTimeAgo, getStateClass, getStateIcon } = usePullRequestCard()
+const { formatTimeAgo, getStateClass, getStateIcon, getStateBorderColor } = usePullRequestCard()
 
 // Compute CSS classes
 const cardClasses = computed(() => {
-  const classes = ['pr-card', getStateClass(props.pullRequest)]
+  const classes = [getStateClass(props.pullRequest)]
 
   if (props.class) {
     classes.push(props.class)
@@ -76,19 +76,25 @@ const cardClasses = computed(() => {
 </script>
 
 <template>
-  <div :class="cardClasses">
-    <div class="pr-card__header">
-      <div class="pr-card__status">
-        <span class="pr-card__icon">{{ getStateIcon(pullRequest) }}</span>
-        <span class="pr-card__number">#{{ pullRequest.number }}</span>
+  <BaseCard
+    width="full"
+    :border-color="getStateBorderColor(pullRequest)"
+    :class="cardClasses"
+  >
+    <template #header>
+      <div class="pr-card__header">
+        <div class="pr-card__status">
+          <span class="pr-card__icon">{{ getStateIcon(pullRequest) }}</span>
+          <span class="pr-card__number">#{{ pullRequest.number }}</span>
+        </div>
+        <div v-if="showRepository" class="pr-card__repository">
+          {{ pullRequest.repository.name }}
+        </div>
       </div>
-      <div v-if="showRepository" class="pr-card__repository">
-        {{ pullRequest.repository.name }}
-      </div>
-    </div>
+    </template>
 
-    <div class="pr-card__content">
-      <TypographyHeader
+    <template #body>
+      <Header
         :level="3"
         size="md"
         variant="primary"
@@ -97,7 +103,7 @@ const cardClasses = computed(() => {
         <a :href="pullRequest.html_url" target="_blank" rel="noopener noreferrer">
           {{ pullRequest.title }}
         </a>
-      </TypographyHeader>
+      </Header>
 
       <div class="pr-card__meta">
         <div class="pr-card__author">
@@ -142,30 +148,15 @@ const cardClasses = computed(() => {
           />
         </div>
       </div>
-    </div>
-  </div>
+    </template>
+  </BaseCard>
 </template>
 
 <style scoped>
-.pr-card {
-  padding: 24px;
-  border-bottom: 1px solid #f3f4f6;
-  transition: background-color 0.2s;
-}
-
-.pr-card:hover {
-  background: #f9fafb;
-}
-
-.pr-card:last-child {
-  border-bottom: none;
-}
-
 .pr-card__header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 12px;
 }
 
 .pr-card__status {
@@ -262,10 +253,6 @@ const cardClasses = computed(() => {
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
-  .pr-card {
-    padding: 16px;
-  }
-
   .pr-card__header {
     flex-direction: column;
     align-items: flex-start;
