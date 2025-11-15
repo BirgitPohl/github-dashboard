@@ -32,87 +32,83 @@ const sizeFormatted = computed(() => formatSize(props.repository.size))
 </script>
 
 <template>
-  <div
-    class="project-card"
-    :style="{
-      backgroundColor: categoryConfig.bgColor,
-      borderColor: categoryConfig.borderColor
-    }"
+  <BaseCard
+    width="300px"
+    :border-color="categoryConfig.borderColor"
+    :bg-color="categoryConfig.bgColor"
   >
-    <!-- Header -->
-    <div class="card-header">
-      <div class="project-info">
-        <div class="project-title">
-          <span class="category-icon">{{ categoryConfig.icon }}</span>
-          <h3 class="project-name">
-            {{ repository.name }}
-          </h3>
-          <span v-if="repository.is_private" class="private-badge">Private</span>
+    <template #header>
+      <div class="project-title">
+        <span class="category-icon">{{ categoryConfig.icon }}</span>
+        <h3 class="project-name">
+          {{ repository.name }}
+        </h3>
+        <span v-if="repository.is_private" class="private-badge">Private</span>
+      </div>
+      <p class="project-description">
+        {{ repository.description }}
+      </p>
+    </template>
+
+    <template #body>
+      <!-- Stats -->
+      <div class="project-stats">
+        <div class="stat-item">
+          <span class="stat-icon">⭐</span>
+          <span class="stat-value">{{ repository.stars }}</span>
         </div>
-        <p class="project-description">
-          {{ repository.description }}
-        </p>
-      </div>
-    </div>
-
-    <!-- Stats -->
-    <div class="project-stats">
-      <div class="stat-item">
-        <span class="stat-icon">⭐</span>
-        <span class="stat-value">{{ repository.stars }}</span>
-      </div>
-      <div class="stat-item">
-        <span class="stat-icon">🍴</span>
-        <span class="stat-value">{{ repository.forks }}</span>
-      </div>
-      <div class="stat-item">
-        <span class="stat-icon">❗</span>
-        <span class="stat-value">{{ repository.issues }}</span>
-      </div>
-    </div>
-
-    <!-- Tech Stack -->
-    <div v-if="repository.tech_stack.length > 0" class="tech-stack">
-      <span class="tech-label">Tech:</span>
-      <div class="tech-tags">
-        <span
-          v-for="tech in repository.tech_stack.slice(0, 3)"
-          :key="tech"
-          class="tech-tag"
-        >
-          {{ tech }}
-        </span>
-        <span v-if="repository.tech_stack.length > 3" class="tech-more">
-          +{{ repository.tech_stack.length - 3 }}
-        </span>
-      </div>
-    </div>
-
-    <!-- Details -->
-    <div class="project-details">
-      <div class="detail-row">
-        <span>Category:</span>
-        <span
-          class="category-label"
-          :style="{ color: categoryConfig.color }"
-        >
-          {{ categoryConfig.label }}
-        </span>
+        <div class="stat-item">
+          <span class="stat-icon">🍴</span>
+          <span class="stat-value">{{ repository.forks }}</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-icon">❗</span>
+          <span class="stat-value">{{ repository.issues }}</span>
+        </div>
       </div>
 
-      <div class="detail-row">
-        <span>Updated:</span>
-        <span>{{ timeAgo }}</span>
+      <!-- Tech Stack -->
+      <div v-if="repository.tech_stack.length > 0" class="tech-stack">
+        <span class="tech-label">Tech:</span>
+        <div class="tech-tags">
+          <span
+            v-for="tech in repository.tech_stack.slice(0, 3)"
+            :key="tech"
+            class="tech-tag"
+          >
+            {{ tech }}
+          </span>
+          <span v-if="repository.tech_stack.length > 3" class="tech-more">
+            +{{ repository.tech_stack.length - 3 }}
+          </span>
+        </div>
       </div>
 
-      <div class="detail-row">
-        <span>Size:</span>
-        <span>{{ sizeFormatted }}</span>
-      </div>
-    </div>
+      <!-- Details -->
+      <div class="project-details">
+        <div class="detail-row">
+          <span>Category:</span>
+          <span
+            class="category-label"
+            :style="{ color: categoryConfig.color }"
+          >
+            {{ categoryConfig.label }}
+          </span>
+        </div>
 
-    <!-- Action -->
-    <div class="card-action">
+        <div class="detail-row">
+          <span>Updated:</span>
+          <span>{{ timeAgo }}</span>
+        </div>
+
+        <div class="detail-row">
+          <span>Size:</span>
+          <span>{{ sizeFormatted }}</span>
+        </div>
+      </div>
+    </template>
+
+    <template #bottom>
       <a
         :href="repository.html_url"
         target="_blank"
@@ -120,30 +116,11 @@ const sizeFormatted = computed(() => formatSize(props.repository.size))
       >
         View Repository →
       </a>
-    </div>
-  </div>
+    </template>
+  </BaseCard>
 </template>
 
 <style scoped>
-.project-card {
-  background: white;
-  border: 2px solid #e5e7eb;
-  border-radius: 8px;
-  padding: 20px;
-  width: 300px;
-  flex-shrink: 0;
-  transition: all 0.2s ease;
-}
-
-.project-card:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  transform: translateY(-2px);
-}
-
-.card-header {
-  margin-bottom: 16px;
-}
-
 .project-title {
   display: flex;
   align-items: center;
@@ -275,11 +252,6 @@ const sizeFormatted = computed(() => formatSize(props.repository.size))
 
 .category-label {
   font-weight: 600;
-}
-
-.card-action {
-  padding-top: 12px;
-  border-top: 1px solid #f3f4f6;
 }
 
 .view-link {
