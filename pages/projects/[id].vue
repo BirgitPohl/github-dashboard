@@ -176,7 +176,7 @@ const showStatusColumn = computed(() => statusOptions.value.length > 1)
 
     <!-- Error State -->
     <div v-else-if="error" class="error-state">
-      <ErrorBoxErrorBox 
+      <ErrorBox
         :error="error"
         title="Failed to load project board"
         @retry="refresh"
@@ -185,7 +185,7 @@ const showStatusColumn = computed(() => statusOptions.value.length > 1)
           <p>Project ID: {{ projectId }}</p>
           <NuxtLink to="/projects" class="back-link">← Back to Project Boards</NuxtLink>
         </template>
-      </ErrorBoxErrorBox>
+      </ErrorBox>
     </div>
 
     <!-- Content -->

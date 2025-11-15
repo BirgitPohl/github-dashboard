@@ -153,7 +153,7 @@ const showRefreshIndicator = computed(() => shouldShowRefreshIndicator(!!reposit
 
     <!-- Error State -->
     <div v-else-if="error && !repositories" class="error-state">
-      <ErrorBoxErrorBox
+      <ErrorBox
         :error="error"
         title="Failed to load repositories"
         @retry="refresh"

@@ -64,7 +64,7 @@ const showRefreshIndicator = computed(() => shouldShowRefreshIndicator(!!data.va
 
     <!-- Error State -->
     <div v-else-if="error && !data" class="error">
-      <ErrorBoxErrorBox
+      <ErrorBox
         :error="error"
         @retry="refresh"
       />

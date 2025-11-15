@@ -115,7 +115,7 @@ const showRefreshIndicator = computed(() => shouldShowRefreshIndicator(!!project
 
     <!-- Error State -->
     <div v-else-if="error && !projects" class="error-state">
-      <ErrorBoxErrorBox
+      <ErrorBox
         :error="error"
         title="Failed to load project boards"
         @retry="refresh"

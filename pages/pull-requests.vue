@@ -275,7 +275,7 @@ const showRefreshIndicator = computed(() => shouldShowRefreshIndicator(!!pullReq
 
       <!-- Error State -->
       <div v-else-if="error && !pullRequestsData" class="error">
-        <ErrorBoxErrorBox
+        <ErrorBox
           :error="error"
           title="Failed to load pull requests"
           @retry="refresh"
