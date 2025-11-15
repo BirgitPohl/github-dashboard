@@ -111,36 +111,8 @@ const showRefreshIndicator = computed(() => shouldShowRefreshIndicator(!!reposit
         />
       </div>
 
-      <!-- Category Distribution -->
-      <div class="category-overview">
-        <Header
-          :level="2"
-          size="xl"
-          variant="primary"
-        >
-          Repository Categories
-        </Header>
-        <div class="category-grid">
-          <div 
-            v-for="(count, category) in categoryStats" 
-            :key="category"
-            class="category-stat"
-          >
-            <span class="category-name">{{ category }}</span>
-            <span class="category-count">{{ count }}</span>
-          </div>
-        </div>
-      </div>
-
       <!-- Repositories Grid -->
       <div class="repositories-section">
-        <Header
-          :level="2"
-          size="xl"
-          variant="primary"
-        >
-          All Repositories
-        </Header>
         <div class="repositories-grid">
           <RepositoryCard 
             v-for="repository in repositories" 

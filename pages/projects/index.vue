@@ -66,32 +66,9 @@ const showRefreshIndicator = computed(() => shouldShowRefreshIndicator(!!project
 
     <!-- Content -->
     <template v-else-if="projects && projects.length > 0">
-      <!-- Stats Overview -->
-      <div class="stats-overview">
-        <StatsCard
-          icon="📋"
-          :value="totalStats.totalProjects"
-          label="Project Boards"
-          variant="primary"
-        />
-
-        <StatsCard
-          icon="📝"
-          :value="totalStats.totalItems"
-          label="Total Items"
-          variant="success"
-        />
-      </div>
 
       <!-- Projects Grid -->
       <div class="projects-section">
-        <Header
-          :level="2"
-          size="xl"
-          variant="primary"
-        >
-          All Project Boards
-        </Header>
         <div class="projects-grid">
           <ProjectCard 
             v-for="project in projects" 
