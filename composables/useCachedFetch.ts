@@ -42,15 +42,8 @@ export const useCachedFetch = <T>(
   // Fetch with caching logic
   const { data, pending, error, refresh, status, execute } = useFetch<T>(url, {
     ...fetchOptions,
-    lazy: true,
     server: false,
     immediate: false, // Don't execute automatically
-
-    // Return cached data immediately if available
-    getCachedData(fetchKey) {
-      // Only return cache if it exists, otherwise let fetch execute
-      return cachedData.value
-    },
 
     // Update cache and metadata on successful response
     onResponse({ response }) {
