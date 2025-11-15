@@ -109,6 +109,10 @@ export const useCachedFetch = <T>(
     })
   })
 
+  // Computed properties for loading states
+  const showSkeleton = computed(() => !cachedData.value && pending.value)
+  const showRefreshIndicator = computed(() => cacheMeta.value.isRefreshing && !!cachedData.value)
+
   return {
     data: computed(() => cachedData.value || data.value),
     pending: computed(() => !cachedData.value && pending.value),
@@ -118,5 +122,7 @@ export const useCachedFetch = <T>(
     status,
     lastUpdated: computed(() => cacheMeta.value.timestamp),
     isCacheStale,
+    showSkeleton,
+    showRefreshIndicator,
   }
 }
