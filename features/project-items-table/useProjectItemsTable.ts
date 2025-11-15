@@ -3,6 +3,8 @@
  * Provides helper functions for formatting and displaying project items
  */
 export const useProjectItemsTable = () => {
+  const { formatDate } = useDateTime()
+
   /**
    * Get icon emoji for item type
    */
@@ -37,19 +39,6 @@ export const useProjectItemsTable = () => {
       case 'merged': return '#8b5cf6'
       default: return '#6b7280'
     }
-  }
-
-  /**
-   * Format date to short readable format
-   */
-  const formatDate = (dateString: string): string => {
-    const date = new Date(dateString)
-    const currentYear = new Date().getFullYear()
-    return date.toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: date.getFullYear() === currentYear ? undefined : 'numeric'
-    })
   }
 
   return {
