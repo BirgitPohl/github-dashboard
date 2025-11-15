@@ -28,9 +28,11 @@
   background: white;
   border-bottom: 1px solid #e5e7eb;
   padding: 16px 0;
-  position: sticky;
+  position: fixed;
   top: 0;
-  z-index: 10;
+  left: 0;
+  right: 0;
+  z-index: 100;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
@@ -76,6 +78,7 @@
 
 .main-content {
   padding: 0;
+  padding-top: 73px; /* Height of fixed navigation */
 }
 
 @media (max-width: 768px) {
@@ -84,9 +87,13 @@
     flex-direction: column;
     gap: 12px;
   }
-  
+
   .nav-links {
     gap: 16px;
+  }
+
+  .main-content {
+    padding-top: 120px; /* Taller navigation on mobile */
   }
 }
 </style>

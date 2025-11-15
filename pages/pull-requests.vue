@@ -369,8 +369,7 @@ const stats = computed(() => pullRequestsData.value?.stats || {
 }
 
 .pr-list {
-  max-height: 800px;
-  overflow-y: auto;
+  /* Removed max-height and overflow - page is scrollable */
 }
 
 @media (max-width: 768px) {
