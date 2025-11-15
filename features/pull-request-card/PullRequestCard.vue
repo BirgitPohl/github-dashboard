@@ -110,11 +110,10 @@ const cardClasses = computed(() => {
           <span class="author-name">{{ pullRequest.user.login }}</span>
         </div>
 
-        <div class="pr-card__branch-info">
-          <span class="branch">{{ pullRequest.head.ref }}</span>
-          <span class="arrow">→</span>
-          <span class="branch">{{ pullRequest.base.ref }}</span>
-        </div>
+        <BranchIndicator
+          :source-branch="pullRequest.head.ref"
+          :target-branch="pullRequest.base.ref"
+        />
 
         <div class="pr-card__time">
           {{ formatTimeAgo(pullRequest.updated_at) }}
@@ -222,24 +221,6 @@ const cardClasses = computed(() => {
   display: flex;
   align-items: center;
   gap: 8px;
-}
-
-.pr-card__branch-info {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.branch {
-  background: #f3f4f6;
-  padding: 2px 6px;
-  border-radius: 4px;
-  font-family: monospace;
-  font-size: 12px;
-}
-
-.arrow {
-  color: #9ca3af;
 }
 
 .pr-card__labels {
