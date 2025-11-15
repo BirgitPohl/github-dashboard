@@ -168,13 +168,6 @@ const showRefreshIndicator = computed(() => shouldShowRefreshIndicator(!!pullReq
         />
 
         <StatsCard
-          icon="✅"
-          :value="stats.merged"
-          label="Merged"
-          variant="primary"
-        />
-
-        <StatsCard
           icon="📝"
           :value="stats.draft"
           label="Draft"
