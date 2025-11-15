@@ -7,17 +7,6 @@ useHead({
   title: 'Project Boards - GitHub Dashboard'
 })
 
-interface Project {
-  id: string
-  title: string
-  description: string
-  url: string
-  created_at: string
-  updated_at: string
-  status: 'open' | 'closed'
-  items_count: number
-}
-
 const {
   data: projects,
   pending,
