@@ -158,26 +158,39 @@ watch(selectedState, () => {
 
       <!-- Stats Cards -->
       <div v-if="!pending" class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-value">{{ stats.total }}</div>
-          <div class="stat-label">Total PRs</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-value">{{ stats.open }}</div>
-          <div class="stat-label">Open</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-value">{{ stats.merged }}</div>
-          <div class="stat-label">Merged</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-value">{{ stats.draft }}</div>
-          <div class="stat-label">Draft</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-value">{{ stats.repositories }}</div>
-          <div class="stat-label">Repositories</div>
-        </div>
+        <StatsCard
+          icon="📊"
+          :value="stats.total"
+          label="Total PRs"
+        />
+
+        <StatsCard
+          icon="🔓"
+          :value="stats.open"
+          label="Open"
+          variant="success"
+        />
+
+        <StatsCard
+          icon="✅"
+          :value="stats.merged"
+          label="Merged"
+          variant="primary"
+        />
+
+        <StatsCard
+          icon="📝"
+          :value="stats.draft"
+          label="Draft"
+          variant="warning"
+        />
+
+        <StatsCard
+          icon="📦"
+          :value="stats.repositories"
+          label="Repositories"
+          variant="info"
+        />
       </div>
 
       <!-- Filters -->
@@ -374,27 +387,6 @@ watch(selectedState, () => {
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 24px;
   margin-bottom: 32px;
-}
-
-.stat-card {
-  background: white;
-  padding: 24px;
-  border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  text-align: center;
-}
-
-.stat-value {
-  font-size: 32px;
-  font-weight: 700;
-  color: #111827;
-  margin-bottom: 8px;
-}
-
-.stat-label {
-  font-size: 14px;
-  color: #6b7280;
-  font-weight: 500;
 }
 
 .filters {
@@ -647,22 +639,26 @@ watch(selectedState, () => {
   .container {
     padding: 0 16px;
   }
-  
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
   .filters {
     flex-direction: column;
   }
-  
+
   .filter-group {
     min-width: auto;
     width: 100%;
   }
-  
+
   .pr-header {
     flex-direction: column;
     align-items: flex-start;
     gap: 8px;
   }
-  
+
   .pr-meta {
     flex-direction: column;
     align-items: flex-start;

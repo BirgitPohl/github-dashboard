@@ -78,29 +78,25 @@ const totalStats = computed(() => {
     <div v-else-if="repositories">
       <!-- Stats Overview -->
       <div class="stats-overview">
-        <div class="stat-card">
-          <div class="stat-icon">📊</div>
-          <div class="stat-content">
-            <div class="stat-value">{{ totalStats.totalRepos }}</div>
-            <div class="stat-label">Total Repositories</div>
-          </div>
-        </div>
-        
-        <div class="stat-card">
-          <div class="stat-icon">⭐</div>
-          <div class="stat-content">
-            <div class="stat-value">{{ totalStats.totalStars }}</div>
-            <div class="stat-label">Total Stars</div>
-          </div>
-        </div>
-        
-        <div class="stat-card">
-          <div class="stat-icon">🍴</div>
-          <div class="stat-content">
-            <div class="stat-value">{{ totalStats.totalForks }}</div>
-            <div class="stat-label">Total Forks</div>
-          </div>
-        </div>
+        <StatsCard
+          icon="📊"
+          :value="totalStats.totalRepos"
+          label="Total Repositories"
+        />
+
+        <StatsCard
+          icon="⭐"
+          :value="totalStats.totalStars"
+          label="Total Stars"
+          variant="warning"
+        />
+
+        <StatsCard
+          icon="🍴"
+          :value="totalStats.totalForks"
+          label="Total Forks"
+          variant="info"
+        />
       </div>
 
       <!-- Category Distribution -->
@@ -171,39 +167,6 @@ const totalStats = computed(() => {
   justify-content: center;
 }
 
-.stat-card {
-  background: white;
-  border-radius: 12px;
-  padding: 24px;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  min-width: 200px;
-}
-
-.stat-icon {
-  font-size: 24px;
-  width: 48px;
-  height: 48px;
-  background: #f3f4f6;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.stat-value {
-  font-size: 24px;
-  font-weight: 700;
-  color: #111827;
-}
-
-.stat-label {
-  font-size: 14px;
-  color: #6b7280;
-}
-
 .category-overview {
   margin-bottom: 32px;
   text-align: center;
@@ -270,16 +233,11 @@ const totalStats = computed(() => {
   .repositories-page {
     padding: 16px;
   }
-  
+
   .stats-overview {
     gap: 16px;
   }
-  
-  .stat-card {
-    min-width: 160px;
-    padding: 20px;
-  }
-  
+
   .repositories-grid {
     gap: 16px;
   }
