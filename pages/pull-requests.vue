@@ -113,35 +113,6 @@ const stats = computed(() => pullRequestsData.value?.stats || {
   repositories: 0
 })
 
-// Format relative time
-function formatTimeAgo(dateString: string): string {
-  const date = new Date(dateString)
-  const now = new Date()
-  const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000)
-  
-  if (diffInSeconds < 60) return 'just now'
-  if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`
-  if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`
-  if (diffInSeconds < 604800) return `${Math.floor(diffInSeconds / 86400)}d ago`
-  
-  return date.toLocaleDateString()
-}
-
-// Get state styling
-function getStateClass(pr: PullRequest): string {
-  if (pr.merged_at) return 'state-merged'
-  if (pr.state === 'open' && pr.draft) return 'state-draft'
-  if (pr.state === 'open') return 'state-open'
-  return 'state-closed'
-}
-
-function getStateIcon(pr: PullRequest): string {
-  if (pr.merged_at) return '✅'
-  if (pr.state === 'open' && pr.draft) return '📝'
-  if (pr.state === 'open') return '🔓'
-  return '❌'
-}
-
 // Watch for state changes and refresh data
 watch(selectedState, () => {
   refresh()
@@ -273,81 +244,11 @@ watch(selectedState, () => {
         </div>
 
         <div class="pr-list">
-          <div 
-            v-for="pr in filteredPullRequests" 
-            :key="pr.id" 
-            class="pr-item"
-            :class="getStateClass(pr)"
-          >
-            <div class="pr-header">
-              <div class="pr-status">
-                <span class="pr-icon">{{ getStateIcon(pr) }}</span>
-                <span class="pr-number">#{{ pr.number }}</span>
-              </div>
-              <div class="pr-repository">
-                {{ pr.repository.name }}
-              </div>
-            </div>
-
-            <div class="pr-content">
-              <TypographyHeader 
-                :level="3" 
-                size="md" 
-                variant="primary"
-                class="pr-title"
-              >
-                <a :href="pr.html_url" target="_blank" rel="noopener noreferrer">
-                  {{ pr.title }}
-                </a>
-              </TypographyHeader>
-              
-              <div class="pr-meta">
-                <div class="pr-author">
-                  <img 
-                    :src="pr.user.avatar_url" 
-                    :alt="pr.user.login"
-                    class="author-avatar"
-                  >
-                  <span class="author-name">{{ pr.user.login }}</span>
-                </div>
-                
-                <div class="pr-branch-info">
-                  <span class="branch">{{ pr.head.ref }}</span>
-                  <span class="arrow">→</span>
-                  <span class="branch">{{ pr.base.ref }}</span>
-                </div>
-                
-                <div class="pr-time">
-                  {{ formatTimeAgo(pr.updated_at) }}
-                </div>
-              </div>
-
-              <div v-if="pr.labels.length > 0" class="pr-labels">
-                <span
-                  v-for="label in pr.labels"
-                  :key="label.name"
-                  class="pr-label"
-                  :style="{ backgroundColor: `#${label.color}` }"
-                >
-                  {{ label.name }}
-                </span>
-              </div>
-
-              <div v-if="pr.assignees.length > 0" class="pr-assignees">
-                <span class="assignees-label">Assigned to:</span>
-                <div class="assignees-list">
-                  <img
-                    v-for="assignee in pr.assignees"
-                    :key="assignee.login"
-                    :src="assignee.avatar_url"
-                    :alt="assignee.login"
-                    :title="assignee.login"
-                    class="assignee-avatar"
-                  >
-                </div>
-              </div>
-            </div>
-          </div>
+          <PullRequestCard
+            v-for="pr in filteredPullRequests"
+            :key="pr.id"
+            :pull-request="pr"
+          />
         </div>
       </div>
 
@@ -476,158 +377,6 @@ watch(selectedState, () => {
   overflow-y: auto;
 }
 
-.pr-item {
-  padding: 24px;
-  border-bottom: 1px solid #f3f4f6;
-  transition: background-color 0.2s;
-}
-
-.pr-item:hover {
-  background: #f9fafb;
-}
-
-.pr-item:last-child {
-  border-bottom: none;
-}
-
-.pr-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 12px;
-}
-
-.pr-status {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.pr-icon {
-  font-size: 16px;
-}
-
-.pr-number {
-  font-weight: 600;
-  color: #6b7280;
-}
-
-.pr-repository {
-  font-size: 14px;
-  color: #374151;
-  background: #e5e7eb;
-  padding: 4px 8px;
-  border-radius: 6px;
-}
-
-.pr-title {
-  margin: 0 0 12px 0;
-  font-size: 18px;
-  font-weight: 600;
-  line-height: 1.4;
-}
-
-.pr-title a {
-  color: #111827;
-  text-decoration: none;
-}
-
-.pr-title a:hover {
-  text-decoration: underline;
-}
-
-.pr-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
-  align-items: center;
-  margin-bottom: 12px;
-  font-size: 14px;
-  color: #6b7280;
-}
-
-.pr-author {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.author-avatar {
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-}
-
-.pr-branch-info {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.branch {
-  background: #f3f4f6;
-  padding: 2px 6px;
-  border-radius: 4px;
-  font-family: monospace;
-  font-size: 12px;
-}
-
-.arrow {
-  color: #9ca3af;
-}
-
-.pr-labels {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 12px;
-}
-
-.pr-label {
-  padding: 2px 8px;
-  border-radius: 12px;
-  font-size: 12px;
-  font-weight: 500;
-  color: white;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-}
-
-.pr-assignees {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 14px;
-  color: #6b7280;
-}
-
-.assignees-list {
-  display: flex;
-  gap: 4px;
-}
-
-.assignee-avatar {
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-}
-
-/* State-specific styling */
-.state-open {
-  border-left: 4px solid #10b981;
-}
-
-.state-draft {
-  border-left: 4px solid #f59e0b;
-}
-
-.state-merged {
-  border-left: 4px solid #8b5cf6;
-}
-
-.state-closed {
-  border-left: 4px solid #ef4444;
-}
-
 @media (max-width: 768px) {
   .container {
     padding: 0 16px;
@@ -644,18 +393,6 @@ watch(selectedState, () => {
   .filter-group {
     min-width: auto;
     width: 100%;
-  }
-
-  .pr-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
-  }
-
-  .pr-meta {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
   }
 }
 </style>
