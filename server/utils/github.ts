@@ -172,3 +172,60 @@ export async function processRepositoriesInBatches<T>(
 
   return results
 }
+
+/**
+ * Execute a GitHub GraphQL query
+ */
+export async function executeGraphQL<T = unknown>(query: string, variables: Record<string, unknown> = {}): Promise<T> {
+  const config = useRuntimeConfig()
+  const token = config.githubToken
+
+  if (!token) {
+    throw createError({
+      statusCode: 401,
+      statusMessage: 'GitHub token is required for GraphQL API'
+    })
+  }
+
+  const response = await fetch('https://api.github.com/graphql', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json',
+      'X-GitHub-Api-Version': '2022-11-28'
+    },
+    body: JSON.stringify({
+      query,
+      variables
+    })
+  })
+
+  if (!response.ok) {
+    const errorText = await response.text()
+    throw createError({
+      statusCode: response.status,
+      statusMessage: `GitHub GraphQL API error: ${response.statusText} - ${errorText}`
+    })
+  }
+
+  const data = await response.json()
+
+  // Check for GraphQL errors
+  if (data.errors) {
+    // Check if it's a scope issue
+    const scopeError = data.errors.find((error: { type?: string }) => error.type === 'INSUFFICIENT_SCOPES')
+    if (scopeError) {
+      throw createError({
+        statusCode: 403,
+        statusMessage: 'GitHub token missing required scopes. Please add the necessary scopes at https://github.com/settings/tokens'
+      })
+    }
+
+    throw createError({
+      statusCode: 400,
+      statusMessage: `GraphQL error: ${data.errors.map((e: { message?: string }) => e.message || 'Unknown error').join(', ')}`
+    })
+  }
+
+  return data.data
+}

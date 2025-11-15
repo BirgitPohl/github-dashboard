@@ -1,3 +1,5 @@
+import { executeGraphQL, getGitHubOwner } from '../utils/github'
+
 interface GitHubProject {
   id: string
   title: string
@@ -25,20 +27,8 @@ interface Project {
 }
 
 export default defineEventHandler(async (_event) => {
-  const config = useRuntimeConfig()
-  
-  // Configuration from runtime config
-  const owner = config.githubOwner || 'Oracommit'
-  const token = config.githubToken
-  
-  if (!token) {
-    throw createError({
-      statusCode: 401,
-      statusMessage: 'GitHub token is required to fetch projects'
-    })
-  }
-
   try {
+    const owner = getGitHubOwner()
     console.log(`Fetching GitHub Projects for organization: ${owner}`)
 
     // GraphQL query for GitHub Projects v2
@@ -63,50 +53,15 @@ export default defineEventHandler(async (_event) => {
       }
     `
 
-    const response = await fetch('https://api.github.com/graphql', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
-        'X-GitHub-Api-Version': '2022-11-28'
-      },
-      body: JSON.stringify({
-        query,
-        variables: { owner }
-      })
-    })
-
-    if (!response.ok) {
-      const errorText = await response.text()
-      console.log(`GitHub GraphQL API error response:`, errorText)
-      throw createError({
-        statusCode: response.status,
-        statusMessage: `GitHub GraphQL API error: ${response.statusText} - ${errorText}`
-      })
-    }
-
-    const data = await response.json()
-    
-    // Check for GraphQL errors
-    if (data.errors) {
-      console.log('GraphQL errors:', data.errors)
-      
-      // Check if it's a scope issue
-      const scopeError = data.errors.find((error: { type?: string }) => error.type === 'INSUFFICIENT_SCOPES')
-      if (scopeError) {
-        throw createError({
-          statusCode: 403,
-          statusMessage: 'GitHub token missing required scopes. Please add "read:project" scope to your token at https://github.com/settings/tokens'
-        })
+    const data = await executeGraphQL<{
+      organization: {
+        projectsV2: {
+          nodes: GitHubProject[]
+        }
       }
-      
-      throw createError({
-        statusCode: 400,
-        statusMessage: `GraphQL error: ${data.errors.map((e: { message?: string }) => e.message || 'Unknown error').join(', ')}`
-      })
-    }
+    }>(query, { owner })
 
-    const githubProjects = data.data?.organization?.projectsV2?.nodes || []
+    const githubProjects = data.organization?.projectsV2?.nodes || []
     console.log(`Found ${githubProjects.length} GitHub Projects`)
 
     // Transform GitHub Projects to our format
@@ -130,14 +85,14 @@ export default defineEventHandler(async (_event) => {
 
     console.log(`Processed ${projects.length} projects`)
     return projects
-    
+
   } catch (error: unknown) {
     console.error('Error fetching GitHub Projects:', error)
-    
+
     if (error && typeof error === 'object' && 'statusCode' in error) {
       throw error // Re-throw createError errors
     }
-    
+
     throw createError({
       statusCode: 500,
       statusMessage: `Failed to fetch GitHub Projects: ${error instanceof Error ? error.message : String(error)}`
