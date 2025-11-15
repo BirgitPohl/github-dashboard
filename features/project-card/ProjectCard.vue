@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useProjectCard } from './useProjectCard'
+
 interface Project {
   id: string
   title: string

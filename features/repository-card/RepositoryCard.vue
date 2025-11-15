@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useRepositoryCard } from './useRepositoryCard'
+
 interface Repository {
   id: number
   name: string

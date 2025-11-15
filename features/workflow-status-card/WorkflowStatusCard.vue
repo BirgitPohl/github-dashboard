@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useWorkflowStatusCard } from './useWorkflowStatusCard'
+
 interface Workflow {
   id: string
   workflow_id: number
