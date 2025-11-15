@@ -16,46 +16,18 @@ const props = defineProps<{
   project: Project
 }>()
 
-const statusConfig = computed(() => {
-  const status = props.project.state
-  
-  switch (status) {
-    case 'OPEN':
-      return {
-        color: '#10b981', // Green
-        bgColor: '#f0fdf4',
-        borderColor: '#10b981',
-        icon: '🚀',
-        label: 'Active'
-      }
-    case 'CLOSED':
-      return {
-        color: '#6b7280', // Gray
-        bgColor: '#f9fafb',
-        borderColor: '#6b7280',
-        icon: '✅',
-        label: 'Closed'
-      }
-    default:
-      return {
-        color: '#6b7280', // Gray
-        bgColor: '#f9fafb',
-        borderColor: '#6b7280',
-        icon: '📋',
-        label: 'Unknown'
-      }
-  }
-})
-
+const { getStatusConfig } = useProjectCard()
 const { formatTimeAgoSimple, formatTimeAgoDetailed } = useDateTime()
+
+const statusConfig = computed(() => getStatusConfig(props.project.state))
 const timeAgo = computed(() => formatTimeAgoSimple(props.project.updatedAt))
 const createdAgo = computed(() => formatTimeAgoDetailed(props.project.createdAt))
 </script>
 
 <template>
-  <div 
+  <div
     class="project-card"
-    :style="{ 
+    :style="{
       backgroundColor: statusConfig.bgColor,
       borderColor: statusConfig.borderColor
     }"
@@ -70,9 +42,9 @@ const createdAgo = computed(() => formatTimeAgoDetailed(props.project.createdAt)
               {{ project.title }}
             </NuxtLink>
           </h3>
-          <span 
+          <span
             class="status-badge"
-            :style="{ 
+            :style="{
               backgroundColor: statusConfig.color + '20',
               color: statusConfig.color
             }"
@@ -80,7 +52,9 @@ const createdAgo = computed(() => formatTimeAgoDetailed(props.project.createdAt)
             {{ statusConfig.label }}
           </span>
         </div>
-        <p v-if="project.shortDescription" class="project-description">{{ project.shortDescription }}</p>
+        <p v-if="project.shortDescription" class="project-description">
+          {{ project.shortDescription }}
+        </p>
       </div>
     </div>
 
@@ -97,14 +71,14 @@ const createdAgo = computed(() => formatTimeAgoDetailed(props.project.createdAt)
     <div class="project-details">
       <div class="detail-row">
         <span>Status:</span>
-        <span 
+        <span
           class="status-text"
           :style="{ color: statusConfig.color }"
         >
           {{ statusConfig.label }}
         </span>
       </div>
-      
+
       <div class="detail-row">
         <span>Updated:</span>
         <span>{{ timeAgo }}</span>
@@ -118,13 +92,13 @@ const createdAgo = computed(() => formatTimeAgoDetailed(props.project.createdAt)
 
     <!-- Action -->
     <div class="card-action">
-      <NuxtLink 
+      <NuxtLink
         :to="`/projects/${project.id}`"
         class="view-link primary-link"
       >
         View Project Board
       </NuxtLink>
-      <a 
+      <a
         :href="project.url"
         target="_blank"
         class="github-link"
