@@ -10,7 +10,15 @@ useHead({
   ]
 })
 
-const { data, error, pending: loading, refresh, isRefreshing, lastUpdated } = useCachedFetch<WorkflowsResponse>(
+const {
+  data,
+  error,
+  refresh,
+  isRefreshing,
+  lastUpdated,
+  showSkeleton,
+  showRefreshIndicator
+} = useCachedFetch<WorkflowsResponse>(
   '/api/workflows',
   {
     key: 'workflows',
@@ -18,43 +26,26 @@ const { data, error, pending: loading, refresh, isRefreshing, lastUpdated } = us
   }
 )
 
-const { shouldShowSkeleton, shouldShowRefreshIndicator } = useLoadingState()
-
 const workflows = computed(() => {
   // Sort workflows by newest first (updated_at)
   return (data.value?.workflows || []).sort((a, b) => {
     return new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
   })
 })
-
-const showSkeleton = computed(() => shouldShowSkeleton(!!data.value, loading.value))
-const showRefreshIndicator = computed(() => shouldShowRefreshIndicator(!!data.value, isRefreshing.value))
 </script>
 
 <template>
-  <div class="dashboard">
-    <!-- Refresh Indicator (shown when refreshing with cached data) -->
-    <RefreshIndicator
-      v-if="showRefreshIndicator"
-      :is-refreshing="isRefreshing"
-      :last-updated="lastUpdated"
-    />
-
-    <!-- Skeleton Loading (shown on initial load with no cached data) -->
-    <div v-if="showSkeleton" class="loading">
-      <SkeletonGrid :count="6" />
-    </div>
-
-    <!-- Error State -->
-    <div v-else-if="error && !data" class="error">
-      <ErrorBox
-        :error="error"
-        @retry="refresh"
-      />
-    </div>
-
-    <!-- Content (shown when we have data, even if refreshing in background) -->
-    <div v-else-if="data" class="content">
+  <PageLayout
+    :show-skeleton="showSkeleton"
+    :show-refresh-indicator="showRefreshIndicator"
+    :is-refreshing="isRefreshing"
+    :last-updated="lastUpdated"
+    :error="error"
+    :data="data"
+    :on-retry="refresh"
+    :skeleton-count="6"
+  >
+    <template #content>
       <div class="workflows-container">
         <WorkflowStatusCard
           v-for="workflow in workflows"
@@ -68,37 +59,11 @@ const showRefreshIndicator = computed(() => shouldShowRefreshIndicator(!!data.va
         title="No workflows found"
         message="This repository doesn't have any workflows."
       />
-    </div>
-  </div>
+    </template>
+  </PageLayout>
 </template>
 
 <style scoped>
-.dashboard {
-  padding: 32px;
-}
-
-.loading {
-  max-width: 1200px;
-  margin: 0 auto;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 80px 0;
-}
-
-.error {
-  max-width: 1200px;
-  margin: 0 auto;
-  display: flex;
-  justify-content: center;
-  padding: 80px 0;
-}
-
-.content {
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
 .workflows-container {
   display: flex;
   flex-wrap: wrap;

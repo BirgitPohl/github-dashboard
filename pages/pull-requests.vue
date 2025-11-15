@@ -14,11 +14,12 @@ const selectedRepository = ref('')
 // Fetch data with caching
 const {
   data: pullRequestsData,
-  pending,
   error,
   refresh,
   isRefreshing,
-  lastUpdated
+  lastUpdated,
+  showSkeleton,
+  showRefreshIndicator
 } = useCachedFetch<PullRequestsResponse>(
   '/api/pull-requests',
   {
@@ -32,8 +33,6 @@ const {
     watch: [selectedState]
   }
 )
-
-const { shouldShowSkeleton, shouldShowRefreshIndicator } = useLoadingState()
 
 // Computed properties for filtering and stats
 const filteredPullRequests = computed(() => {
@@ -74,66 +73,56 @@ const stats = computed(() => pullRequestsData.value?.stats || {
   draft: 0,
   repositories: 0
 })
-
-const showSkeleton = computed(() => shouldShowSkeleton(!!pullRequestsData.value, pending.value))
-const showRefreshIndicator = computed(() => shouldShowRefreshIndicator(!!pullRequestsData.value, isRefreshing.value))
 </script>
 
 <template>
-  <div class="pull-requests-page">
-    <div class="container">
-      <!-- Refresh Indicator -->
-      <RefreshIndicator
-        v-if="showRefreshIndicator"
-        :is-refreshing="isRefreshing"
-        :last-updated="lastUpdated"
+  <PageLayout
+    :show-skeleton="showSkeleton"
+    :show-refresh-indicator="showRefreshIndicator"
+    :is-refreshing="isRefreshing"
+    :last-updated="lastUpdated"
+    :error="error"
+    :data="pullRequestsData"
+    :on-retry="refresh"
+    :skeleton-count="6"
+    :show-stats="true"
+  >
+    <template #stats>
+      <StatsCard
+        icon="📊"
+        :value="stats.total"
+        label="Total PRs"
       />
 
-      <!-- Skeleton Loading -->
-      <template v-if="showSkeleton">
-        <SkeletonStats :count="5" />
-        <SkeletonGrid :count="6" />
-      </template>
+      <StatsCard
+        icon="🔓"
+        :value="stats.open"
+        label="Open"
+        variant="success"
+      />
 
-      <!-- Content -->
-      <template v-else-if="pullRequestsData">
-        <!-- Stats Cards -->
-        <div class="stats-grid">
-        <StatsCard
-          icon="📊"
-          :value="stats.total"
-          label="Total PRs"
-        />
+      <StatsCard
+        icon="📝"
+        :value="stats.draft"
+        label="Draft"
+        variant="warning"
+      />
 
-        <StatsCard
-          icon="🔓"
-          :value="stats.open"
-          label="Open"
-          variant="success"
-        />
+      <StatsCard
+        icon="📦"
+        :value="stats.repositories"
+        label="Repositories"
+        variant="info"
+      />
+    </template>
 
-        <StatsCard
-          icon="📝"
-          :value="stats.draft"
-          label="Draft"
-          variant="warning"
-        />
-
-        <StatsCard
-          icon="📦"
-          :value="stats.repositories"
-          label="Repositories"
-          variant="info"
-        />
-      </div>
-
-      <!-- Filters -->
+    <template #filters>
       <div class="filters">
         <div class="filter-group">
           <label for="state-select" class="filter-label">State</label>
-          <select 
+          <select
             id="state-select"
-            v-model="selectedState" 
+            v-model="selectedState"
             class="filter-select"
           >
             <option value="open">Open</option>
@@ -155,15 +144,15 @@ const showRefreshIndicator = computed(() => shouldShowRefreshIndicator(!!pullReq
 
         <div class="filter-group">
           <label for="repo-select" class="filter-label">Repository</label>
-          <select 
+          <select
             id="repo-select"
-            v-model="selectedRepository" 
+            v-model="selectedRepository"
             class="filter-select"
           >
             <option value="">All Repositories</option>
-            <option 
-              v-for="repo in repositoryOptions" 
-              :key="repo" 
+            <option
+              v-for="repo in repositoryOptions"
+              :key="repo"
               :value="repo"
             >
               {{ repo }}
@@ -171,16 +160,17 @@ const showRefreshIndicator = computed(() => shouldShowRefreshIndicator(!!pullReq
           </select>
         </div>
 
-        <button 
+        <button
           class="refresh-button"
-          :disabled="pending"
-          @click="refresh()" 
+          :disabled="isRefreshing"
+          @click="refresh()"
         >
-          {{ pending ? 'Loading...' : 'Refresh' }}
+          {{ isRefreshing ? 'Loading...' : 'Refresh' }}
         </button>
       </div>
+    </template>
 
-      <!-- Pull Requests List -->
+    <template #content>
       <div v-if="filteredPullRequests.length > 0" class="pull-requests-list">
         <div class="list-header">
           <Header
@@ -209,45 +199,16 @@ const showRefreshIndicator = computed(() => shouldShowRefreshIndicator(!!pullReq
                   selectedState === 'closed' ? 'No closed pull requests' :
                   'No pull requests match your current filters'"
       />
-      </template>
-
-      <!-- Error State -->
-      <div v-else-if="error && !pullRequestsData" class="error">
-        <ErrorBox
-          :error="error"
-          title="Failed to load pull requests"
-          @retry="refresh"
-        />
-      </div>
-    </div>
-  </div>
+    </template>
+  </PageLayout>
 </template>
 
 <style scoped>
-.pull-requests-page {
-  min-height: 100vh;
-  padding: 32px 0;
-}
-
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 32px;
-}
-
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 24px;
-  margin-bottom: 32px;
-}
-
 .filters {
   background: white;
   padding: 24px;
   border-radius: 12px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  margin-bottom: 32px;
   display: flex;
   flex-wrap: wrap;
   gap: 16px;
@@ -302,16 +263,6 @@ const showRefreshIndicator = computed(() => shouldShowRefreshIndicator(!!pullReq
   cursor: not-allowed;
 }
 
-.loading, .error {
-  background: white;
-  padding: 64px 32px;
-  border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  text-align: center;
-}
-
-
-
 .pull-requests-list {
   background: white;
   border-radius: 12px;
@@ -331,19 +282,7 @@ const showRefreshIndicator = computed(() => shouldShowRefreshIndicator(!!pullReq
   color: #111827;
 }
 
-.pr-list {
-  /* Removed max-height and overflow - page is scrollable */
-}
-
 @media (max-width: 768px) {
-  .container {
-    padding: 0 16px;
-  }
-
-  .stats-grid {
-    grid-template-columns: 1fr;
-  }
-
   .filters {
     flex-direction: column;
   }
