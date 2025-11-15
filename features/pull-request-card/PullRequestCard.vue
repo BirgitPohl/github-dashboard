@@ -122,14 +122,12 @@ const cardClasses = computed(() => {
       </div>
 
       <div v-if="pullRequest.labels.length > 0" class="pr-card__labels">
-        <span
+        <LabelBadge
           v-for="label in pullRequest.labels"
           :key="label.name"
-          class="pr-label"
-          :style="{ backgroundColor: `#${label.color}` }"
-        >
-          {{ label.name }}
-        </span>
+          :name="label.name"
+          :color="label.color"
+        />
       </div>
 
       <div v-if="pullRequest.assignees.length > 0" class="pr-card__assignees">
@@ -249,15 +247,6 @@ const cardClasses = computed(() => {
   flex-wrap: wrap;
   gap: 8px;
   margin-bottom: 12px;
-}
-
-.pr-label {
-  padding: 2px 8px;
-  border-radius: 12px;
-  font-size: 12px;
-  font-weight: 500;
-  color: white;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .pr-card__assignees {
