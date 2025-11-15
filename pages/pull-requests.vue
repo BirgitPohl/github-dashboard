@@ -66,13 +66,29 @@ const selectedState = ref('open')
 const searchQuery = ref('')
 const selectedRepository = ref('')
 
-// Fetch data reactively based on state
-const { data: pullRequestsData, pending, error, refresh } = await useFetch<PullRequestsResponse>('/api/pull-requests', {
-  query: {
-    state: selectedState
+// Fetch data with caching
+const {
+  data: pullRequestsData,
+  pending,
+  error,
+  refresh,
+  isRefreshing,
+  lastUpdated
+} = useCachedFetch<PullRequestsResponse>(
+  '/api/pull-requests',
+  {
+    key: 'pull-requests',
+    staleTime: 5 * 60 * 1000, // 5 minutes
   },
-  watch: [selectedState]
-})
+  {
+    query: {
+      state: selectedState
+    },
+    watch: [selectedState]
+  }
+)
+
+const { shouldShowSkeleton, shouldShowRefreshIndicator } = useLoadingState()
 
 // Computed properties for filtering and stats
 const filteredPullRequests = computed(() => {
@@ -113,13 +129,31 @@ const stats = computed(() => pullRequestsData.value?.stats || {
   draft: 0,
   repositories: 0
 })
+
+const showSkeleton = computed(() => shouldShowSkeleton(!!pullRequestsData.value, pending.value))
+const showRefreshIndicator = computed(() => shouldShowRefreshIndicator(!!pullRequestsData.value, isRefreshing.value))
 </script>
 
 <template>
   <div class="pull-requests-page">
     <div class="container">
-      <!-- Stats Cards -->
-      <div v-if="!pending" class="stats-grid">
+      <!-- Refresh Indicator -->
+      <RefreshIndicator
+        v-if="showRefreshIndicator"
+        :is-refreshing="isRefreshing"
+        :last-updated="lastUpdated"
+      />
+
+      <!-- Skeleton Loading -->
+      <template v-if="showSkeleton">
+        <SkeletonStats :count="5" />
+        <SkeletonGrid :count="6" />
+      </template>
+
+      <!-- Content -->
+      <template v-else-if="pullRequestsData">
+        <!-- Stats Cards -->
+        <div class="stats-grid">
         <StatsCard
           icon="📊"
           :value="stats.total"
@@ -208,22 +242,8 @@ const stats = computed(() => pullRequestsData.value?.stats || {
         </button>
       </div>
 
-      <!-- Loading State -->
-      <div v-if="pending" class="loading">
-        <LoadingSpinner message="Loading pull requests..." />
-      </div>
-
-      <!-- Error State -->
-      <div v-else-if="error" class="error">
-        <ErrorBoxErrorBox 
-          :error="error"
-          title="Failed to load pull requests"
-          @retry="refresh"
-        />
-      </div>
-
       <!-- Pull Requests List -->
-      <div v-else-if="filteredPullRequests.length > 0" class="pull-requests-list">
+      <div v-if="filteredPullRequests.length > 0" class="pull-requests-list">
         <div class="list-header">
           <TypographyHeader 
             :level="2" 
@@ -251,6 +271,16 @@ const stats = computed(() => pullRequestsData.value?.stats || {
                   selectedState === 'closed' ? 'No closed pull requests' :
                   'No pull requests match your current filters'"
       />
+      </template>
+
+      <!-- Error State -->
+      <div v-else-if="error && !pullRequestsData" class="error">
+        <ErrorBoxErrorBox
+          :error="error"
+          title="Failed to load pull requests"
+          @retry="refresh"
+        />
+      </div>
     </div>
   </div>
 </template>

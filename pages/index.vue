@@ -27,29 +27,51 @@ useHead({
   ]
 })
 
-const { data, error, pending: loading, refresh } = await useFetch<{ workflows: Workflow[] }>('/api/workflows')
+const { data, error, pending: loading, refresh, isRefreshing, lastUpdated } = useCachedFetch<{ workflows: Workflow[] }>(
+  '/api/workflows',
+  {
+    key: 'workflows',
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  }
+)
+
+const { shouldShowSkeleton, shouldShowRefreshIndicator } = useLoadingState()
+
 const workflows = computed(() => {
   // Sort workflows by newest first (updated_at)
   return (data.value?.workflows || []).sort((a, b) => {
     return new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
   })
 })
+
+const showSkeleton = computed(() => shouldShowSkeleton(!!data.value, loading.value))
+const showRefreshIndicator = computed(() => shouldShowRefreshIndicator(!!data.value, isRefreshing.value))
 </script>
 
 <template>
   <div class="dashboard">
-    <div v-if="loading" class="loading">
-      <LoadingSpinner message="Loading workflows..." />
+    <!-- Refresh Indicator (shown when refreshing with cached data) -->
+    <RefreshIndicator
+      v-if="showRefreshIndicator"
+      :is-refreshing="isRefreshing"
+      :last-updated="lastUpdated"
+    />
+
+    <!-- Skeleton Loading (shown on initial load with no cached data) -->
+    <div v-if="showSkeleton" class="loading">
+      <SkeletonGrid :count="6" />
     </div>
 
-    <div v-else-if="error" class="error">
-      <ErrorBoxErrorBox 
+    <!-- Error State -->
+    <div v-else-if="error && !data" class="error">
+      <ErrorBoxErrorBox
         :error="error"
         @retry="refresh"
       />
     </div>
 
-    <div v-else class="content">
+    <!-- Content (shown when we have data, even if refreshing in background) -->
+    <div v-else-if="data" class="content">
       <div class="workflows-container">
         <WorkflowStatusCard
           v-for="workflow in workflows"

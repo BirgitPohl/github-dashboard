@@ -18,62 +18,54 @@ interface Project {
   items_count: number
 }
 
-const { data: projects, pending, error, refresh } = await useFetch<Project[]>('/api/projects')
+const {
+  data: projects,
+  pending,
+  error,
+  refresh,
+  isRefreshing,
+  lastUpdated
+} = useCachedFetch<Project[]>(
+  '/api/projects',
+  {
+    key: 'projects',
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  }
+)
+
+const { shouldShowSkeleton, shouldShowRefreshIndicator } = useLoadingState()
 
 // Total stats
 const totalStats = computed(() => {
   if (!projects.value) return { totalProjects: 0, totalItems: 0 }
-  
+
   return {
     totalProjects: projects.value.length,
     totalItems: projects.value.reduce((sum: number, project: Project) => sum + project.items_count, 0)
   }
 })
+
+const showSkeleton = computed(() => shouldShowSkeleton(!!projects.value, pending.value))
+const showRefreshIndicator = computed(() => shouldShowRefreshIndicator(!!projects.value, isRefreshing.value))
 </script>
 
 <template>
   <div class="projects-page">
-    <!-- Loading State -->
-    <div v-if="pending" class="loading-state">
-      <LoadingSpinner message="Loading projects..." />
-    </div>
+    <!-- Refresh Indicator -->
+    <RefreshIndicator
+      v-if="showRefreshIndicator"
+      :is-refreshing="isRefreshing"
+      :last-updated="lastUpdated"
+    />
 
-    <!-- Error State -->
-    <div v-else-if="error" class="error-state">
-      <ErrorBoxErrorBox 
-        :error="error"
-        title="Failed to load project boards"
-        @retry="refresh"
-      />
-      
-      <div class="error-details">
-        
-        <!-- Special handling for scope errors -->
-        <div v-if="error.statusCode === 403" class="scope-error">
-          <TypographyHeader 
-            :level="4" 
-            size="md" 
-            variant="primary"
-          >
-            🔑 Token Scope Issue
-          </TypographyHeader>
-          <p>Your GitHub token needs additional permissions to access Project Boards.</p>
-          <div class="scope-instructions">
-            <p><strong>To fix this:</strong></p>
-            <ol>
-              <li>Go to <a href="https://github.com/settings/tokens" target="_blank">GitHub Token Settings</a></li>
-              <li>Edit your existing token or create a new one</li>
-              <li>Add the <code>read:project</code> scope</li>
-              <li>Update your <code>.env</code> file with the new token</li>
-              <li>Restart the development server</li>
-            </ol>
-          </div>
-        </div>
-      </div>
-    </div>
+    <!-- Skeleton Loading -->
+    <template v-if="showSkeleton">
+      <SkeletonStats :count="2" />
+      <SkeletonGrid :count="4" />
+    </template>
 
     <!-- Content -->
-    <div v-else-if="projects && projects.length > 0">
+    <template v-else-if="projects && projects.length > 0">
       <!-- Stats Overview -->
       <div class="stats-overview">
         <StatsCard
@@ -108,7 +100,7 @@ const totalStats = computed(() => {
           />
         </div>
       </div>
-    </div>
+    </template>
 
     <!-- Empty State -->
     <EmptyState
@@ -120,6 +112,39 @@ const totalStats = computed(() => {
       action-url="https://github.com/orgs/Oracommit/projects"
       :action-external="true"
     />
+
+    <!-- Error State -->
+    <div v-else-if="error && !projects" class="error-state">
+      <ErrorBoxErrorBox
+        :error="error"
+        title="Failed to load project boards"
+        @retry="refresh"
+      />
+
+      <div class="error-details">
+        <!-- Special handling for scope errors -->
+        <div v-if="error.statusCode === 403" class="scope-error">
+          <TypographyHeader
+            :level="4"
+            size="md"
+            variant="primary"
+          >
+            🔑 Token Scope Issue
+          </TypographyHeader>
+          <p>Your GitHub token needs additional permissions to access Project Boards.</p>
+          <div class="scope-instructions">
+            <p><strong>To fix this:</strong></p>
+            <ol>
+              <li>Go to <a href="https://github.com/settings/tokens" target="_blank">GitHub Token Settings</a></li>
+              <li>Edit your existing token or create a new one</li>
+              <li>Add the <code>read:project</code> scope</li>
+              <li>Update your <code>.env</code> file with the new token</li>
+              <li>Restart the development server</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 

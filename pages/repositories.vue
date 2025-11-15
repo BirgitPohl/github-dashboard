@@ -27,7 +27,22 @@ interface Repository {
   tech_stack: string[]
 }
 
-const { data: repositories, pending, error, refresh } = await useFetch<Repository[]>('/api/repositories')
+const {
+  data: repositories,
+  pending,
+  error,
+  refresh,
+  isRefreshing,
+  lastUpdated
+} = useCachedFetch<Repository[]>(
+  '/api/repositories',
+  {
+    key: 'repositories',
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  }
+)
+
+const { shouldShowSkeleton, shouldShowRefreshIndicator } = useLoadingState()
 
 // Category stats
 const categoryStats = computed(() => {
@@ -51,26 +66,28 @@ const totalStats = computed(() => {
     totalForks: repositories.value.reduce((sum: number, repo: Repository) => sum + repo.forks, 0)
   }
 })
+
+const showSkeleton = computed(() => shouldShowSkeleton(!!repositories.value, pending.value))
+const showRefreshIndicator = computed(() => shouldShowRefreshIndicator(!!repositories.value, isRefreshing.value))
 </script>
 
 <template>
   <div class="repositories-page">
-    <!-- Loading State -->
-    <div v-if="pending" class="loading-state">
-      <LoadingSpinner message="Loading repositories..." />
-    </div>
+    <!-- Refresh Indicator -->
+    <RefreshIndicator
+      v-if="showRefreshIndicator"
+      :is-refreshing="isRefreshing"
+      :last-updated="lastUpdated"
+    />
 
-    <!-- Error State -->
-    <div v-else-if="error" class="error-state">
-      <ErrorBoxErrorBox 
-        :error="error"
-        title="Failed to load repositories"
-        @retry="refresh"
-      />
-    </div>
+    <!-- Skeleton Loading -->
+    <template v-if="showSkeleton">
+      <SkeletonStats :count="3" />
+      <SkeletonGrid :count="8" />
+    </template>
 
     <!-- Content -->
-    <div v-else-if="repositories">
+    <template v-else-if="repositories">
       <!-- Stats Overview -->
       <div class="stats-overview">
         <StatsCard
@@ -132,6 +149,15 @@ const totalStats = computed(() => {
           />
         </div>
       </div>
+    </template>
+
+    <!-- Error State -->
+    <div v-else-if="error && !repositories" class="error-state">
+      <ErrorBoxErrorBox
+        :error="error"
+        title="Failed to load repositories"
+        @retry="refresh"
+      />
     </div>
   </div>
 </template>
