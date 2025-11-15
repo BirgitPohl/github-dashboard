@@ -55,6 +55,7 @@ const cardStyles = computed(() => ({
   padding: 20px;
   flex-shrink: 0;
   transition: all 0.2s ease;
+  box-sizing: border-box;
 }
 
 .base-card:hover {
