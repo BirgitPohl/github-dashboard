@@ -151,19 +151,10 @@ watch(selectedState, () => {
 <template>
   <div class="pull-requests-page">
     <div class="container">
-      <div class="page-header">
-        <TypographyHeader 
-          :level="1" 
-          size="3xl" 
-          variant="primary"
-          class="page-title"
-        >
-          Pull Requests
-        </TypographyHeader>
-        <p class="page-description">
-          Overview of pull requests across all repositories
-        </p>
-      </div>
+      <PageHeader
+        title="Pull Requests"
+        description="Overview of pull requests across all repositories"
+      />
 
       <!-- Stats Cards -->
       <div v-if="!pending" class="stats-grid">
@@ -376,23 +367,6 @@ watch(selectedState, () => {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 32px;
-}
-
-.page-header {
-  margin-bottom: 32px;
-}
-
-.page-title {
-  font-size: 32px;
-  font-weight: 700;
-  color: #111827;
-  margin: 0 0 8px 0;
-}
-
-.page-description {
-  font-size: 16px;
-  color: #6b7280;
-  margin: 0;
 }
 
 .stats-grid {

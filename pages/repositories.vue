@@ -55,16 +55,10 @@ const totalStats = computed(() => {
 
 <template>
   <div class="repositories-page">
-    <header class="page-header">
-      <TypographyHeader 
-        :level="1" 
-        size="3xl" 
-        variant="primary"
-      >
-        Repositories Dashboard
-      </TypographyHeader>
-      <p>Overview of all repositories and their details</p>
-    </header>
+    <PageHeader
+      title="Repositories Dashboard"
+      description="Overview of all repositories and their details"
+    />
 
     <!-- Loading State -->
     <div v-if="pending" class="loading-state">
@@ -156,24 +150,6 @@ const totalStats = computed(() => {
   padding: 20px;
   min-height: 100vh;
   background: #f8fafc;
-}
-
-.page-header {
-  margin-bottom: 32px;
-  text-align: center;
-}
-
-.page-header h1 {
-  font-size: 32px;
-  font-weight: 700;
-  color: #111827;
-  margin: 0 0 8px 0;
-}
-
-.page-header p {
-  font-size: 16px;
-  color: #6b7280;
-  margin: 0;
 }
 
 .loading-state {

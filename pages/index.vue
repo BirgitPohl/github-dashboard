@@ -38,16 +38,10 @@ const workflows = computed(() => {
 
 <template>
   <div class="dashboard">
-    <div class="header">
-      <TypographyHeader 
-        :level="1" 
-        size="3xl" 
-        variant="primary"
-      >
-        GitHub Workflows
-      </TypographyHeader>
-      <p>Monitor workflows across all repositories</p>
-    </div>
+    <PageHeader
+      title="GitHub Workflows"
+      description="Monitor workflows across all repositories"
+    />
 
     <div v-if="loading" class="loading">
       <LoadingSpinner message="Loading workflows..." />
@@ -86,15 +80,6 @@ const workflows = computed(() => {
 <style scoped>
 .dashboard {
   padding: 32px;
-}
-
-.header {
-  max-width: 1200px;
-  margin: 0 auto 48px auto;
-}
-
-.header p {
-  color: #6b7280;
 }
 
 .loading {
