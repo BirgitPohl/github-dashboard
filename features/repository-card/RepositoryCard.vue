@@ -23,78 +23,18 @@ const props = defineProps<{
   repository: Repository
 }>()
 
-const categoryConfig = computed(() => {
-  const category = props.repository.category.toLowerCase()
-  
-  switch (category) {
-    case 'web application':
-      return {
-        color: '#10b981', // Green
-        bgColor: '#f0fdf4',
-        borderColor: '#10b981',
-        icon: '🌐',
-        label: 'Web App'
-      }
-    case 'api/service':
-      return {
-        color: '#3b82f6', // Blue
-        bgColor: '#eff6ff',
-        borderColor: '#3b82f6',
-        icon: '⚡',
-        label: 'API/Service'
-      }
-    case 'library/component':
-      return {
-        color: '#8b5cf6', // Purple
-        bgColor: '#f5f3ff',
-        borderColor: '#8b5cf6',
-        icon: '📦',
-        label: 'Library'
-      }
-    case 'documentation':
-      return {
-        color: '#f59e0b', // Amber
-        bgColor: '#fffbeb',
-        borderColor: '#f59e0b',
-        icon: '📚',
-        label: 'Docs'
-      }
-    case 'tool/utility':
-      return {
-        color: '#ef4444', // Red
-        bgColor: '#fef2f2',
-        borderColor: '#ef4444',
-        icon: '🔧',
-        label: 'Tool'
-      }
-    default:
-      return {
-        color: '#6b7280', // Gray
-        bgColor: '#f9fafb',
-        borderColor: '#6b7280',
-        icon: '📁',
-        label: 'General'
-      }
-  }
-})
-
+const { getCategoryConfig, formatSize } = useRepositoryCard()
 const { formatTimeAgoSimple } = useDateTime()
-const timeAgo = computed(() => formatTimeAgoSimple(props.repository.updated_at))
 
-const formatSize = computed(() => {
-  const kb = props.repository.size
-  if (kb < 1024) return `${kb} KB`
-  const mb = kb / 1024
-  if (mb < 1024) return `${mb.toFixed(1)} MB`
-  const gb = mb / 1024
-  return `${gb.toFixed(1)} GB`
-})
+const categoryConfig = computed(() => getCategoryConfig(props.repository.category))
+const timeAgo = computed(() => formatTimeAgoSimple(props.repository.updated_at))
+const sizeFormatted = computed(() => formatSize(props.repository.size))
 </script>
 
 <template>
-  <div 
+  <div
     class="project-card"
-    :style="{ 
+    :style="{
       backgroundColor: categoryConfig.bgColor,
       borderColor: categoryConfig.borderColor
     }"
@@ -104,10 +44,14 @@ const formatSize = computed(() => {
       <div class="project-info">
         <div class="project-title">
           <span class="category-icon">{{ categoryConfig.icon }}</span>
-          <h3 class="project-name">{{ repository.name }}</h3>
+          <h3 class="project-name">
+            {{ repository.name }}
+          </h3>
           <span v-if="repository.is_private" class="private-badge">Private</span>
         </div>
-        <p class="project-description">{{ repository.description }}</p>
+        <p class="project-description">
+          {{ repository.description }}
+        </p>
       </div>
     </div>
 
@@ -131,8 +75,8 @@ const formatSize = computed(() => {
     <div v-if="repository.tech_stack.length > 0" class="tech-stack">
       <span class="tech-label">Tech:</span>
       <div class="tech-tags">
-        <span 
-          v-for="tech in repository.tech_stack.slice(0, 3)" 
+        <span
+          v-for="tech in repository.tech_stack.slice(0, 3)"
           :key="tech"
           class="tech-tag"
         >
@@ -148,14 +92,14 @@ const formatSize = computed(() => {
     <div class="project-details">
       <div class="detail-row">
         <span>Category:</span>
-        <span 
+        <span
           class="category-label"
           :style="{ color: categoryConfig.color }"
         >
           {{ categoryConfig.label }}
         </span>
       </div>
-      
+
       <div class="detail-row">
         <span>Updated:</span>
         <span>{{ timeAgo }}</span>
@@ -163,13 +107,13 @@ const formatSize = computed(() => {
 
       <div class="detail-row">
         <span>Size:</span>
-        <span>{{ formatSize }}</span>
+        <span>{{ sizeFormatted }}</span>
       </div>
     </div>
 
     <!-- Action -->
     <div class="card-action">
-      <a 
+      <a
         :href="repository.html_url"
         target="_blank"
         class="view-link"
