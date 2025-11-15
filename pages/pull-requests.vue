@@ -67,10 +67,11 @@ const searchQuery = ref('')
 const selectedRepository = ref('')
 
 // Fetch data reactively based on state
-const { data: pullRequestsData, pending, error, refresh } = await useLazyFetch<PullRequestsResponse>('/api/pull-requests', {
+const { data: pullRequestsData, pending, error, refresh } = await useFetch<PullRequestsResponse>('/api/pull-requests', {
   query: {
     state: selectedState
-  }
+  },
+  watch: [selectedState]
 })
 
 // Computed properties for filtering and stats
@@ -111,11 +112,6 @@ const stats = computed(() => pullRequestsData.value?.stats || {
   merged: 0,
   draft: 0,
   repositories: 0
-})
-
-// Watch for state changes and refresh data
-watch(selectedState, () => {
-  refresh()
 })
 </script>
 
