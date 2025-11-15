@@ -129,43 +129,7 @@ const props = withDefaults(defineProps<Props>(), {
   showStatus: false
 })
 
-// Helper functions
-const getTypeIcon = (type: string): string => {
-  switch (type) {
-    case 'ISSUE': return '🐛'
-    case 'PULL_REQUEST': return '🔀'
-    case 'DRAFT_ISSUE': return '📝'
-    default: return '📋'
-  }
-}
-
-const getTypeText = (type: string): string => {
-  switch (type) {
-    case 'PULL_REQUEST': return 'PR'
-    case 'DRAFT_ISSUE': return 'Draft'
-    case 'ISSUE': return 'Issue'
-    default: return type
-  }
-}
-
-const getStateColor = (state: string): string => {
-  switch (state.toLowerCase()) {
-    case 'open': return '#10b981'
-    case 'closed': return '#6b7280'
-    case 'merged': return '#8b5cf6'
-    default: return '#6b7280'
-  }
-}
-
-const formatDate = (dateString: string): string => {
-  const date = new Date(dateString)
-  const currentYear = new Date().getFullYear()
-  return date.toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: date.getFullYear() === currentYear ? undefined : 'numeric'
-  })
-}
+const { getTypeIcon, getTypeText, getStateColor, formatDate } = useProjectItemsTable()
 </script>
 
 <style scoped>
