@@ -78,21 +78,8 @@ const categoryConfig = computed(() => {
   }
 })
 
-const timeAgo = computed(() => {
-  const now = new Date()
-  const updated = new Date(props.repository.updated_at)
-  const diffMs = now.getTime() - updated.getTime()
-  const diffHours = Math.floor(diffMs / (1000 * 60 * 60))
-  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
-
-  if (diffDays > 0) {
-    return `${diffDays}d ago`
-  } else if (diffHours > 0) {
-    return `${diffHours}h ago`
-  } else {
-    return 'Recent'
-  }
-})
+const { formatTimeAgoSimple } = useDateTime()
+const timeAgo = computed(() => formatTimeAgoSimple(props.repository.updated_at))
 
 const formatSize = computed(() => {
   const kb = props.repository.size

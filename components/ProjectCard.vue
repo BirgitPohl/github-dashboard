@@ -47,40 +47,9 @@ const statusConfig = computed(() => {
   }
 })
 
-const timeAgo = computed(() => {
-  const now = new Date()
-  const updated = new Date(props.project.updatedAt)
-  const diffMs = now.getTime() - updated.getTime()
-  const diffHours = Math.floor(diffMs / (1000 * 60 * 60))
-  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
-
-  if (diffDays > 0) {
-    return `${diffDays}d ago`
-  } else if (diffHours > 0) {
-    return `${diffHours}h ago`
-  } else {
-    return 'Recent'
-  }
-})
-
-const createdAgo = computed(() => {
-  const now = new Date()
-  const created = new Date(props.project.createdAt)
-  const diffMs = now.getTime() - created.getTime()
-  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
-
-  if (diffDays > 365) {
-    const years = Math.floor(diffDays / 365)
-    return `${years} year${years > 1 ? 's' : ''} ago`
-  } else if (diffDays > 30) {
-    const months = Math.floor(diffDays / 30)
-    return `${months} month${months > 1 ? 's' : ''} ago`
-  } else if (diffDays > 0) {
-    return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`
-  } else {
-    return 'Today'
-  }
-})
+const { formatTimeAgoSimple, formatTimeAgoDetailed } = useDateTime()
+const timeAgo = computed(() => formatTimeAgoSimple(props.project.updatedAt))
+const createdAgo = computed(() => formatTimeAgoDetailed(props.project.createdAt))
 </script>
 
 <template>
