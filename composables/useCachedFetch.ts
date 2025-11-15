@@ -40,14 +40,15 @@ export const useCachedFetch = <T>(
   })
 
   // Fetch with caching logic
-  const { data, pending, error, refresh, status } = useFetch<T>(url, {
+  const { data, pending, error, refresh, status, execute } = useFetch<T>(url, {
     ...fetchOptions,
     lazy: true,
     server: false,
-    immediate: true,
+    immediate: false, // Don't execute automatically
 
     // Return cached data immediately if available
     getCachedData(fetchKey) {
+      // Only return cache if it exists, otherwise let fetch execute
       return cachedData.value
     },
 
@@ -75,13 +76,20 @@ export const useCachedFetch = <T>(
     },
   })
 
+  // Execute fetch immediately on mount if no cache or cache is stale
+  onMounted(async () => {
+    if (!cachedData.value || isCacheStale.value) {
+      await execute()
+    }
+  })
+
   // Auto-refresh at interval if specified
   let refreshTimer: NodeJS.Timeout | null = null
   if (refreshInterval) {
     onMounted(() => {
       refreshTimer = setInterval(() => {
         if (!document.hidden) {
-          refresh()
+          execute()
         }
       }, refreshInterval)
     })
@@ -97,7 +105,7 @@ export const useCachedFetch = <T>(
   onMounted(() => {
     const handleVisibilityChange = () => {
       if (!document.hidden && isCacheStale.value) {
-        refresh()
+        execute()
       }
     }
 
@@ -106,13 +114,6 @@ export const useCachedFetch = <T>(
     onUnmounted(() => {
       document.removeEventListener('visibilitychange', handleVisibilityChange)
     })
-  })
-
-  // Trigger initial fetch if cache is stale
-  onMounted(() => {
-    if (isCacheStale.value && !pending.value) {
-      refresh()
-    }
   })
 
   return {
