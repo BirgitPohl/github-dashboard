@@ -194,11 +194,12 @@ const showStatusColumn = computed(() => statusOptions.value.length > 1)
       <!-- Header -->
       <div class="project-header">
         <div class="header-content">
-          <div class="breadcrumb">
-            <NuxtLink to="/projects" class="breadcrumb-link">Project Boards</NuxtLink>
-            <span class="breadcrumb-separator">/</span>
-            <span class="breadcrumb-current">{{ project.title }}</span>
-          </div>
+          <Breadcrumbs
+            :items="[
+              { label: 'Project Boards', to: '/projects' },
+              { label: project.title, current: true }
+            ]"
+          />
 
           <TypographyHeader 
             :level="1" 
@@ -313,31 +314,6 @@ const showStatusColumn = computed(() => statusOptions.value.length > 1)
   padding: 24px;
   margin-bottom: 24px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-.breadcrumb {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 12px;
-  font-size: 14px;
-}
-
-.breadcrumb-link {
-  color: #2563eb;
-  text-decoration: none;
-}
-
-.breadcrumb-link:hover {
-  text-decoration: underline;
-}
-
-.breadcrumb-separator {
-  color: #6b7280;
-}
-
-.breadcrumb-current {
-  color: #6b7280;
 }
 
 .project-title {
