@@ -23,10 +23,13 @@ export interface RESTProjectItem {
   node_id: string
   project_url: string
   content: {
-    type?: 'Issue' | 'PullRequest' | 'DraftIssue'
+    // This is a full GitHub issue/PR object
+    id?: number
+    node_id?: string
     number?: number
     title?: string
     url?: string
+    html_url?: string
     state?: string
     body?: string
     repository_url?: string
@@ -35,11 +38,13 @@ export interface RESTProjectItem {
     milestone?: { title: string }
     created_at?: string
     updated_at?: string
+    pull_request?: any  // If this exists, it's a PR
+    draft?: boolean
   }
   fields: Array<{
     id: number
     name: string
-    type: string  // Note: items use 'type', fields list uses 'data_type'
+    data_type: string  // REST API uses 'data_type' consistently
     value: any
   }>
   created_at: string
@@ -220,14 +225,22 @@ export async function fetchProjectItemsREST(projectNumber: number): Promise<REST
  * Transform REST API project item to our internal format
  * Handles all field types including parent_issue, number (Size), etc.
  */
+let _debugLogged = false
 export function transformRESTItemToProjectItem(item: RESTProjectItem): ProjectItem {
   const customFields: Record<string, string> = {}
+
+  // Debug: log item structure for first item
+  if (!_debugLogged) {
+    console.log('Sample item content:', JSON.stringify(item.content, null, 2).substring(0, 800))
+    console.log('Sample item fields:', JSON.stringify(item.fields, null, 2).substring(0, 800))
+    _debugLogged = true
+  }
 
   // Extract ALL custom fields from the fields array
   for (const field of item.fields) {
     if (field.value === null || field.value === undefined) continue
 
-    switch (field.type) {
+    switch (field.data_type) {
       case 'number':
         // Size field and other numeric fields
         customFields[field.name] = field.value.toString()
@@ -306,9 +319,18 @@ export function transformRESTItemToProjectItem(item: RESTProjectItem): ProjectIt
     }
   }
 
+  // Determine item type from content
+  // If content has pull_request field, it's a PR; if draft, it's a draft issue
+  let itemType: 'ISSUE' | 'PULL_REQUEST' | 'DRAFT_ISSUE' = 'ISSUE'
+  if (item.content.pull_request) {
+    itemType = 'PULL_REQUEST'
+  } else if (item.content.draft) {
+    itemType = 'DRAFT_ISSUE'
+  }
+
   return {
     id: item.node_id,
-    type: (item.content.type || 'ISSUE').toUpperCase() as 'ISSUE' | 'PULL_REQUEST' | 'DRAFT_ISSUE',
+    type: itemType,
     number: item.content.number,
     title: item.content.title || 'Untitled',
     url: item.content.url || '',
