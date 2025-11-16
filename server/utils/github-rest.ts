@@ -211,10 +211,20 @@ export async function fetchProjectItemsREST(projectNumber: number): Promise<REST
     const items = Array.isArray(data) ? data : (data.items || [])
     allItems = allItems.concat(items)
 
-    cursor = data.pagination?.next_cursor || null
+    // Parse Link header for pagination cursor
+    const linkHeader = response.headers.get('Link')
+    cursor = null
+    if (linkHeader) {
+      // Link header format: <url>; rel="next", <url>; rel="last"
+      const nextMatch = linkHeader.match(/<[^>]*[?&]after=([^>&]+)[^>]*>;\s*rel="next"/)
+      if (nextMatch) {
+        cursor = nextMatch[1]
+      }
+    }
+
     page++
 
-    console.log(`Page ${page - 1}: fetched ${items.length} items (total: ${allItems.length})`)
+    console.log(`Page ${page - 1}: fetched ${items.length} items (total: ${allItems.length})${cursor ? ' - has more pages' : ' - final page'}`)
   } while (cursor)
 
   console.log(`Total items fetched: ${allItems.length}`)
