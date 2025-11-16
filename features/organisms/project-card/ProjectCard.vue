@@ -3,6 +3,7 @@ import { useProjectCard } from './useProjectCard'
 
 interface Project {
   id: string
+  number: number
   title: string
   shortDescription?: string
   url: string
@@ -36,7 +37,7 @@ const createdAgo = computed(() => formatTimeAgoDetailed(props.project.createdAt)
       <div class="project-title">
         <Icon :icon="statusConfig.icon" size="lg" decorative />
         <Header :level="3" size="base" class="project-name">
-          <Link :to="`/projects/${project.id}`" variant="secondary">
+          <Link :to="`/projects/${project.number}`" variant="secondary">
             {{ project.title }}
           </Link>
         </Header>

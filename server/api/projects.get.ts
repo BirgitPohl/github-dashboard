@@ -1,20 +1,8 @@
-import { executeGraphQL, getGitHubOwner } from '../utils/github'
-
-interface GitHubProject {
-  id: string
-  title: string
-  shortDescription: string | null
-  url: string
-  createdAt: string
-  updatedAt: string
-  closed: boolean
-  items?: {
-    totalCount: number
-  }
-}
+import { fetchProjectsREST } from '../utils/github-rest'
 
 interface Project {
   id: string
+  number: number
   title: string
   shortDescription?: string
   url: string
@@ -28,69 +16,40 @@ interface Project {
 
 export default defineEventHandler(async (_event) => {
   try {
-    const owner = getGitHubOwner()
-    console.log(`Fetching GitHub Projects for organization: ${owner}`)
+    console.log('Fetching GitHub Projects (REST API)')
 
-    // GraphQL query for GitHub Projects v2
-    const query = `
-      query($owner: String!) {
-        organization(login: $owner) {
-          projectsV2(first: 20) {
-            nodes {
-              id
-              title
-              shortDescription
-              url
-              createdAt
-              updatedAt
-              closed
-              items {
-                totalCount
-              }
-            }
-          }
-        }
-      }
-    `
+    const projects = await fetchProjectsREST()
 
-    const data = await executeGraphQL<{
-      organization: {
-        projectsV2: {
-          nodes: GitHubProject[]
-        }
-      }
-    }>(query, { owner })
-
-    const githubProjects = data.organization?.projectsV2?.nodes || []
-    console.log(`Found ${githubProjects.length} GitHub Projects`)
-
-    // Transform GitHub Projects to our format
-    const projects: Project[] = githubProjects
-      .filter((project: GitHubProject) => !project.closed) // Filter out closed projects
-      .map((project: GitHubProject) => ({
-        id: project.id,
-        title: project.title,
-        shortDescription: project.shortDescription || undefined,
-        url: project.url,
-        createdAt: project.createdAt,
-        updatedAt: project.updatedAt,
-        state: project.closed ? 'CLOSED' : 'OPEN',
+    // Transform to frontend format
+    const transformedProjects: Project[] = projects
+      .filter(p => p.state === 'open')
+      .map(p => ({
+        id: p.node_id,         // GraphQL node_id for consistency
+        number: p.number,       // REST API project number - used for detail pages
+        title: p.title,
+        shortDescription: p.description || undefined,
+        url: p.url,
+        createdAt: p.created_at,
+        updatedAt: p.updated_at,
+        state: 'OPEN' as const,
         items: {
-          totalCount: project.items?.totalCount || 0
+          totalCount: 0 // Can be fetched separately if needed
         }
       }))
 
     // Sort by most recently updated
-    projects.sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
+    transformedProjects.sort((a, b) =>
+      new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+    )
 
-    console.log(`Processed ${projects.length} projects`)
-    return projects
+    console.log(`Processed ${transformedProjects.length} projects (REST API)`)
+    return transformedProjects
 
   } catch (error: unknown) {
-    console.error('Error fetching GitHub Projects:', error)
+    console.error('Error fetching GitHub Projects (REST):', error)
 
     if (error && typeof error === 'object' && 'statusCode' in error) {
-      throw error // Re-throw createError errors
+      throw error
     }
 
     throw createError({
