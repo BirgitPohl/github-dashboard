@@ -48,23 +48,6 @@ interface GitHubProjectItem {
     title: string
     url: string
     state: string
-    milestone?: {
-      title: string
-    }
-    trackedInIssues?: {
-      nodes: Array<{
-        title: string
-        number: number
-        url: string
-      }>
-    }
-    trackedIssues?: {
-      nodes: Array<{
-        title: string
-        number: number
-        url: string
-      }>
-    }
     repository: {
       name: string
       owner: {
@@ -95,23 +78,6 @@ interface GitHubProjectItem {
       text?: string
       name?: string
       date?: string
-      number?: number
-      title?: string
-      startDate?: string
-      duration?: number
-      issues?: {
-        nodes: Array<{
-          number: number
-          title: string
-          url: string
-          repository: {
-            name: string
-            owner: {
-              login: string
-            }
-          }
-        }>
-      }
     }>
   }
 }
@@ -250,23 +216,6 @@ export default defineEventHandler(async (event) => {
                     title
                     url
                     state
-                    milestone {
-                      title
-                    }
-                    trackedInIssues(first: 5) {
-                      nodes {
-                        title
-                        number
-                        url
-                      }
-                    }
-                    trackedIssues(first: 5) {
-                      nodes {
-                        title
-                        number
-                        url
-                      }
-                    }
                     repository {
                       name
                       owner {
@@ -294,9 +243,6 @@ export default defineEventHandler(async (event) => {
                     title
                     url
                     state
-                    milestone {
-                      title
-                    }
                     repository {
                       name
                       owner {
@@ -351,71 +297,6 @@ export default defineEventHandler(async (event) => {
                         }
                       }
                       date
-                    }
-                    ... on ProjectV2ItemFieldNumberValue {
-                      field {
-                        ... on ProjectV2Field {
-                          name
-                        }
-                      }
-                      number
-                    }
-                    ... on ProjectV2ItemFieldIterationValue {
-                      field {
-                        ... on ProjectV2IterationField {
-                          name
-                        }
-                      }
-                      title
-                      startDate
-                      duration
-                    }
-                    ... on ProjectV2ItemFieldRepositoryValue {
-                      field {
-                        ... on ProjectV2Field {
-                          name
-                        }
-                      }
-                      repository {
-                        name
-                        owner {
-                          login
-                        }
-                      }
-                    }
-                    ... on ProjectV2ItemFieldPullRequestValue {
-                      field {
-                        ... on ProjectV2Field {
-                          name
-                        }
-                      }
-                      pullRequests(first: 5) {
-                        nodes {
-                          number
-                          title
-                          url
-                        }
-                      }
-                    }
-                    ... on ProjectV2ItemFieldIssueValue {
-                      field {
-                        ... on ProjectV2Field {
-                          name
-                        }
-                      }
-                      issues(first: 1) {
-                        nodes {
-                          number
-                          title
-                          url
-                          repository {
-                            name
-                            owner {
-                              login
-                            }
-                          }
-                        }
-                      }
                     }
                   }
                 }
@@ -475,90 +356,18 @@ export default defineEventHandler(async (event) => {
         
         // Extract custom field values
         const customFields: Record<string, string> = {}
-
-        // Add built-in GitHub fields that might be used for grouping
-        if (content.milestone?.title) {
-          customFields['Milestone'] = content.milestone.title
-        }
-
-        // Add parent issue information
-        // trackedInIssues = issues that track this issue (parents)
-        if (content.trackedInIssues?.nodes && content.trackedInIssues.nodes.length > 0) {
-          const parentIssue = content.trackedInIssues.nodes[0]
-          customFields['Parent issue'] = `#${parentIssue.number} ${parentIssue.title}`
-        }
-
-        // Also add child issues information if needed
-        if (content.trackedIssues?.nodes && content.trackedIssues.nodes.length > 0) {
-          const childCount = content.trackedIssues.nodes.length
-          customFields['Child issues'] = `${childCount} child issue${childCount > 1 ? 's' : ''}`
-        }
-
-        // Extract project-specific custom field values
         if (item.fieldValues?.nodes) {
           for (const fieldValue of item.fieldValues.nodes) {
             if (fieldValue?.field?.name) {
               const fieldName = fieldValue.field.name
-              let value = ''
 
-              // Handle different field value types based on __typename
-              switch (fieldValue.__typename) {
-                case 'ProjectV2ItemFieldTextValue':
-                  value = fieldValue.text || ''
-                  break
-                case 'ProjectV2ItemFieldSingleSelectValue':
-                  value = fieldValue.name || ''
-                  break
-                case 'ProjectV2ItemFieldDateValue':
-                  value = fieldValue.date || ''
-                  break
-                case 'ProjectV2ItemFieldNumberValue':
-                  value = fieldValue.number?.toString() || ''
-                  break
-                case 'ProjectV2ItemFieldIterationValue':
-                  value = fieldValue.title || ''
-                  break
-                case 'ProjectV2ItemFieldRepositoryValue': {
-                  const repoField = fieldValue as { repository?: { owner: { login: string }, name: string } }
-                  value = repoField.repository ? `${repoField.repository.owner.login}/${repoField.repository.name}` : ''
-                  break
-                }
-                case 'ProjectV2ItemFieldPullRequestValue': {
-                  const prField = fieldValue as { pullRequests?: { nodes: Array<{ number: number, title: string }> } }
-                  if (prField.pullRequests?.nodes && prField.pullRequests.nodes.length > 0) {
-                    const pr = prField.pullRequests.nodes[0]
-                    value = `#${pr.number} ${pr.title}`
-                  }
-                  break
-                }
-                case 'ProjectV2ItemFieldIssueValue': {
-                  const issueField = fieldValue as {
-                    issues?: {
-                      nodes: Array<{
-                        number: number
-                        title: string
-                        url: string
-                        repository: { name: string, owner: { login: string } }
-                      }>
-                    }
-                  }
-                  if (issueField.issues?.nodes && issueField.issues.nodes.length > 0) {
-                    const issue = issueField.issues.nodes[0]
-                    // Include repository info for cross-repo parent issues
-                    const repo = issue.repository ? `${issue.repository.owner.login}/${issue.repository.name}` : ''
-                    value = repo ? `${repo}#${issue.number} ${issue.title}` : `#${issue.number} ${issue.title}`
-                  }
-                  break
-                }
-                default:
-                  // Fallback to the old logic for any other field types
-                  value = fieldValue.text || fieldValue.name || fieldValue.date || fieldValue.number?.toString() || fieldValue.title || ''
-                  break
+              // Log the typename for debugging
+              if (fieldValue.__typename) {
+                console.log(`Field ${fieldName} has type: ${fieldValue.__typename}`)
               }
 
-              if (value) {
-                customFields[fieldName] = value
-              }
+              const value = fieldValue.text || fieldValue.name || fieldValue.date || ''
+              customFields[fieldName] = value
             }
           }
         }

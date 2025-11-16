@@ -59,19 +59,6 @@ interface GitHubProjectItem {
       title?: string
       startDate?: string
       duration?: number
-      issues?: {
-        nodes: Array<{
-          number: number
-          title: string
-          url: string
-          repository: {
-            name: string
-            owner: {
-              login: string
-            }
-          }
-        }>
-      }
     }>
   }
 }
@@ -312,26 +299,6 @@ export default defineEventHandler(async (event) => {
                         }
                       }
                     }
-                    ... on ProjectV2ItemFieldIssueValue {
-                      field {
-                        ... on ProjectV2Field {
-                          name
-                        }
-                      }
-                      issues(first: 1) {
-                        nodes {
-                          number
-                          title
-                          url
-                          repository {
-                            name
-                            owner {
-                              login
-                            }
-                          }
-                        }
-                      }
-                    }
 
                   }
                 }
@@ -495,25 +462,6 @@ export default defineEventHandler(async (event) => {
                   if (prField.pullRequests?.nodes && prField.pullRequests.nodes.length > 0) {
                     const pr = prField.pullRequests.nodes[0]
                     value = `#${pr.number} ${pr.title}`
-                  }
-                  break
-                }
-                case 'ProjectV2ItemFieldIssueValue': {
-                  const issueField = fieldValue as {
-                    issues?: {
-                      nodes: Array<{
-                        number: number
-                        title: string
-                        url: string
-                        repository: { name: string, owner: { login: string } }
-                      }>
-                    }
-                  }
-                  if (issueField.issues?.nodes && issueField.issues.nodes.length > 0) {
-                    const issue = issueField.issues.nodes[0]
-                    // Include repository info for cross-repo parent issues
-                    const repo = issue.repository ? `${issue.repository.owner.login}/${issue.repository.name}` : ''
-                    value = repo ? `${repo}#${issue.number} ${issue.title}` : `#${issue.number} ${issue.title}`
                   }
                   break
                 }
