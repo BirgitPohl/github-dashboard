@@ -9,12 +9,15 @@
       <!-- View Selector -->
       <div v-if="views && views.length > 0" class="filter-group">
         <label for="view-filter">View</label>
-        <select id="view-filter" :value="selectedView" @change="$emit('update:selectedView', ($event.target as HTMLSelectElement).value)" class="filter-select">
-          <option value="">All items</option>
-          <option v-for="view in views" :key="view.id" :value="view.id">
-            {{ view.name }} ({{ view.layout.replace('_LAYOUT', '').toLowerCase() }})
-          </option>
-        </select>
+        <Select
+          id="view-filter"
+          :model-value="selectedView"
+          :options="[
+            { value: '', label: 'All items' },
+            ...views.map(v => ({ value: v.id, label: `${v.name} (${v.layout.replace('_LAYOUT', '').toLowerCase()})` }))
+          ]"
+          @update:model-value="$emit('update:selectedView', $event)"
+        />
       </div>
 
       <!-- Search -->
@@ -32,76 +35,56 @@
       <!-- State -->
       <div class="filter-group">
         <label for="state-filter">State</label>
-        <select
+        <Select
           id="state-filter"
-          :value="filters.state"
-          @change="updateFilter('state', ($event.target as HTMLSelectElement).value)"
-          class="filter-select"
-        >
-          <option v-for="option in stateOptions" :key="option.value" :value="option.value">
-            {{ option.label }}
-          </option>
-        </select>
+          :model-value="filters.state"
+          :options="stateOptions"
+          @update:model-value="updateFilter('state', $event)"
+        />
       </div>
 
       <!-- Type -->
       <div class="filter-group">
         <label for="type-filter">Type</label>
-        <select
+        <Select
           id="type-filter"
-          :value="filters.type"
-          @change="updateFilter('type', ($event.target as HTMLSelectElement).value)"
-          class="filter-select"
-        >
-          <option v-for="option in typeOptions" :key="option.value" :value="option.value">
-            {{ option.label }}
-          </option>
-        </select>
+          :model-value="filters.type"
+          :options="typeOptions"
+          @update:model-value="updateFilter('type', $event)"
+        />
       </div>
 
       <!-- Status -->
       <div v-if="statusOptions.length > 1" class="filter-group">
         <label for="status-filter">Status</label>
-        <select
+        <Select
           id="status-filter"
-          :value="filters.status"
-          @change="updateFilter('status', ($event.target as HTMLSelectElement).value)"
-          class="filter-select"
-        >
-          <option v-for="option in statusOptions" :key="option.value" :value="option.value">
-            {{ option.label }}
-          </option>
-        </select>
+          :model-value="filters.status"
+          :options="statusOptions"
+          @update:model-value="updateFilter('status', $event)"
+        />
       </div>
 
       <!-- Repository -->
       <div v-if="repositoryOptions.length > 1" class="filter-group">
         <label for="repository-filter">Repository</label>
-        <select
+        <Select
           id="repository-filter"
-          :value="filters.repository"
-          @change="updateFilter('repository', ($event.target as HTMLSelectElement).value)"
-          class="filter-select"
-        >
-          <option v-for="option in repositoryOptions" :key="option.value" :value="option.value">
-            {{ option.label }}
-          </option>
-        </select>
+          :model-value="filters.repository"
+          :options="repositoryOptions"
+          @update:model-value="updateFilter('repository', $event)"
+        />
       </div>
 
       <!-- Assignee -->
       <div v-if="assigneeOptions.length > 1" class="filter-group">
         <label for="assignee-filter">Assignee</label>
-        <select
+        <Select
           id="assignee-filter"
-          :value="filters.assignee"
-          @change="updateFilter('assignee', ($event.target as HTMLSelectElement).value)"
-          class="filter-select"
-        >
-          <option v-for="option in assigneeOptions" :key="option.value" :value="option.value">
-            {{ option.label }}
-          </option>
-        </select>
+          :model-value="filters.assignee"
+          :options="assigneeOptions"
+          @update:model-value="updateFilter('assignee', $event)"
+        />
       </div>
     </div>
 
@@ -226,20 +209,6 @@ const clearFilters = () => {
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-medium);
   color: var(--color-gray-700);
-}
-
-.filter-select {
-  padding: var(--spacing-2) var(--spacing-3);
-  border: var(--border-width-thin) solid var(--color-gray-300);
-  border-radius: var(--radius-md);
-  font-size: var(--font-size-sm);
-  transition: border-color var(--transition-base);
-}
-
-.filter-select:focus {
-  outline: none;
-  border-color: var(--color-blue-600);
-  box-shadow: var(--shadow-focus);
 }
 
 .results-summary {

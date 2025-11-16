@@ -120,53 +120,47 @@ const stats = computed(() => pullRequestsData.value?.stats || {
       <div class="filters">
         <div class="filter-group">
           <label for="state-select" class="filter-label">State</label>
-          <select
+          <Select
             id="state-select"
             v-model="selectedState"
-            class="filter-select"
-          >
-            <option value="open">Open</option>
-            <option value="closed">Closed</option>
-            <option value="all">All</option>
-          </select>
+            :options="[
+              { value: 'open', label: 'Open' },
+              { value: 'closed', label: 'Closed' },
+              { value: 'all', label: 'All' }
+            ]"
+          />
         </div>
 
         <div class="filter-group">
           <label for="search-input" class="filter-label">Search</label>
-          <input
+          <Input
             id="search-input"
             v-model="searchQuery"
-            type="text"
+            type="search"
             placeholder="Search PRs, authors, or repositories..."
-            class="filter-input"
-          >
+          />
         </div>
 
         <div class="filter-group">
           <label for="repo-select" class="filter-label">Repository</label>
-          <select
+          <Select
             id="repo-select"
             v-model="selectedRepository"
-            class="filter-select"
-          >
-            <option value="">All Repositories</option>
-            <option
-              v-for="repo in repositoryOptions"
-              :key="repo"
-              :value="repo"
-            >
-              {{ repo }}
-            </option>
-          </select>
+            :options="[
+              { value: '', label: 'All Repositories' },
+              ...repositoryOptions.map(r => ({ value: r, label: r }))
+            ]"
+          />
         </div>
 
-        <button
-          class="refresh-button"
+        <Button
+          variant="primary"
           :disabled="isRefreshing"
+          class="refresh-button"
           @click="refresh()"
         >
           {{ isRefreshing ? 'Loading...' : 'Refresh' }}
-        </button>
+        </Button>
       </div>
     </template>
 
@@ -228,39 +222,8 @@ const stats = computed(() => pullRequestsData.value?.stats || {
   margin-bottom: var(--spacing-2);
 }
 
-.filter-select, .filter-input {
-  padding: var(--spacing-2-5) var(--spacing-3);
-  border: var(--border-width-thin) solid var(--color-gray-300);
-  border-radius: var(--radius-md);
-  font-size: var(--font-size-sm);
-  background: var(--color-white);
-}
-
-.filter-select:focus, .filter-input:focus {
-  outline: 2px solid var(--color-blue-500);
-  outline-offset: -2px;
-  border-color: var(--color-blue-500);
-}
-
 .refresh-button {
-  padding: var(--spacing-2-5) var(--spacing-5);
-  background: var(--color-blue-700);
-  color: var(--color-white);
-  border: none;
-  border-radius: var(--radius-md);
-  font-weight: var(--font-weight-medium);
-  cursor: pointer;
-  transition: background-color var(--transition-base);
   height: fit-content;
-}
-
-.refresh-button:hover:not(:disabled) {
-  background: var(--color-blue-600);
-}
-
-.refresh-button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
 }
 
 .pull-requests-list {
