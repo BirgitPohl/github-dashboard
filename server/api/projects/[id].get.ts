@@ -81,7 +81,7 @@ export default defineEventHandler(async (event) => {
       items,
       fields: fields.map((f: RESTProjectField) => ({
         name: f.name,
-        dataType: f.type.toUpperCase()
+        dataType: f.data_type.toUpperCase()
       }))
     }
 

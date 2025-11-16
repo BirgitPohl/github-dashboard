@@ -21,26 +21,25 @@ export interface RESTProject {
 export interface RESTProjectItem {
   id: number
   node_id: string
+  project_url: string
   content: {
-    type: 'Issue' | 'PullRequest' | 'DraftIssue'
+    type?: 'Issue' | 'PullRequest' | 'DraftIssue'
     number?: number
-    title: string
-    url: string
-    state: string
-    repository?: {
-      name: string
-      owner: { login: string }
-    }
+    title?: string
+    url?: string
+    state?: string
+    body?: string
+    repository_url?: string
     assignees?: Array<{ login: string, avatar_url: string }>
     labels?: Array<{ name: string, color: string }>
     milestone?: { title: string }
-    created_at: string
-    updated_at: string
+    created_at?: string
+    updated_at?: string
   }
   fields: Array<{
     id: number
     name: string
-    type: string
+    type: string  // Note: items use 'type', fields list uses 'data_type'
     value: any
   }>
   created_at: string
@@ -51,8 +50,10 @@ export interface RESTProjectField {
   id: number
   node_id: string
   name: string
-  type: 'text' | 'number' | 'single_select' | 'date' | 'iteration' | 'parent_issue' | string
+  data_type: 'text' | 'number' | 'single_select' | 'date' | 'iteration' | 'parent_issue' | 'title' | 'assignees' | string
   options?: Array<{ name: string }>
+  created_at: string
+  updated_at: string
 }
 
 export interface ProjectItem {
@@ -162,7 +163,8 @@ export async function fetchProjectFieldsREST(projectNumber: number): Promise<RES
   }
 
   const data = await response.json()
-  const fields = data.fields || []
+  // REST API returns array directly, not { fields: [...] }
+  const fields = Array.isArray(data) ? data : (data.fields || [])
   console.log(`Found ${fields.length} fields`)
 
   return fields
@@ -200,7 +202,8 @@ export async function fetchProjectItemsREST(projectNumber: number): Promise<REST
     }
 
     const data = await response.json()
-    const items = data.items || []
+    // REST API returns array directly, not { items: [...] }
+    const items = Array.isArray(data) ? data : (data.items || [])
     allItems = allItems.concat(items)
 
     cursor = data.pagination?.next_cursor || null
@@ -291,22 +294,34 @@ export function transformRESTItemToProjectItem(item: RESTProjectItem): ProjectIt
     customFields['Milestone'] = item.content.milestone.title
   }
 
+  // Extract repository info from repository_url
+  // Format: https://api.github.com/repos/{owner}/{repo}
+  let repoName = 'Unknown'
+  let repoOwner = 'Unknown'
+  if (item.content.repository_url) {
+    const match = item.content.repository_url.match(/repos\/([^\/]+)\/([^\/]+)/)
+    if (match) {
+      repoOwner = match[1]
+      repoName = match[2]
+    }
+  }
+
   return {
     id: item.node_id,
-    type: item.content.type as 'ISSUE' | 'PULL_REQUEST' | 'DRAFT_ISSUE',
+    type: (item.content.type || 'ISSUE').toUpperCase() as 'ISSUE' | 'PULL_REQUEST' | 'DRAFT_ISSUE',
     number: item.content.number,
-    title: item.content.title,
-    url: item.content.url,
+    title: item.content.title || 'Untitled',
+    url: item.content.url || '',
     state: item.content.state || 'open',
-    repository: item.content.repository?.name || 'Unknown',
-    repository_owner: item.content.repository?.owner?.login || 'Unknown',
+    repository: repoName,
+    repository_owner: repoOwner,
     assignees: (item.content.assignees || []).map(a => ({
       login: a.login,
       avatarUrl: a.avatar_url
     })),
     labels: item.content.labels || [],
-    created_at: item.content.created_at,
-    updated_at: item.content.updated_at,
+    created_at: item.content.created_at || item.created_at,
+    updated_at: item.content.updated_at || item.updated_at,
     status: customFields['Status'],
     priority: customFields['Priority'],
     custom_fields: customFields // Includes Size, Parent issue, and all others!
