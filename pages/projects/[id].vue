@@ -23,57 +23,13 @@ const { data: project, pending, error, refresh } = useFetch<ProjectDetails>(`/ap
   server: false
 })
 
-// Selected view and grouping
-const selectedView = ref<string>('')
+// Selected grouping
 const selectedGroupBy = ref<string>('')
 
-// View items state
-const viewItemsState = ref<{
-  data: ViewData | null
-  loading: boolean
-} | null>(null)
-
-// Watch for view changes
-watch(selectedView, async (newViewId) => {
-  if (!newViewId) {
-    viewItemsState.value = null
-    selectedGroupBy.value = '' // Reset grouping when clearing view
-    return
-  }
-
-  viewItemsState.value = { data: null, loading: true }
-
-  try {
-    const response = await $fetch<ViewData>(`/api/projects/${projectId}/views/${newViewId}`)
-    viewItemsState.value = { data: response, loading: false }
-
-    // Set default grouping from view if available
-    if (response.view.groupByFields && response.view.groupByFields.length > 0) {
-      selectedGroupBy.value = response.view.groupByFields[0]
-    } else {
-      selectedGroupBy.value = ''
-    }
-  } catch (error) {
-    console.error('Failed to fetch view items:', error)
-    viewItemsState.value = { data: null, loading: false }
-  }
-})
-
-// Reactive items based on selected view or project items
+// Current items from project (no views)
 const currentItems = computed(() => {
-  if (selectedView.value && viewItemsState.value?.data) {
-    return viewItemsState.value.data.items
-  }
   if (!project.value) return []
   return project.value.items
-})
-
-// Current view metadata
-const currentView = computed(() => {
-  if (selectedView.value && viewItemsState.value?.data) {
-    return viewItemsState.value.data.view
-  }
-  return null
 })
 
 // Filters
@@ -101,14 +57,13 @@ const groupByOptions = computed(() => {
   ]
 })
 
-// Grouped items using composable with manual grouping override
+// Grouped items using composable with manual grouping (no views)
 const groupedItems = computed(() => {
   const items = filteredItems.value
-  const view = currentView.value
-  // Use selectedGroupBy as override (empty string means no grouping)
+  // Use selectedGroupBy (empty string means no grouping)
   const groupField = selectedGroupBy.value || undefined
-  const grouped = groupItems(items, view, groupField)
-  return sortItemsInGroups(grouped, view)
+  const grouped = groupItems(items, null, groupField)
+  return sortItemsInGroups(grouped, null)
 })
 
 // Clear filters
@@ -185,9 +140,7 @@ const showParentIssueColumn = computed(() =>
       <!-- Filters -->
       <ProjectFilters
         v-model:filters="filters"
-        v-model:selected-view="selectedView"
         v-model:selected-group-by="selectedGroupBy"
-        :views="project.views"
         :group-by-options="groupByOptions"
         :state-options="stateOptions"
         :type-options="typeOptions"
@@ -196,17 +149,12 @@ const showParentIssueColumn = computed(() =>
         :assignee-options="assigneeOptions"
         :filtered-count="filteredItems.length"
         :total-count="currentItems.length"
-        :is-loading="viewItemsState?.loading || false"
         @clear-filters="clearFilters"
       />
 
       <!-- Items Table -->
       <div class="items-section">
-        <div v-if="viewItemsState?.loading" class="loading-items">
-          <LoadingSpinner size="sm" message="Loading view items..." />
-        </div>
-
-        <div v-else-if="filteredItems.length === 0" class="empty-items">
+        <div v-if="filteredItems.length === 0" class="empty-items">
           <Text variant="tertiary" size="base">No items match the current filters.</Text>
         </div>
 

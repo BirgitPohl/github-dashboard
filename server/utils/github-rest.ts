@@ -47,6 +47,14 @@ export interface RESTProjectItem {
   updated_at: string
 }
 
+export interface RESTProjectField {
+  id: number
+  node_id: string
+  name: string
+  type: 'text' | 'number' | 'single_select' | 'date' | 'iteration' | 'parent_issue' | string
+  options?: Array<{ name: string }>
+}
+
 export interface ProjectItem {
   id: string
   type: 'ISSUE' | 'PULL_REQUEST' | 'DRAFT_ISSUE'
@@ -99,6 +107,65 @@ export async function fetchProjectsREST(): Promise<RESTProject[]> {
   console.log(`Found ${projects.length} projects via REST API`)
 
   return projects
+}
+
+/**
+ * Fetch single project details by number
+ */
+export async function fetchProjectREST(projectNumber: number): Promise<RESTProject> {
+  const owner = getGitHubOwner()
+  const headers = getGitHubHeaders()
+
+  console.log(`Fetching project ${projectNumber} details (REST API)`)
+
+  const response = await fetch(
+    `https://api.github.com/orgs/${owner}/projectsV2/${projectNumber}`,
+    { headers }
+  )
+
+  if (!response.ok) {
+    const errorText = await response.text()
+    console.error('REST API error response:', errorText)
+    throw createError({
+      statusCode: response.status,
+      statusMessage: `GitHub REST API error: ${response.statusText} - ${errorText}`
+    })
+  }
+
+  const project = await response.json()
+  console.log(`Fetched project: ${project.title}`)
+
+  return project
+}
+
+/**
+ * Fetch all fields for a project
+ */
+export async function fetchProjectFieldsREST(projectNumber: number): Promise<RESTProjectField[]> {
+  const owner = getGitHubOwner()
+  const headers = getGitHubHeaders()
+
+  console.log(`Fetching fields for project ${projectNumber} (REST API)`)
+
+  const response = await fetch(
+    `https://api.github.com/orgs/${owner}/projectsV2/${projectNumber}/fields`,
+    { headers }
+  )
+
+  if (!response.ok) {
+    const errorText = await response.text()
+    console.error('REST API error response:', errorText)
+    throw createError({
+      statusCode: response.status,
+      statusMessage: `GitHub REST API error: ${response.statusText} - ${errorText}`
+    })
+  }
+
+  const data = await response.json()
+  const fields = data.fields || []
+  console.log(`Found ${fields.length} fields`)
+
+  return fields
 }
 
 /**

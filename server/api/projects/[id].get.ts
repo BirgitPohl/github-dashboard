@@ -1,20 +1,10 @@
-import { fetchProjectItemsREST, transformRESTItemToProjectItem } from '../../utils/github-rest'
-import { executeGraphQL } from '../../utils/github'
-
-interface ProjectView {
-  id: string
-  name: string
-  number: number
-  layout: 'TABLE_LAYOUT' | 'BOARD_LAYOUT' | 'ROADMAP_LAYOUT'
-  filter?: string
-  groupByFields?: string[]
-  sortByFields?: Array<{
-    fieldName: string
-    direction: 'ASC' | 'DESC'
-  }>
-  createdAt: string
-  updatedAt: string
-}
+import {
+  fetchProjectREST,
+  fetchProjectItemsREST,
+  fetchProjectFieldsREST,
+  transformRESTItemToProjectItem,
+  type RESTProjectField
+} from '../../utils/github-rest'
 
 interface ProjectItem {
   id: string
@@ -46,7 +36,6 @@ interface ProjectDetails {
   title: string
   shortDescription: string | null
   url: string
-  views: ProjectView[]
   items: ProjectItem[]
   fields: Array<{
     name: string
@@ -65,157 +54,42 @@ export default defineEventHandler(async (event) => {
   }
 
   try {
-    console.log(`Fetching project details for project number: ${projectNumber} (REST API)`)
+    const projectNum = parseInt(projectNumber)
 
-    // Fetch project items using REST API
-    const restItems = await fetchProjectItemsREST(parseInt(projectNumber))
+    console.log(`Fetching project ${projectNum} via PURE REST API (NO GraphQL)`)
 
-    // Transform REST items to our format
-    // This automatically extracts ALL custom fields including Size, Parent issue, etc.
+    // Fetch all data using REST API only - NO GraphQL!
+    const [project, restItems, fields] = await Promise.all([
+      fetchProjectREST(projectNum),           // Project metadata
+      fetchProjectItemsREST(projectNum),       // All items with fields
+      fetchProjectFieldsREST(projectNum)       // Project field definitions
+    ])
+
+    // Transform REST items to our internal format
+    // This automatically extracts ALL custom fields: Size, Parent issue, Priority, etc.
     const items: ProjectItem[] = restItems.map(transformRESTItemToProjectItem)
 
     // Sort items by updated date (newest first)
     items.sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime())
 
-    // Extract unique field names from all items
-    const fieldNames = new Set<string>()
-    items.forEach(item => {
-      Object.keys(item.custom_fields).forEach(key => fieldNames.add(key))
-    })
-
-    // Fetch views using minimal GraphQL query (only view metadata, not items)
-    // We only use GraphQL for views because REST API doesn't provide this
-    let views: ProjectView[] = []
-    try {
-      const viewsQuery = `
-        query($projectNumber: Int!) {
-          organization(login: "Oracommit") {
-            projectV2(number: $projectNumber) {
-              id
-              title
-              shortDescription
-              url
-              views(first: 10) {
-                nodes {
-                  id
-                  name
-                  number
-                  layout
-                  filter
-                  groupByFields(first: 10) {
-                    nodes {
-                      ... on ProjectV2Field {
-                        name
-                      }
-                      ... on ProjectV2SingleSelectField {
-                        name
-                      }
-                    }
-                  }
-                  sortByFields(first: 10) {
-                    nodes {
-                      field {
-                        ... on ProjectV2Field {
-                          name
-                        }
-                        ... on ProjectV2SingleSelectField {
-                          name
-                        }
-                      }
-                      direction
-                    }
-                  }
-                  createdAt
-                  updatedAt
-                }
-              }
-            }
-          }
-        }
-      `
-
-      const viewsData = await executeGraphQL<{
-        organization: {
-          projectV2: {
-            id: string
-            title: string
-            shortDescription: string | null
-            url: string
-            views: {
-              nodes: Array<{
-                id: string
-                name: string
-                number: number
-                layout: string
-                filter?: string
-                groupByFields?: { nodes: Array<{ name: string }> }
-                sortByFields?: { nodes: Array<{ field: { name: string }, direction: string }> }
-                createdAt: string
-                updatedAt: string
-              }>
-            }
-          }
-        }
-      }>(viewsQuery, { projectNumber: parseInt(projectNumber) })
-
-      const project = viewsData.organization?.projectV2
-      if (project) {
-        views = project.views?.nodes?.map(view => ({
-          id: view.id,
-          name: view.name,
-          number: view.number,
-          layout: view.layout as 'TABLE_LAYOUT' | 'BOARD_LAYOUT' | 'ROADMAP_LAYOUT',
-          filter: view.filter,
-          groupByFields: view.groupByFields?.nodes?.map(field => field.name) || [],
-          sortByFields: view.sortByFields?.nodes?.map(sortField => ({
-            fieldName: sortField.field.name,
-            direction: sortField.direction as 'ASC' | 'DESC'
-          })) || [],
-          createdAt: view.createdAt,
-          updatedAt: view.updatedAt
-        })) || []
-
-        const projectDetails: ProjectDetails = {
-          id: project.id,
-          number: parseInt(projectNumber),
-          title: project.title,
-          shortDescription: project.shortDescription,
-          url: project.url,
-          views,
-          items,
-          fields: Array.from(fieldNames).map(name => ({
-            name,
-            dataType: 'TEXT'
-          }))
-        }
-
-        console.log(`Processed ${items.length} items for project: ${project.title} (REST + GraphQL views)`)
-        return projectDetails
-      }
-    } catch (viewsError) {
-      console.warn('Failed to fetch views via GraphQL, continuing without views:', viewsError)
-    }
-
-    // Fallback if GraphQL fails: return data without views
     const projectDetails: ProjectDetails = {
-      id: projectNumber,
-      number: parseInt(projectNumber),
-      title: `Project ${projectNumber}`,
-      shortDescription: null,
-      url: '',
-      views: [],
+      id: project.node_id,
+      number: project.number,
+      title: project.title,
+      shortDescription: project.description,
+      url: project.url,
       items,
-      fields: Array.from(fieldNames).map(name => ({
-        name,
-        dataType: 'TEXT'
+      fields: fields.map((f: RESTProjectField) => ({
+        name: f.name,
+        dataType: f.type.toUpperCase()
       }))
     }
 
-    console.log(`Processed ${items.length} items for project ${projectNumber} (REST API only)`)
+    console.log(`✅ SUCCESS: Fetched project "${project.title}" with ${items.length} items via PURE REST API (NO GraphQL)`)
     return projectDetails
 
   } catch (error: unknown) {
-    console.error('Error fetching project details:', error)
+    console.error('Error fetching project details (REST):', error)
 
     if (error && typeof error === 'object' && 'statusCode' in error) {
       throw error

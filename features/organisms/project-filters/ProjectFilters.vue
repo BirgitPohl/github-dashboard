@@ -6,20 +6,6 @@
     </div>
 
     <div class="filters-grid">
-      <!-- View Selector -->
-      <div v-if="views && views.length > 0" class="filter-group">
-        <label for="view-filter">View</label>
-        <Select
-          id="view-filter"
-          :model-value="selectedView"
-          :options="[
-            { value: '', label: 'All items' },
-            ...views.map(v => ({ value: v.id, label: `${v.name} (${v.layout.replace('_LAYOUT', '').toLowerCase()})` }))
-          ]"
-          @update:model-value="$emit('update:selectedView', $event)"
-        />
-      </div>
-
       <!-- Group By Selector -->
       <div class="filter-group">
         <label for="group-by-filter">Group By</label>
@@ -110,21 +96,6 @@
 </template>
 
 <script setup lang="ts">
-interface ProjectView {
-  id: string
-  name: string
-  number: number
-  layout: 'TABLE_LAYOUT' | 'BOARD_LAYOUT' | 'ROADMAP_LAYOUT'
-  filter?: string
-  groupByFields?: string[]
-  sortByFields?: Array<{
-    fieldName: string
-    direction: 'ASC' | 'DESC'
-  }>
-  createdAt: string
-  updatedAt: string
-}
-
 interface FilterOptions {
   search: string
   state: string
@@ -141,9 +112,7 @@ interface SelectOption {
 
 interface Props {
   filters: FilterOptions
-  selectedView: string
   selectedGroupBy: string
-  views?: ProjectView[]
   groupByOptions: SelectOption[]
   stateOptions: SelectOption[]
   typeOptions: SelectOption[]
@@ -161,15 +130,10 @@ const props = withDefaults(defineProps<Props>(), {
 
 const emit = defineEmits<{
   'update:filters': [filters: FilterOptions]
-  'update:selectedView': [viewId: string]
   'update:selectedGroupBy': [groupField: string]
   'clear-filters': []
 }>()
 
-const currentViewName = computed(() => {
-  if (!props.selectedView || !props.views) return null
-  return props.views.find(v => v.id === props.selectedView)?.name
-})
 
 const updateFilter = (key: keyof FilterOptions, value: string) => {
   emit('update:filters', {
