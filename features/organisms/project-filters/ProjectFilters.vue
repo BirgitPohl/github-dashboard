@@ -86,11 +86,7 @@
     </div>
 
     <div class="results-summary">
-      <span v-if="isLoading" class="loading-text">Loading view items...</span>
-      <span v-else>Showing {{ filteredCount }} of {{ totalCount }} items</span>
-      <span v-if="selectedView" class="view-indicator">
-        ({{ currentViewName || 'Custom view' }})
-      </span>
+      <span>Showing {{ filteredCount }} of {{ totalCount }} items</span>
     </div>
   </div>
 </template>
@@ -121,12 +117,9 @@ interface Props {
   assigneeOptions: SelectOption[]
   filteredCount: number
   totalCount: number
-  isLoading?: boolean
 }
 
-const props = withDefaults(defineProps<Props>(), {
-  isLoading: false
-})
+const props = defineProps<Props>()
 
 const emit = defineEmits<{
   'update:filters': [filters: FilterOptions]
