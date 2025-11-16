@@ -2,7 +2,7 @@
   <div class="filters-section">
     <div class="filters-header">
       <h3>Filters</h3>
-      <button class="clear-filters-btn" @click="clearFilters">Clear All</button>
+      <Button variant="ghost" size="sm" @click="clearFilters">Clear All</Button>
     </div>
 
     <div class="filters-grid">
@@ -20,14 +20,13 @@
       <!-- Search -->
       <div class="filter-group">
         <label for="search-filter">Search</label>
-        <input
+        <Input
           id="search-filter"
-          :value="filters.search"
-          @input="updateFilter('search', ($event.target as HTMLInputElement).value)"
-          type="text"
+          :model-value="filters.search"
+          type="search"
           placeholder="Search items..."
-          class="filter-input"
-        >
+          @update:model-value="updateFilter('search', $event)"
+        />
       </div>
 
       <!-- State -->
@@ -210,21 +209,6 @@ const clearFilters = () => {
   margin: 0;
 }
 
-.clear-filters-btn {
-  background: var(--color-gray-100);
-  border: var(--border-width-thin) solid var(--color-gray-300);
-  border-radius: var(--radius-md);
-  padding: var(--spacing-1-5) var(--spacing-3);
-  font-size: var(--font-size-sm);
-  color: var(--color-gray-700);
-  cursor: pointer;
-  transition: all var(--transition-base);
-}
-
-.clear-filters-btn:hover {
-  background: var(--color-gray-200);
-}
-
 .filters-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -244,7 +228,7 @@ const clearFilters = () => {
   color: var(--color-gray-700);
 }
 
-.filter-input, .filter-select {
+.filter-select {
   padding: var(--spacing-2) var(--spacing-3);
   border: var(--border-width-thin) solid var(--color-gray-300);
   border-radius: var(--radius-md);
@@ -252,7 +236,7 @@ const clearFilters = () => {
   transition: border-color var(--transition-base);
 }
 
-.filter-input:focus, .filter-select:focus {
+.filter-select:focus {
   outline: none;
   border-color: var(--color-blue-600);
   box-shadow: var(--shadow-focus);
