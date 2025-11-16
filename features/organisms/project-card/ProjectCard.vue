@@ -105,7 +105,7 @@ const createdAgo = computed(() => formatTimeAgoDetailed(props.project.createdAt)
           variant="primary"
           size="md"
           class="view-button"
-          @click="navigateTo(`/projects/${project.id}`)"
+          @click="navigateTo(`/projects/${project.number}`)"
         >
           View Project Board
         </Button>
