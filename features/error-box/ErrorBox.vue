@@ -128,41 +128,41 @@ const errorClasses = computed(() => {
 
 <style scoped>
 .error-box {
-  padding: 24px;
-  border-radius: 12px;
+  padding: var(--spacing-6);
+  border-radius: var(--radius-xl);
   border: 1px solid;
-  background-color: #fff;
+  background-color: var(--color-bg-primary);
   max-width: 600px;
 }
 
 /* Error variant */
 .error-box--error {
-  border-color: #fecaca;
-  background-color: #fef2f2;
+  border-color: var(--color-red-50);
+  background-color: var(--color-error-50);
 }
 
 .error-box--error .error-title {
-  color: #dc2626;
+  color: var(--color-error-600);
 }
 
 /* Warning variant */
 .error-box--warning {
-  border-color: #fed7aa;
-  background-color: #fff7ed;
+  border-color: var(--color-orange-100);
+  background-color: var(--color-orange-50);
 }
 
 .error-box--warning .error-title {
-  color: #ea580c;
+  color: var(--color-orange-500);
 }
 
 /* Info variant */
 .error-box--info {
-  border-color: #bfdbfe;
-  background-color: #eff6ff;
+  border-color: var(--color-blue-50);
+  background-color: var(--color-primary-50);
 }
 
 .error-box--info .error-title {
-  color: #2563eb;
+  color: var(--color-primary-600);
 }
 
 .error-content {
@@ -172,72 +172,72 @@ const errorClasses = computed(() => {
 .error-header {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-bottom: 8px;
+  gap: var(--spacing-2);
+  margin-bottom: var(--spacing-2);
 }
 
 .error-title {
   margin: 0;
-  font-size: 18px;
-  font-weight: 600;
-  line-height: 1.2;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-tight);
 }
 
 .error-code {
-  padding: 2px 8px;
+  padding: var(--spacing-1) var(--spacing-2);
   background-color: rgba(0, 0, 0, 0.1);
-  border-radius: 4px;
-  font-size: 12px;
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-xs);
   font-family: monospace;
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
 }
 
 .error-message {
-  margin: 0 0 16px 0;
-  color: #374151;
-  line-height: 1.5;
+  margin: 0 0 var(--spacing-4) 0;
+  color: var(--color-text-tertiary);
+  line-height: var(--line-height-normal);
 }
 
 .error-actions {
-  margin-bottom: 16px;
+  margin-bottom: var(--spacing-4);
 }
 
 .actions-title {
-  margin: 0 0 8px 0;
-  font-size: 14px;
-  font-weight: 600;
-  color: #374151;
+  margin: 0 0 var(--spacing-2) 0;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-tertiary);
 }
 
 .actions-list {
   margin: 0;
-  padding-left: 20px;
-  color: #6b7280;
-  font-size: 14px;
+  padding-left: var(--spacing-5);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
 }
 
 .actions-list li {
-  margin-bottom: 4px;
+  margin-bottom: var(--spacing-1);
 }
 
 .error-details {
-  margin-bottom: 16px;
+  margin-bottom: var(--spacing-4);
 }
 
 .error-details summary {
   cursor: pointer;
-  font-size: 14px;
-  font-weight: 500;
-  color: #6b7280;
-  margin-bottom: 8px;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-2);
 }
 
 .error-details pre {
-  background-color: #f9fafb;
-  border: 1px solid #e5e7eb;
-  border-radius: 6px;
-  padding: 12px;
-  font-size: 12px;
+  background-color: var(--color-gray-50);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-3);
+  font-size: var(--font-size-xs);
   overflow-x: auto;
   max-height: 200px;
   overflow-y: auto;
@@ -245,24 +245,24 @@ const errorClasses = computed(() => {
 
 .error-buttons {
   display: flex;
-  gap: 12px;
+  gap: var(--spacing-3);
   flex-wrap: wrap;
 }
 
 .retry-button {
-  padding: 8px 16px;
-  background-color: #374151;
+  padding: var(--spacing-2) var(--spacing-4);
+  background-color: var(--color-text-tertiary);
   color: white;
   border: none;
-  border-radius: 6px;
-  font-size: 14px;
-  font-weight: 500;
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition: background-color var(--transition-base);
 }
 
 .retry-button:hover {
-  background-color: #111827;
+  background-color: var(--color-text-primary);
 }
 
 .retry-button:active {
@@ -272,17 +272,17 @@ const errorClasses = computed(() => {
 /* Responsive adjustments */
 @media (max-width: 640px) {
   .error-box {
-    padding: 20px;
+    padding: var(--spacing-5);
   }
-  
+
   .error-title {
-    font-size: 16px;
+    font-size: var(--font-size-base);
   }
-  
+
   .error-header {
     flex-direction: column;
     align-items: flex-start;
-    gap: 4px;
+    gap: var(--spacing-1);
   }
 }
 </style>

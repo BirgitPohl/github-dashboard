@@ -96,72 +96,72 @@ const containerClasses = computed(() => {
 <style scoped>
 .empty-state {
   text-align: center;
-  padding: 80px 20px;
+  padding: var(--spacing-20) var(--spacing-5);
 }
 
 .empty-state__icon {
-  font-size: 48px;
-  margin-bottom: 16px;
+  font-size: var(--font-size-4xl);
+  margin-bottom: var(--spacing-4);
   opacity: 0.8;
 }
 
 .empty-state__title {
-  font-size: 20px;
-  font-weight: 600;
-  color: #6b7280;
-  margin: 0 0 8px 0;
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-gray-500);
+  margin: 0 0 var(--spacing-2) 0;
 }
 
 .empty-state__message {
-  color: #6b7280;
-  margin: 0 0 20px 0;
-  line-height: 1.5;
-  font-size: 15px;
+  color: var(--color-gray-500);
+  margin: 0 0 var(--spacing-5) 0;
+  line-height: var(--line-height-relaxed);
+  font-size: var(--font-size-base);
 }
 
 .empty-state__content {
-  margin: 20px 0;
+  margin: var(--spacing-5) 0;
 }
 
 .empty-state__action {
   display: inline-block;
-  color: #2563eb;
+  color: var(--color-blue-600);
   text-decoration: none;
-  font-weight: 500;
-  padding: 8px 16px;
-  border: 1px solid #2563eb;
-  border-radius: 6px;
-  transition: all 0.2s ease;
-  font-size: 14px;
+  font-weight: var(--font-weight-medium);
+  padding: var(--spacing-2) var(--spacing-4);
+  border: var(--border-width-thin) solid var(--color-blue-600);
+  border-radius: var(--radius-md);
+  transition: all var(--transition-base);
+  font-size: var(--font-size-sm);
 }
 
 .empty-state__action:hover {
-  background: #2563eb;
-  color: white;
+  background: var(--color-blue-600);
+  color: var(--color-white);
   transform: translateY(-1px);
-  box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2);
+  box-shadow: var(--shadow-md);
 }
 
 .empty-state__actions {
-  margin-top: 20px;
+  margin-top: var(--spacing-5);
 }
 
 /* Responsive adjustments */
 @media (max-width: 640px) {
   .empty-state {
-    padding: 60px 16px;
+    padding: var(--spacing-15) var(--spacing-4);
   }
 
   .empty-state__icon {
-    font-size: 40px;
+    font-size: var(--font-size-3xl);
   }
 
   .empty-state__title {
-    font-size: 18px;
+    font-size: var(--font-size-lg);
   }
 
   .empty-state__message {
-    font-size: 14px;
+    font-size: var(--font-size-sm);
   }
 }
 </style>

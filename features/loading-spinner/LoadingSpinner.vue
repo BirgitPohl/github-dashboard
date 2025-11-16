@@ -58,11 +58,11 @@ const spinnerClasses = computed(() => {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 12px;
+  gap: var(--spacing-3);
 }
 
 .loading-spinner {
-  border-radius: 50%;
+  border-radius: var(--radius-full);
   animation: spin 1s linear infinite;
 }
 
@@ -70,36 +70,36 @@ const spinnerClasses = computed(() => {
 .loading-spinner--sm {
   width: 20px;
   height: 20px;
-  border: 2px solid #e5e7eb;
+  border: 2px solid var(--color-gray-200);
   border-top: 2px solid transparent;
 }
 
 .loading-spinner--md {
   width: 32px;
   height: 32px;
-  border: 3px solid #e5e7eb;
+  border: 3px solid var(--color-gray-200);
   border-top: 3px solid transparent;
 }
 
 .loading-spinner--lg {
   width: 40px;
   height: 40px;
-  border: 4px solid #e5e7eb;
+  border: 4px solid var(--color-gray-200);
   border-top: 4px solid transparent;
 }
 
 /* Color variants */
 .loading-spinner--primary.loading-spinner--sm {
-  border-top-color: #111827;
+  border-top-color: var(--color-gray-900);
 }
 
 .loading-spinner--primary.loading-spinner--md,
 .loading-spinner--primary.loading-spinner--lg {
-  border-top-color: #3b82f6;
+  border-top-color: var(--color-blue-500);
 }
 
 .loading-spinner--secondary {
-  border-top-color: #6b7280;
+  border-top-color: var(--color-gray-500);
 }
 
 @keyframes spin {
@@ -109,18 +109,18 @@ const spinnerClasses = computed(() => {
 }
 
 .loading-message {
-  color: #6b7280;
-  font-size: 14px;
+  color: var(--color-gray-500);
+  font-size: var(--font-size-sm);
 }
 
 /* Responsive adjustments */
 @media (max-width: 640px) {
   .loading-spinner-container {
-    gap: 8px;
+    gap: var(--spacing-2);
   }
 
   .loading-message {
-    font-size: 13px;
+    font-size: var(--font-size-sm);
   }
 }
 </style>

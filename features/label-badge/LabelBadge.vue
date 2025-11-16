@@ -70,33 +70,33 @@ const textColor = computed(() => {
 <style scoped>
 .label-badge {
   display: inline-block;
-  border-radius: 12px;
-  font-weight: 500;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  border-radius: var(--radius-full);
+  font-weight: var(--font-weight-medium);
+  text-shadow: var(--shadow-text);
   white-space: nowrap;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: transform var(--transition-base), box-shadow var(--transition-base);
 }
 
 .label-badge:hover {
   transform: translateY(-1px);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--shadow-md);
 }
 
 /* Size variants */
 .label-badge--sm {
-  padding: 1px 6px;
-  font-size: 11px;
-  border-radius: 10px;
+  padding: var(--spacing-0-25) var(--spacing-1-5);
+  font-size: var(--font-size-xs);
+  border-radius: var(--radius-lg);
 }
 
 .label-badge--md {
-  padding: 2px 8px;
-  font-size: 12px;
+  padding: var(--spacing-0-5) var(--spacing-2);
+  font-size: var(--font-size-xs);
 }
 
 .label-badge--lg {
-  padding: 4px 10px;
-  font-size: 13px;
-  border-radius: 14px;
+  padding: var(--spacing-1) var(--spacing-2-5);
+  font-size: var(--font-size-sm);
+  border-radius: var(--radius-xl);
 }
 </style>

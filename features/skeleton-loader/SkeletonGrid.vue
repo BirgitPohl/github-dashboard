@@ -26,8 +26,8 @@ withDefaults(defineProps<Props>(), {
 <style scoped>
 .skeleton-grid {
   display: grid;
-  gap: 20px;
-  margin-top: 24px;
+  gap: var(--spacing-5);
+  margin-top: var(--spacing-6);
 }
 
 @media (max-width: 768px) {

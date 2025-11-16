@@ -26,31 +26,26 @@ withDefaults(defineProps<Props>(), {
 .skeleton-stats {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 24px;
-  margin-bottom: 32px;
+  gap: var(--spacing-6);
+  margin-bottom: var(--spacing-8);
 }
 
 .skeleton-stat-card {
-  background: white;
-  border-radius: 12px;
-  padding: 24px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  background: var(--color-white);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-6);
+  box-shadow: var(--shadow-sm);
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
+  gap: var(--spacing-3);
 }
 
 .skeleton-icon {
   width: 48px;
   height: 48px;
-  border-radius: 50%;
-  background: linear-gradient(
-    90deg,
-    #f0f0f0 25%,
-    #e0e0e0 50%,
-    #f0f0f0 75%
-  );
+  border-radius: var(--radius-full);
+  background: var(--gradient-shimmer);
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
 }
@@ -58,13 +53,8 @@ withDefaults(defineProps<Props>(), {
 .skeleton-value {
   width: 60px;
   height: 32px;
-  border-radius: 4px;
-  background: linear-gradient(
-    90deg,
-    #f0f0f0 25%,
-    #e0e0e0 50%,
-    #f0f0f0 75%
-  );
+  border-radius: var(--radius-sm);
+  background: var(--gradient-shimmer);
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
 }
@@ -72,13 +62,8 @@ withDefaults(defineProps<Props>(), {
 .skeleton-label {
   width: 120px;
   height: 16px;
-  border-radius: 4px;
-  background: linear-gradient(
-    90deg,
-    #f0f0f0 25%,
-    #e0e0e0 50%,
-    #f0f0f0 75%
-  );
+  border-radius: var(--radius-sm);
+  background: var(--gradient-shimmer);
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
 }

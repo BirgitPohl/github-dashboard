@@ -126,41 +126,41 @@ const sizeFormatted = computed(() => formatSize(props.repository.size))
 .project-title {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-bottom: 8px;
+  gap: var(--spacing-2);
+  margin-bottom: var(--spacing-2);
   flex-wrap: wrap;
 }
 
 .category-icon {
-  font-size: 18px;
+  font-size: var(--font-size-lg);
   flex-shrink: 0;
 }
 
 .project-name {
-  font-size: 16px;
-  font-weight: 600;
-  color: #111827;
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
   margin: 0;
-  line-height: 1.2;
+  line-height: var(--line-height-tight);
   word-break: break-word;
   flex: 1;
   min-width: 0;
 }
 
 .private-badge {
-  background: #fef3c7;
-  color: #92400e;
-  padding: 2px 6px;
-  border-radius: 8px;
+  background: var(--color-warning-50);
+  color: var(--color-warning-700);
+  padding: var(--spacing-1) var(--spacing-2);
+  border-radius: var(--radius-lg);
   font-size: 10px;
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
   text-transform: uppercase;
   flex-shrink: 0;
 }
 
 .project-description {
-  font-size: 13px;
-  color: #6b7280;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
   margin: 0;
   line-height: 1.4;
   display: -webkit-box;
@@ -172,100 +172,100 @@ const sizeFormatted = computed(() => formatSize(props.repository.size))
 
 .project-stats {
   display: flex;
-  gap: 16px;
-  margin-bottom: 16px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid #f3f4f6;
+  gap: var(--spacing-4);
+  margin-bottom: var(--spacing-4);
+  padding-bottom: var(--spacing-3);
+  border-bottom: 1px solid var(--color-gray-100);
 }
 
 .stat-item {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: var(--spacing-1);
 }
 
 .stat-icon {
-  font-size: 14px;
+  font-size: var(--font-size-sm);
 }
 
 .stat-value {
-  font-size: 13px;
-  font-weight: 500;
-  color: #374151;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-tertiary);
 }
 
 .tech-stack {
-  margin-bottom: 16px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid #f3f4f6;
+  margin-bottom: var(--spacing-4);
+  padding-bottom: var(--spacing-3);
+  border-bottom: 1px solid var(--color-gray-100);
 }
 
 .tech-label {
-  font-size: 12px;
-  color: #6b7280;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
   display: block;
-  margin-bottom: 6px;
+  margin-bottom: var(--spacing-2);
 }
 
 .tech-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 4px;
+  gap: var(--spacing-1);
 }
 
 .tech-tag {
-  background: #e5e7eb;
-  color: #374151;
-  padding: 2px 8px;
-  border-radius: 12px;
+  background: var(--color-border-default);
+  color: var(--color-text-tertiary);
+  padding: var(--spacing-1) var(--spacing-2);
+  border-radius: var(--radius-xl);
   font-size: 11px;
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
 }
 
 .tech-more {
-  background: #d1d5db;
-  color: #6b7280;
-  padding: 2px 8px;
-  border-radius: 12px;
+  background: var(--color-gray-300);
+  color: var(--color-text-secondary);
+  padding: var(--spacing-1) var(--spacing-2);
+  border-radius: var(--radius-xl);
   font-size: 11px;
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
 }
 
 .project-details {
-  margin-bottom: 16px;
+  margin-bottom: var(--spacing-4);
 }
 
 .detail-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 6px;
-  font-size: 13px;
+  margin-bottom: var(--spacing-2);
+  font-size: var(--font-size-xs);
 }
 
 .detail-row span:first-child {
-  color: #6b7280;
+  color: var(--color-text-secondary);
 }
 
 .detail-row span:last-child {
-  color: #374151;
-  font-weight: 500;
+  color: var(--color-text-tertiary);
+  font-weight: var(--font-weight-medium);
 }
 
 .category-label {
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
 }
 
 .view-link {
-  color: #2563eb;
+  color: var(--color-primary-600);
   text-decoration: none;
-  font-size: 14px;
-  font-weight: 500;
-  transition: color 0.2s ease;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  transition: color var(--transition-base);
 }
 
 .view-link:hover {
-  color: #1d4ed8;
+  color: var(--color-primary-700);
   text-decoration: underline;
 }
 </style>

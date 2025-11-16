@@ -84,56 +84,56 @@ const containerClasses = computed(() => {
 
 <style scoped>
 .breadcrumbs {
-  margin-bottom: 12px;
+  margin-bottom: var(--spacing-3);
 }
 
 .breadcrumbs__list {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: var(--spacing-2);
   list-style: none;
   margin: 0;
   padding: 0;
-  font-size: 14px;
+  font-size: var(--font-size-sm);
 }
 
 .breadcrumbs__item {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--spacing-2);
 }
 
 .breadcrumbs__link {
-  color: #2563eb;
+  color: var(--color-blue-600);
   text-decoration: none;
-  transition: color 0.2s ease, text-decoration 0.2s ease;
+  transition: color var(--transition-base), text-decoration var(--transition-base);
 }
 
 .breadcrumbs__link:hover {
   text-decoration: underline;
-  color: #1d4ed8;
+  color: var(--color-blue-700);
 }
 
 .breadcrumbs__current {
-  color: #6b7280;
-  font-weight: 400;
+  color: var(--color-gray-500);
+  font-weight: var(--font-weight-normal);
 }
 
 .breadcrumbs__separator {
-  color: #6b7280;
+  color: var(--color-gray-500);
   user-select: none;
 }
 
 /* Responsive adjustments */
 @media (max-width: 640px) {
   .breadcrumbs__list {
-    font-size: 13px;
-    gap: 6px;
+    font-size: var(--font-size-sm);
+    gap: var(--spacing-1-5);
   }
 
   .breadcrumbs__item {
-    gap: 6px;
+    gap: var(--spacing-1-5);
   }
 }
 </style>

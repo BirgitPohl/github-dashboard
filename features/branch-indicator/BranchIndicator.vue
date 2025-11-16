@@ -51,58 +51,58 @@ const containerClasses = computed(() => {
 .branch-indicator {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  font-size: 14px;
+  gap: var(--spacing-2);
+  font-size: var(--font-size-sm);
 }
 
 .branch-indicator__branch {
-  background: #f3f4f6;
-  padding: 2px 6px;
-  border-radius: 4px;
-  font-family: monospace;
-  font-size: 12px;
-  color: #374151;
-  transition: background-color 0.2s ease;
+  background: var(--color-gray-100);
+  padding: var(--spacing-0-5) var(--spacing-1-5);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-xs);
+  color: var(--color-gray-700);
+  transition: background-color var(--transition-base);
 }
 
 .branch-indicator__branch:hover {
-  background: #e5e7eb;
+  background: var(--color-gray-200);
 }
 
 .branch-indicator__arrow {
-  color: #9ca3af;
-  font-size: 14px;
+  color: var(--color-gray-400);
+  font-size: var(--font-size-sm);
 }
 
 /* Compact variant */
 .branch-indicator--compact {
-  gap: 6px;
-  font-size: 12px;
+  gap: var(--spacing-1-5);
+  font-size: var(--font-size-xs);
 }
 
 .branch-indicator--compact .branch-indicator__branch {
-  padding: 1px 4px;
-  font-size: 11px;
-  border-radius: 3px;
+  padding: var(--spacing-0-25) var(--spacing-1);
+  font-size: var(--font-size-xs);
+  border-radius: var(--radius-sm);
 }
 
 .branch-indicator--compact .branch-indicator__arrow {
-  font-size: 12px;
+  font-size: var(--font-size-xs);
 }
 
 /* Responsive adjustments */
 @media (max-width: 640px) {
   .branch-indicator {
-    gap: 6px;
+    gap: var(--spacing-1-5);
   }
 
   .branch-indicator__branch {
-    padding: 2px 4px;
-    font-size: 11px;
+    padding: var(--spacing-0-5) var(--spacing-1);
+    font-size: var(--font-size-xs);
   }
 
   .branch-indicator__arrow {
-    font-size: 12px;
+    font-size: var(--font-size-xs);
   }
 }
 </style>

@@ -143,44 +143,44 @@ const { formatDate } = useDateTime()
 .items-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 14px;
+  font-size: var(--font-size-sm);
 }
 
 .items-table th {
-  background: #f9fafb;
-  padding: 12px;
+  background: var(--color-gray-50);
+  padding: var(--spacing-3);
   text-align: left;
-  font-weight: 600;
-  color: #374151;
-  border-bottom: 1px solid #e5e7eb;
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-gray-700);
+  border-bottom: var(--border-width-thin) solid var(--color-gray-200);
   white-space: nowrap;
 }
 
 .items-table td {
-  padding: 12px;
-  border-bottom: 1px solid #f3f4f6;
+  padding: var(--spacing-3);
+  border-bottom: var(--border-width-thin) solid var(--color-gray-100);
   vertical-align: middle;
 }
 
 .item-row:hover {
-  background: #f9fafb;
+  background: var(--color-gray-50);
 }
 
 .type-cell {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--spacing-1-5);
   min-width: 80px;
 }
 
 .type-icon {
-  font-size: 16px;
+  font-size: var(--font-size-base);
 }
 
 .type-text {
-  font-size: 12px;
-  color: #6b7280;
-  font-weight: 500;
+  font-size: var(--font-size-xs);
+  color: var(--color-gray-500);
+  font-weight: var(--font-weight-medium);
 }
 
 .title-cell {
@@ -188,9 +188,9 @@ const { formatDate } = useDateTime()
 }
 
 .item-title {
-  color: #2563eb;
+  color: var(--color-blue-600);
   text-decoration: none;
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
   line-height: 1.4;
 }
 
@@ -203,8 +203,8 @@ const { formatDate } = useDateTime()
 }
 
 .repository-name {
-  color: #6b7280;
-  font-size: 13px;
+  color: var(--color-gray-500);
+  font-size: var(--font-size-sm);
 }
 
 .state-cell {
@@ -212,10 +212,10 @@ const { formatDate } = useDateTime()
 }
 
 .state-badge {
-  padding: 4px 8px;
-  border-radius: 12px;
-  font-size: 12px;
-  font-weight: 500;
+  padding: var(--spacing-1) var(--spacing-2);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
   text-transform: capitalize;
 }
 
@@ -224,16 +224,16 @@ const { formatDate } = useDateTime()
 }
 
 .status-badge {
-  background: #f3f4f6;
-  color: #374151;
-  padding: 4px 8px;
-  border-radius: 12px;
-  font-size: 12px;
-  font-weight: 500;
+  background: var(--color-gray-100);
+  color: var(--color-gray-700);
+  padding: var(--spacing-1) var(--spacing-2);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
 }
 
 .no-status, .no-assignees, .no-labels {
-  color: #9ca3af;
+  color: var(--color-gray-400);
 }
 
 .assignees-cell {
@@ -243,20 +243,20 @@ const { formatDate } = useDateTime()
 .assignees {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: var(--spacing-1);
 }
 
 .assignee-avatar {
   width: 24px;
   height: 24px;
-  border-radius: 50%;
-  border: 1px solid #e5e7eb;
+  border-radius: var(--radius-full);
+  border: var(--border-width-thin) solid var(--color-gray-200);
 }
 
 .assignee-more {
-  font-size: 12px;
-  color: #6b7280;
-  margin-left: 4px;
+  font-size: var(--font-size-xs);
+  color: var(--color-gray-500);
+  margin-left: var(--spacing-1);
 }
 
 .labels-cell {
@@ -266,21 +266,21 @@ const { formatDate } = useDateTime()
 .labels {
   display: flex;
   flex-wrap: wrap;
-  gap: 4px;
+  gap: var(--spacing-1);
   align-items: center;
 }
 
 .label-badge {
-  padding: 2px 6px;
-  border-radius: 8px;
-  font-size: 11px;
-  font-weight: 500;
+  padding: var(--spacing-0-5) var(--spacing-1-5);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
   white-space: nowrap;
 }
 
 .labels-more {
-  font-size: 12px;
-  color: #6b7280;
+  font-size: var(--font-size-xs);
+  color: var(--color-gray-500);
 }
 
 .updated-cell {
@@ -288,18 +288,18 @@ const { formatDate } = useDateTime()
 }
 
 .updated-date {
-  color: #6b7280;
-  font-size: 13px;
+  color: var(--color-gray-500);
+  font-size: var(--font-size-sm);
 }
 
 @media (max-width: 768px) {
   .items-table {
-    font-size: 13px;
+    font-size: var(--font-size-sm);
   }
 
   .items-table th,
   .items-table td {
-    padding: 8px;
+    padding: var(--spacing-2);
   }
 }
 </style>

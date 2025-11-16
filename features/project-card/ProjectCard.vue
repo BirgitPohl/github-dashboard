@@ -114,22 +114,22 @@ const createdAgo = computed(() => formatTimeAgoDetailed(props.project.createdAt)
 .project-title {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-bottom: 8px;
+  gap: var(--spacing-2);
+  margin-bottom: var(--spacing-2);
   flex-wrap: wrap;
 }
 
 .status-icon {
-  font-size: 18px;
+  font-size: var(--font-size-lg);
   flex-shrink: 0;
 }
 
 .project-name {
-  font-size: 16px;
-  font-weight: 600;
-  color: #111827;
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
   margin: 0;
-  line-height: 1.2;
+  line-height: var(--line-height-tight);
   word-break: break-word;
   flex: 1;
   min-width: 0;
@@ -138,25 +138,25 @@ const createdAgo = computed(() => formatTimeAgoDetailed(props.project.createdAt)
 .project-link {
   color: inherit;
   text-decoration: none;
-  transition: color 0.2s ease;
+  transition: color var(--transition-base);
 }
 
 .project-link:hover {
-  color: #2563eb;
+  color: var(--color-primary-600);
 }
 
 .status-badge {
-  padding: 2px 8px;
-  border-radius: 8px;
+  padding: var(--spacing-1) var(--spacing-2);
+  border-radius: var(--radius-lg);
   font-size: 11px;
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   text-transform: uppercase;
   flex-shrink: 0;
 }
 
 .project-description {
-  font-size: 13px;
-  color: #6b7280;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
   margin: 0;
   line-height: 1.4;
   display: -webkit-box;
@@ -168,100 +168,100 @@ const createdAgo = computed(() => formatTimeAgoDetailed(props.project.createdAt)
 
 .project-stats {
   display: flex;
-  gap: 16px;
-  margin-bottom: 16px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid #f3f4f6;
+  gap: var(--spacing-4);
+  margin-bottom: var(--spacing-4);
+  padding-bottom: var(--spacing-3);
+  border-bottom: 1px solid var(--color-gray-100);
 }
 
 .stat-item {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--spacing-2);
 }
 
 .stat-icon {
-  font-size: 14px;
+  font-size: var(--font-size-sm);
 }
 
 .stat-label {
-  font-size: 12px;
-  color: #6b7280;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
 }
 
 .stat-value {
-  font-size: 14px;
-  font-weight: 600;
-  color: #374151;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-tertiary);
 }
 
 .project-details {
-  margin-bottom: 16px;
+  margin-bottom: var(--spacing-4);
 }
 
 .detail-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 6px;
-  font-size: 13px;
+  margin-bottom: var(--spacing-2);
+  font-size: var(--font-size-xs);
 }
 
 .detail-row span:first-child {
-  color: #6b7280;
+  color: var(--color-text-secondary);
 }
 
 .detail-row span:last-child {
-  color: #374151;
-  font-weight: 500;
+  color: var(--color-text-tertiary);
+  font-weight: var(--font-weight-medium);
 }
 
 .status-text {
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
 }
 
 .card-action {
   display: flex;
-  gap: 12px;
+  gap: var(--spacing-3);
   align-items: center;
 }
 
 .view-link {
-  color: #2563eb;
+  color: var(--color-primary-600);
   text-decoration: none;
-  font-size: 14px;
-  font-weight: 500;
-  transition: color 0.2s ease;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  transition: color var(--transition-base);
   flex: 1;
 }
 
 .view-link:hover {
-  color: #1d4ed8;
+  color: var(--color-primary-700);
   text-decoration: underline;
 }
 
 .primary-link {
-  background: #2563eb;
+  background: var(--color-primary-600);
   color: white;
-  padding: 8px 16px;
-  border-radius: 6px;
+  padding: var(--spacing-2) var(--spacing-4);
+  border-radius: var(--radius-md);
   text-decoration: none;
 }
 
 .primary-link:hover {
-  background: #1d4ed8;
+  background: var(--color-primary-700);
   text-decoration: none;
   color: white;
 }
 
 .github-link {
-  color: #6b7280;
+  color: var(--color-text-secondary);
   text-decoration: none;
-  font-size: 14px;
-  transition: color 0.2s ease;
+  font-size: var(--font-size-sm);
+  transition: color var(--transition-base);
 }
 
 .github-link:hover {
-  color: #374151;
+  color: var(--color-text-tertiary);
 }
 </style>

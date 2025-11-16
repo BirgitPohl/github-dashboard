@@ -162,35 +162,35 @@ const cardClasses = computed(() => {
 .pr-card__status {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--spacing-2);
 }
 
 .pr-card__icon {
-  font-size: 16px;
+  font-size: var(--font-size-base);
 }
 
 .pr-card__number {
-  font-weight: 600;
-  color: #6b7280;
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-secondary);
 }
 
 .pr-card__repository {
-  font-size: 14px;
-  color: #374151;
-  background: #e5e7eb;
-  padding: 4px 8px;
-  border-radius: 6px;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-tertiary);
+  background: var(--color-border-default);
+  padding: var(--spacing-1) var(--spacing-2);
+  border-radius: var(--radius-md);
 }
 
 .pr-card__title {
-  margin: 0 0 12px 0;
-  font-size: 18px;
-  font-weight: 600;
+  margin: 0 0 var(--spacing-3) 0;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
   line-height: 1.4;
 }
 
 .pr-card__title a {
-  color: #111827;
+  color: var(--color-text-primary);
   text-decoration: none;
 }
 
@@ -201,54 +201,54 @@ const cardClasses = computed(() => {
 .pr-card__meta {
   display: flex;
   flex-wrap: wrap;
-  gap: 16px;
+  gap: var(--spacing-4);
   align-items: center;
-  margin-bottom: 12px;
-  font-size: 14px;
-  color: #6b7280;
+  margin-bottom: var(--spacing-3);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
 }
 
 .pr-card__author {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--spacing-2);
 }
 
 .pr-card__labels {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 12px;
+  gap: var(--spacing-2);
+  margin-bottom: var(--spacing-3);
 }
 
 .pr-card__assignees {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 14px;
-  color: #6b7280;
+  gap: var(--spacing-2);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
 }
 
 .assignees-list {
   display: flex;
-  gap: 4px;
+  gap: var(--spacing-1);
 }
 
 /* State-specific styling */
 .state-open {
-  border-left: 4px solid #10b981;
+  border-left: var(--spacing-1) solid var(--color-success-500);
 }
 
 .state-draft {
-  border-left: 4px solid #f59e0b;
+  border-left: var(--spacing-1) solid var(--color-warning-500);
 }
 
 .state-merged {
-  border-left: 4px solid #8b5cf6;
+  border-left: var(--spacing-1) solid var(--color-purple-500);
 }
 
 .state-closed {
-  border-left: 4px solid #ef4444;
+  border-left: var(--spacing-1) solid var(--color-error-500);
 }
 
 /* Responsive adjustments */
@@ -256,17 +256,17 @@ const cardClasses = computed(() => {
   .pr-card__header {
     flex-direction: column;
     align-items: flex-start;
-    gap: 8px;
+    gap: var(--spacing-2);
   }
 
   .pr-card__meta {
     flex-direction: column;
     align-items: flex-start;
-    gap: 8px;
+    gap: var(--spacing-2);
   }
 
   .pr-card__title {
-    font-size: 16px;
+    font-size: var(--font-size-base);
   }
 }
 </style>

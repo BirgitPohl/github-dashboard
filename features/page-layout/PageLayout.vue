@@ -65,34 +65,34 @@ const props = withDefaults(defineProps<Props>(), {
 
 <style scoped>
 .page-layout {
-  padding: 32px;
+  padding: var(--spacing-8);
   min-height: 100vh;
-  background: #f8fafc;
+  background: var(--color-bg-secondary);
 }
 
 .error-state {
-  max-width: 1200px;
+  max-width: var(--container-max-width);
   margin: 0 auto;
   display: flex;
   justify-content: center;
-  padding: 80px 0;
+  padding: var(--spacing-20) 0;
 }
 
 .content {
-  max-width: 1200px;
+  max-width: var(--container-max-width);
   margin: 0 auto;
 }
 
 .stats-section {
   display: flex;
-  gap: 20px;
-  margin-bottom: 32px;
+  gap: var(--spacing-5);
+  margin-bottom: var(--spacing-8);
   flex-wrap: wrap;
   justify-content: center;
 }
 
 .filters-section {
-  margin-bottom: 32px;
+  margin-bottom: var(--spacing-8);
 }
 
 .main-content {
@@ -101,11 +101,11 @@ const props = withDefaults(defineProps<Props>(), {
 
 @media (max-width: 768px) {
   .page-layout {
-    padding: 16px;
+    padding: var(--spacing-4);
   }
 
   .stats-section {
-    gap: 16px;
+    gap: var(--spacing-4);
   }
 }
 </style>

@@ -189,92 +189,92 @@ const clearFilters = () => {
 
 <style scoped>
 .filters-section {
-  background: white;
-  border-radius: 12px;
-  padding: 24px;
-  margin-bottom: 24px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  background: var(--color-white);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-6);
+  margin-bottom: var(--spacing-6);
+  box-shadow: var(--shadow-sm);
 }
 
 .filters-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 16px;
+  margin-bottom: var(--spacing-4);
 }
 
 .filters-header h3 {
-  font-size: 18px;
-  font-weight: 600;
-  color: #111827;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-gray-900);
   margin: 0;
 }
 
 .clear-filters-btn {
-  background: #f3f4f6;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
-  padding: 6px 12px;
-  font-size: 14px;
-  color: #374151;
+  background: var(--color-gray-100);
+  border: var(--border-width-thin) solid var(--color-gray-300);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-1-5) var(--spacing-3);
+  font-size: var(--font-size-sm);
+  color: var(--color-gray-700);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all var(--transition-base);
 }
 
 .clear-filters-btn:hover {
-  background: #e5e7eb;
+  background: var(--color-gray-200);
 }
 
 .filters-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 16px;
-  margin-bottom: 16px;
+  gap: var(--spacing-4);
+  margin-bottom: var(--spacing-4);
 }
 
 .filter-group {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: var(--spacing-1);
 }
 
 .filter-group label {
-  font-size: 14px;
-  font-weight: 500;
-  color: #374151;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-gray-700);
 }
 
 .filter-input, .filter-select {
-  padding: 8px 12px;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
-  font-size: 14px;
-  transition: border-color 0.2s ease;
+  padding: var(--spacing-2) var(--spacing-3);
+  border: var(--border-width-thin) solid var(--color-gray-300);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  transition: border-color var(--transition-base);
 }
 
 .filter-input:focus, .filter-select:focus {
   outline: none;
-  border-color: #2563eb;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  border-color: var(--color-blue-600);
+  box-shadow: var(--shadow-focus);
 }
 
 .results-summary {
-  color: #6b7280;
-  font-size: 14px;
+  color: var(--color-gray-500);
+  font-size: var(--font-size-sm);
   text-align: center;
-  padding-top: 16px;
-  border-top: 1px solid #f3f4f6;
+  padding-top: var(--spacing-4);
+  border-top: var(--border-width-thin) solid var(--color-gray-100);
 }
 
 .loading-text {
-  color: #6b7280;
+  color: var(--color-gray-500);
   font-style: italic;
 }
 
 .view-indicator {
-  color: #6b7280;
+  color: var(--color-gray-500);
   font-style: italic;
-  margin-left: 8px;
+  margin-left: var(--spacing-2);
 }
 
 @media (max-width: 768px) {
@@ -283,7 +283,7 @@ const clearFilters = () => {
   }
 
   .filters-section {
-    padding: 16px;
+    padding: var(--spacing-4);
   }
 }
 </style>

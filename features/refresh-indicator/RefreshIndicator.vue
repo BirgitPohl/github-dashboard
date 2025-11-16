@@ -38,28 +38,28 @@ const lastUpdatedText = computed(() => {
 <style scoped>
 .refresh-indicator {
   position: fixed;
-  bottom: 24px;
-  right: 24px;
+  bottom: var(--spacing-6);
+  right: var(--spacing-6);
   z-index: 50;
   pointer-events: none;
 }
 
 .indicator-content {
   background: rgba(255, 255, 255, 0.95);
-  border: 1px solid #e5e7eb;
-  border-radius: 24px;
-  padding: 8px 16px;
+  border: var(--border-width-thin) solid var(--color-gray-200);
+  border-radius: var(--radius-full);
+  padding: var(--spacing-2) var(--spacing-4);
   display: flex;
   align-items: center;
-  gap: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  gap: var(--spacing-2);
+  box-shadow: var(--shadow-md);
   backdrop-filter: blur(8px);
 }
 
 .indicator-icon {
-  font-size: 16px;
+  font-size: var(--font-size-base);
   display: inline-block;
-  transition: transform 0.3s ease;
+  transition: transform var(--transition-slow);
 }
 
 .indicator-icon.spinning {
@@ -67,9 +67,9 @@ const lastUpdatedText = computed(() => {
 }
 
 .indicator-text {
-  font-size: 14px;
-  color: #6b7280;
-  font-weight: 500;
+  font-size: var(--font-size-sm);
+  color: var(--color-gray-500);
+  font-weight: var(--font-weight-medium);
 }
 
 @keyframes spin {
@@ -83,20 +83,20 @@ const lastUpdatedText = computed(() => {
 
 @media (max-width: 768px) {
   .refresh-indicator {
-    bottom: 16px;
-    right: 16px;
+    bottom: var(--spacing-4);
+    right: var(--spacing-4);
   }
 
   .indicator-content {
-    padding: 6px 12px;
+    padding: var(--spacing-1-5) var(--spacing-3);
   }
 
   .indicator-icon {
-    font-size: 14px;
+    font-size: var(--font-size-sm);
   }
 
   .indicator-text {
-    font-size: 12px;
+    font-size: var(--font-size-xs);
   }
 }
 </style>

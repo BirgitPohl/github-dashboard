@@ -67,7 +67,7 @@ const workflows = computed(() => {
 .workflows-container {
   display: flex;
   flex-wrap: wrap;
-  gap: 24px;
+  gap: var(--spacing-6);
   justify-content: flex-start;
 }
 </style>

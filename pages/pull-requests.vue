@@ -205,13 +205,13 @@ const stats = computed(() => pullRequestsData.value?.stats || {
 
 <style scoped>
 .filters {
-  background: white;
-  padding: 24px;
-  border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  background: var(--color-white);
+  padding: var(--spacing-6);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
   display: flex;
   flex-wrap: wrap;
-  gap: 16px;
+  gap: var(--spacing-4);
   align-items: end;
 }
 
@@ -222,40 +222,40 @@ const stats = computed(() => pullRequestsData.value?.stats || {
 }
 
 .filter-label {
-  font-size: 14px;
-  font-weight: 500;
-  color: #374151;
-  margin-bottom: 8px;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-gray-700);
+  margin-bottom: var(--spacing-2);
 }
 
 .filter-select, .filter-input {
-  padding: 10px 12px;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
-  font-size: 14px;
-  background: white;
+  padding: var(--spacing-2-5) var(--spacing-3);
+  border: var(--border-width-thin) solid var(--color-gray-300);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  background: var(--color-white);
 }
 
 .filter-select:focus, .filter-input:focus {
-  outline: 2px solid #3b82f6;
+  outline: 2px solid var(--color-blue-500);
   outline-offset: -2px;
-  border-color: #3b82f6;
+  border-color: var(--color-blue-500);
 }
 
 .refresh-button {
-  padding: 10px 20px;
-  background: #1d4ed8;
-  color: #ffffff;
+  padding: var(--spacing-2-5) var(--spacing-5);
+  background: var(--color-blue-700);
+  color: var(--color-white);
   border: none;
-  border-radius: 8px;
-  font-weight: 500;
+  border-radius: var(--radius-md);
+  font-weight: var(--font-weight-medium);
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: background-color var(--transition-base);
   height: fit-content;
 }
 
 .refresh-button:hover:not(:disabled) {
-  background: #2563eb;
+  background: var(--color-blue-600);
 }
 
 .refresh-button:disabled {
@@ -264,22 +264,22 @@ const stats = computed(() => pullRequestsData.value?.stats || {
 }
 
 .pull-requests-list {
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  background: var(--color-white);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
   overflow: hidden;
 }
 
 .list-header {
-  padding: 24px;
-  border-bottom: 1px solid #e5e7eb;
+  padding: var(--spacing-6);
+  border-bottom: var(--border-width-thin) solid var(--color-gray-200);
 }
 
 .list-header h2 {
   margin: 0;
-  font-size: 20px;
-  font-weight: 600;
-  color: #111827;
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-gray-900);
 }
 
 @media (max-width: 768px) {

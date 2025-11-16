@@ -98,15 +98,15 @@ const timeAgo = computed(() => formatTimeAgoSimple(props.workflow.updated_at))
 .status-row {
   display: flex;
   align-items: flex-start;
-  gap: 12px;
+  gap: var(--spacing-3);
 }
 
 .status-dot {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
+  width: var(--spacing-3);
+  height: var(--spacing-3);
+  border-radius: var(--radius-full);
   flex-shrink: 0;
-  margin-top: 2px;
+  margin-top: var(--spacing-1);
 }
 
 .workflow-info {
@@ -115,77 +115,77 @@ const timeAgo = computed(() => formatTimeAgoSimple(props.workflow.updated_at))
 }
 
 .workflow-name {
-  font-size: 16px;
-  font-weight: 600;
-  color: #111827;
-  margin: 0 0 4px 0;
-  line-height: 1.2;
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin: 0 0 var(--spacing-1) 0;
+  line-height: var(--line-height-tight);
   word-break: break-word;
 }
 
 .repository-name {
-  font-size: 13px;
-  color: #6b7280;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
   margin: 0;
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--spacing-2);
   word-break: break-word;
 }
 
 .private-badge {
-  background: #fef3c7;
-  color: #92400e;
-  padding: 1px 6px;
-  border-radius: 8px;
+  background: var(--color-warning-50);
+  color: var(--color-warning-700);
+  padding: 1px var(--spacing-2);
+  border-radius: var(--radius-lg);
   font-size: 10px;
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
   text-transform: uppercase;
 }
 
 .card-details {
-  margin-bottom: 16px;
+  margin-bottom: var(--spacing-4);
 }
 
 .detail-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 8px;
-  font-size: 14px;
+  margin-bottom: var(--spacing-2);
+  font-size: var(--font-size-sm);
 }
 
 .detail-row span:first-child {
-  color: #6b7280;
+  color: var(--color-text-secondary);
 }
 
 .detail-row span:last-child {
-  color: #374151;
-  font-weight: 500;
+  color: var(--color-text-tertiary);
+  font-weight: var(--font-weight-medium);
 }
 
 .status-text {
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
 }
 
 .view-link {
-  color: #2563eb;
+  color: var(--color-primary-600);
   text-decoration: none;
-  font-size: 14px;
-  font-weight: 500;
-  transition: color 0.2s ease;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  transition: color var(--transition-base);
 }
 
 .view-link:hover {
-  color: #1d4ed8;
+  color: var(--color-primary-700);
   text-decoration: underline;
 }
 
 .branch-name {
   font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
-  background: #f3f4f6;
-  padding: 2px 6px;
-  border-radius: 4px;
-  font-size: 12px;
+  background: var(--color-gray-100);
+  padding: var(--spacing-1) var(--spacing-2);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-xs);
 }
 </style>

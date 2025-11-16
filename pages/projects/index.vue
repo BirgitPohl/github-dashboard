@@ -64,13 +64,13 @@ const {
 .projects-grid {
   display: flex;
   flex-wrap: wrap;
-  gap: 20px;
+  gap: var(--spacing-5);
   justify-content: center;
 }
 
 @media (max-width: 768px) {
   .projects-grid {
-    gap: 16px;
+    gap: var(--spacing-4);
   }
 }
 </style>
