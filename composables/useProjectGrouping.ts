@@ -96,13 +96,7 @@ export const useProjectGrouping = () => {
           : 'No Labels'
       case 'parent issue':
       case 'parent_issue':
-        // TEMPORARY: Demonstrate grouping using Status field since Parent issue data isn't available
-        // TODO: Replace this with actual parent issue data when GitHub API is fixed
-        const status = item.status || item.custom_fields?.['Status']
-        if (status) {
-          return `Status: ${status}`
-        }
-        return 'Ungrouped Items'
+        return item.custom_fields?.['Parent issue'] || 'No Parent Issue'
       default:
         // If no value found, return "No [FieldName]"
         const fieldDisplayName = groupField.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())
