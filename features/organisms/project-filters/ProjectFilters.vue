@@ -20,6 +20,17 @@
         />
       </div>
 
+      <!-- Group By Selector -->
+      <div class="filter-group">
+        <label for="group-by-filter">Group By</label>
+        <Select
+          id="group-by-filter"
+          :model-value="selectedGroupBy"
+          :options="groupByOptions"
+          @update:model-value="$emit('update:selectedGroupBy', $event)"
+        />
+      </div>
+
       <!-- Search -->
       <div class="filter-group">
         <label for="search-filter">Search</label>
@@ -131,7 +142,9 @@ interface SelectOption {
 interface Props {
   filters: FilterOptions
   selectedView: string
+  selectedGroupBy: string
   views?: ProjectView[]
+  groupByOptions: SelectOption[]
   stateOptions: SelectOption[]
   typeOptions: SelectOption[]
   statusOptions: SelectOption[]
@@ -149,6 +162,7 @@ const props = withDefaults(defineProps<Props>(), {
 const emit = defineEmits<{
   'update:filters': [filters: FilterOptions]
   'update:selectedView': [viewId: string]
+  'update:selectedGroupBy': [groupField: string]
   'clear-filters': []
 }>()
 

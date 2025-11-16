@@ -9,7 +9,7 @@ definePageMeta({
 })
 
 // Initialize composables
-const { groupItems, sortItemsInGroups } = useProjectGrouping()
+const { groupItems, sortItemsInGroups, getAvailableGroupFields } = useProjectGrouping()
 const { createFilterOptions, filterItems, createDefaultFilters } = useProjectFilters()
 
 const route = useRoute()
@@ -23,8 +23,9 @@ const { data: project, pending, error, refresh } = useFetch<ProjectDetails>(`/ap
   server: false
 })
 
-// Selected view
+// Selected view and grouping
 const selectedView = ref<string>('')
+const selectedGroupBy = ref<string>('')
 
 // View items state
 const viewItemsState = ref<{
@@ -36,6 +37,7 @@ const viewItemsState = ref<{
 watch(selectedView, async (newViewId) => {
   if (!newViewId) {
     viewItemsState.value = null
+    selectedGroupBy.value = '' // Reset grouping when clearing view
     return
   }
 
@@ -44,6 +46,13 @@ watch(selectedView, async (newViewId) => {
   try {
     const response = await $fetch<ViewData>(`/api/projects/${projectId}/views/${newViewId}`)
     viewItemsState.value = { data: response, loading: false }
+
+    // Set default grouping from view if available
+    if (response.view.groupByFields && response.view.groupByFields.length > 0) {
+      selectedGroupBy.value = response.view.groupByFields[0]
+    } else {
+      selectedGroupBy.value = ''
+    }
   } catch (error) {
     console.error('Failed to fetch view items:', error)
     viewItemsState.value = { data: null, loading: false }
@@ -83,11 +92,22 @@ const filteredItems = computed(() => {
   return filterItems(currentItems.value, filters.value)
 })
 
-// Grouped items using composable
+// Group By options - available grouping fields from items
+const groupByOptions = computed(() => {
+  const fields = getAvailableGroupFields(currentItems.value)
+  return [
+    { value: '', label: 'None (flat list)' },
+    ...fields.map(field => ({ value: field, label: field }))
+  ]
+})
+
+// Grouped items using composable with manual grouping override
 const groupedItems = computed(() => {
   const items = filteredItems.value
   const view = currentView.value
-  const grouped = groupItems(items, view)
+  // Use selectedGroupBy as override (empty string means no grouping)
+  const groupField = selectedGroupBy.value || undefined
+  const grouped = groupItems(items, view, groupField)
   return sortItemsInGroups(grouped, view)
 })
 
@@ -157,7 +177,9 @@ const showStatusColumn = computed(() => statusOptions.value.length > 1)
       <ProjectFilters
         v-model:filters="filters"
         v-model:selected-view="selectedView"
+        v-model:selected-group-by="selectedGroupBy"
         :views="project.views"
+        :group-by-options="groupByOptions"
         :state-options="stateOptions"
         :type-options="typeOptions"
         :status-options="statusOptions"
@@ -180,8 +202,8 @@ const showStatusColumn = computed(() => statusOptions.value.length > 1)
         </div>
 
         <div v-else class="items-table-container">
-          <!-- Show groups when view has grouping, otherwise show flat table -->
-          <div v-if="currentView && currentView.groupByFields && currentView.groupByFields.length > 0">
+          <!-- Show groups when grouping is selected, otherwise show flat table -->
+          <div v-if="selectedGroupBy">
             <div v-for="group in groupedItems" :key="group.name" class="group-section">
               <div class="group-header">
                 <Header
