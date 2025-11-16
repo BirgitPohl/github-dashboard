@@ -11,6 +11,17 @@ import '~/assets/styles/design-tokens.css'
   </div>
 </template>
 
+<style>
+/* Global styles - apply font family to all elements */
+html,
+body {
+  font-family: var(--font-family-sans);
+  color: var(--color-text-primary);
+  margin: 0;
+  padding: 0;
+}
+</style>
+
 <style scoped>
 .app {
   min-height: 100vh;
