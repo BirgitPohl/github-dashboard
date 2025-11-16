@@ -9,6 +9,7 @@ interface CategoryConfig {
 /**
  * Composable for repository card logic
  * Determines visual configuration based on repository category
+ * TODO, the colors don"t come from design system
  */
 export const useRepositoryCard = () => {
   const getCategoryConfig = (category: string): CategoryConfig => {
