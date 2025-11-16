@@ -67,12 +67,15 @@
   --color-bg-primary: #ffffff;
   --color-bg-secondary: #f8fafc;
   --color-bg-tertiary: #f1f5f9;
+  --color-bg-overlay: rgba(255, 255, 255, 0.95);
+  --color-bg-overlay-dark: rgba(0, 0, 0, 0.1);
 
   /* Text Colors - Typography */
   --color-text-primary: var(--color-gray-900);
   --color-text-secondary: var(--color-gray-500);
   --color-text-tertiary: var(--color-gray-700);
   --color-text-muted: var(--color-gray-400);
+  --color-text-inverse: #ffffff;
 
   /* Border Colors - Dividers and outlines */
   --color-border-default: var(--color-gray-200);
@@ -84,6 +87,7 @@
      ======================================== */
 
   /* Font Sizes (rem-based for accessibility) */
+  --font-size-2xs: 0.6875rem; /* 11px */
   --font-size-xs: 0.75rem;    /* 12px */
   --font-size-sm: 0.875rem;   /* 14px */
   --font-size-base: 1rem;     /* 16px */
@@ -92,6 +96,10 @@
   --font-size-2xl: 1.5rem;    /* 24px */
   --font-size-3xl: 1.875rem;  /* 30px */
   --font-size-4xl: 2.25rem;   /* 36px */
+
+  /* Font Families */
+  --font-family-sans: system-ui, -apple-system, sans-serif;
+  --font-family-mono: 'Monaco', 'Courier New', monospace;
 
   /* Font Weights */
   --font-weight-normal: 400;
@@ -102,8 +110,14 @@
   /* Line Heights */
   --line-height-tight: 1.2;
   --line-height-snug: 1.375;
+  --line-height-base: 1.4;
   --line-height-normal: 1.5;
   --line-height-relaxed: 1.75;
+
+  /* Line Clamp */
+  --line-clamp-1: 1;
+  --line-clamp-2: 2;
+  --line-clamp-3: 3;
 
   /* ========================================
      SPACING

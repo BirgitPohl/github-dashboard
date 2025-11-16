@@ -148,7 +148,7 @@ const createdAgo = computed(() => formatTimeAgoDetailed(props.project.createdAt)
 .status-badge {
   padding: var(--spacing-1) var(--spacing-2);
   border-radius: var(--radius-lg);
-  font-size: 11px;
+  font-size: var(--font-size-2xs);
   font-weight: var(--font-weight-semibold);
   text-transform: uppercase;
   flex-shrink: 0;
@@ -158,10 +158,10 @@ const createdAgo = computed(() => formatTimeAgoDetailed(props.project.createdAt)
   font-size: var(--font-size-xs);
   color: var(--color-text-secondary);
   margin: 0;
-  line-height: 1.4;
+  line-height: var(--line-height-base);
   display: -webkit-box;
   -webkit-line-clamp: 3;
-  line-clamp: 3;
+  line-clamp: var(--line-clamp-3);
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
@@ -242,7 +242,7 @@ const createdAgo = computed(() => formatTimeAgoDetailed(props.project.createdAt)
 
 .primary-link {
   background: var(--color-primary-600);
-  color: white;
+  color: var(--color-text-inverse);
   padding: var(--spacing-2) var(--spacing-4);
   border-radius: var(--radius-md);
   text-decoration: none;
@@ -251,7 +251,7 @@ const createdAgo = computed(() => formatTimeAgoDetailed(props.project.createdAt)
 .primary-link:hover {
   background: var(--color-primary-700);
   text-decoration: none;
-  color: white;
+  color: var(--color-text-inverse);
 }
 
 .github-link {

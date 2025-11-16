@@ -72,11 +72,14 @@ export const useDesignSystem = () => {
       secondary: 'var(--color-text-secondary)',
       tertiary: 'var(--color-text-tertiary)',
       muted: 'var(--color-text-muted)',
+      inverse: 'var(--color-text-inverse)',
     },
     bg: {
       primary: 'var(--color-bg-primary)',
       secondary: 'var(--color-bg-secondary)',
       tertiary: 'var(--color-bg-tertiary)',
+      overlay: 'var(--color-bg-overlay)',
+      overlayDark: 'var(--color-bg-overlay-dark)',
     },
     border: {
       default: 'var(--color-border-default)',
@@ -90,6 +93,7 @@ export const useDesignSystem = () => {
    */
   const typography = {
     fontSize: {
+      '2xs': 'var(--font-size-2xs)',
       xs: 'var(--font-size-xs)',
       sm: 'var(--font-size-sm)',
       base: 'var(--font-size-base)',
@@ -98,6 +102,10 @@ export const useDesignSystem = () => {
       '2xl': 'var(--font-size-2xl)',
       '3xl': 'var(--font-size-3xl)',
       '4xl': 'var(--font-size-4xl)',
+    },
+    fontFamily: {
+      sans: 'var(--font-family-sans)',
+      mono: 'var(--font-family-mono)',
     },
     fontWeight: {
       normal: 'var(--font-weight-normal)',
@@ -108,8 +116,14 @@ export const useDesignSystem = () => {
     lineHeight: {
       tight: 'var(--line-height-tight)',
       snug: 'var(--line-height-snug)',
+      base: 'var(--line-height-base)',
       normal: 'var(--line-height-normal)',
       relaxed: 'var(--line-height-relaxed)',
+    },
+    lineClamp: {
+      1: 'var(--line-clamp-1)',
+      2: 'var(--line-clamp-2)',
+      3: 'var(--line-clamp-3)',
     }
   } as const
 

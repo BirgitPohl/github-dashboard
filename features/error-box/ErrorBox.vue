@@ -185,10 +185,10 @@ const errorClasses = computed(() => {
 
 .error-code {
   padding: var(--spacing-1) var(--spacing-2);
-  background-color: rgba(0, 0, 0, 0.1);
+  background-color: var(--color-bg-overlay-dark);
   border-radius: var(--radius-sm);
   font-size: var(--font-size-xs);
-  font-family: monospace;
+  font-family: var(--font-family-mono);
   font-weight: var(--font-weight-medium);
 }
 
@@ -252,7 +252,7 @@ const errorClasses = computed(() => {
 .retry-button {
   padding: var(--spacing-2) var(--spacing-4);
   background-color: var(--color-text-tertiary);
-  color: white;
+  color: var(--color-text-inverse);
   border: none;
   border-radius: var(--radius-md);
   font-size: var(--font-size-sm);

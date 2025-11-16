@@ -45,7 +45,7 @@ const lastUpdatedText = computed(() => {
 }
 
 .indicator-content {
-  background: rgba(255, 255, 255, 0.95);
+  background: var(--color-bg-overlay);
   border: var(--border-width-thin) solid var(--color-gray-200);
   border-radius: var(--radius-full);
   padding: var(--spacing-2) var(--spacing-4);
