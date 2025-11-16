@@ -55,7 +55,7 @@ const createdAgo = computed(() => formatTimeAgoDetailed(props.project.createdAt)
         variant="secondary"
         size="xs"
         line-height="base"
-        line-clamp="3"
+        :line-clamp="3"
         class="project-description"
       >
         {{ project.shortDescription }}

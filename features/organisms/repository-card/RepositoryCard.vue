@@ -47,7 +47,7 @@ const sizeFormatted = computed(() => formatSize(props.repository.size))
         </Header>
         <Tag v-if="repository.is_private" label="Private" variant="warning" size="sm" />
       </div>
-      <Text variant="secondary" size="xs" line-clamp="2" class="project-description">
+      <Text variant="secondary" size="xs" :line-clamp="2" class="project-description">
         {{ repository.description }}
       </Text>
     </template>
