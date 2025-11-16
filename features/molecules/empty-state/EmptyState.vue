@@ -53,22 +53,33 @@ const containerClasses = computed(() => {
 
 <template>
   <div :class="containerClasses">
-    <div v-if="icon" class="empty-state__icon">
-      {{ icon }}
-    </div>
+    <Icon
+      v-if="icon"
+      :icon="icon"
+      size="4xl"
+      color="muted"
+      class="empty-state__icon"
+      decorative
+    />
 
-    <TypographyHeader
+    <Header
       :level="3"
       size="lg"
       variant="secondary"
       class="empty-state__title"
     >
       {{ title }}
-    </TypographyHeader>
+    </Header>
 
-    <p v-if="message" class="empty-state__message">
+    <Text
+      v-if="message"
+      variant="secondary"
+      size="base"
+      line-height="relaxed"
+      class="empty-state__message"
+    >
       {{ message }}
-    </p>
+    </Text>
 
     <!-- Slot for custom content -->
     <div v-if="$slots.default" class="empty-state__content">
@@ -76,15 +87,14 @@ const containerClasses = computed(() => {
     </div>
 
     <!-- Action button -->
-    <a
+    <Button
       v-if="actionLabel && actionUrl"
-      :href="actionUrl"
-      :target="actionExternal ? '_blank' : undefined"
-      :rel="actionExternal ? 'noopener noreferrer' : undefined"
-      class="empty-state__action"
+      variant="outline"
+      :class="'empty-state__action'"
+      @click="() => actionExternal ? window.open(actionUrl, '_blank') : $router.push(actionUrl)"
     >
       {{ actionLabel }}
-    </a>
+    </Button>
 
     <!-- Slot for custom actions -->
     <div v-if="$slots.actions" class="empty-state__actions">
@@ -100,23 +110,16 @@ const containerClasses = computed(() => {
 }
 
 .empty-state__icon {
-  font-size: var(--font-size-4xl);
   margin-bottom: var(--spacing-4);
   opacity: 0.8;
 }
 
 .empty-state__title {
-  font-size: var(--font-size-xl);
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-gray-500);
   margin: 0 0 var(--spacing-2) 0;
 }
 
 .empty-state__message {
-  color: var(--color-gray-500);
   margin: 0 0 var(--spacing-5) 0;
-  line-height: var(--line-height-relaxed);
-  font-size: var(--font-size-base);
 }
 
 .empty-state__content {
@@ -124,22 +127,7 @@ const containerClasses = computed(() => {
 }
 
 .empty-state__action {
-  display: inline-block;
-  color: var(--color-blue-600);
-  text-decoration: none;
-  font-weight: var(--font-weight-medium);
-  padding: var(--spacing-2) var(--spacing-4);
-  border: var(--border-width-thin) solid var(--color-blue-600);
-  border-radius: var(--radius-md);
-  transition: all var(--transition-base);
-  font-size: var(--font-size-sm);
-}
-
-.empty-state__action:hover {
-  background: var(--color-blue-600);
-  color: var(--color-white);
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-md);
+  /* Styling provided by Button atom */
 }
 
 .empty-state__actions {
@@ -152,16 +140,6 @@ const containerClasses = computed(() => {
     padding: var(--spacing-15) var(--spacing-4);
   }
 
-  .empty-state__icon {
-    font-size: var(--font-size-3xl);
-  }
-
-  .empty-state__title {
-    font-size: var(--font-size-lg);
-  }
-
-  .empty-state__message {
-    font-size: var(--font-size-sm);
-  }
+  /* Responsive sizing handled by atomic components */
 }
 </style>

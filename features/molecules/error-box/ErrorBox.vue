@@ -111,15 +111,14 @@ const errorClasses = computed(() => {
       </div>
 
       <div class="error-buttons">
-        <button 
-          v-if="canRetry" 
-          type="button" 
-          class="retry-button"
+        <Button
+          v-if="canRetry"
+          variant="secondary"
           @click="handleRetry"
         >
           Try Again
-        </button>
-        
+        </Button>
+
         <slot name="actions" :parsed-error="parsedError" />
       </div>
     </div>
@@ -247,26 +246,6 @@ const errorClasses = computed(() => {
   display: flex;
   gap: var(--spacing-3);
   flex-wrap: wrap;
-}
-
-.retry-button {
-  padding: var(--spacing-2) var(--spacing-4);
-  background-color: var(--color-text-tertiary);
-  color: var(--color-text-inverse);
-  border: none;
-  border-radius: var(--radius-md);
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
-  cursor: pointer;
-  transition: background-color var(--transition-base);
-}
-
-.retry-button:hover {
-  background-color: var(--color-text-primary);
-}
-
-.retry-button:active {
-  transform: translateY(1px);
 }
 
 /* Responsive adjustments */

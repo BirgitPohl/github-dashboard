@@ -5,11 +5,9 @@ import '~/assets/styles/design-tokens.css'
 
 <template>
   <div class="app">
-    <Navigation />
-
-    <main class="main-content">
+    <NuxtLayout>
       <NuxtPage />
-    </main>
+    </NuxtLayout>
   </div>
 </template>
 
@@ -17,16 +15,5 @@ import '~/assets/styles/design-tokens.css'
 .app {
   min-height: 100vh;
   background-color: var(--color-bg-secondary);
-}
-
-.main-content {
-  padding: 0;
-  padding-top: var(--nav-height);
-}
-
-@media (max-width: 768px) {
-  .main-content {
-    padding-top: var(--nav-height-mobile);
-  }
 }
 </style>
