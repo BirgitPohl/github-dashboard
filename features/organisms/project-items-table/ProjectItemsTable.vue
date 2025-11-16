@@ -8,6 +8,9 @@
           <th>Repository</th>
           <th>State</th>
           <th v-if="showStatus">Status</th>
+          <th v-if="showPriority">Priority</th>
+          <th v-if="showSize">Size</th>
+          <th v-if="showParentIssue">Parent Issue</th>
           <th>Assignees</th>
           <th>Labels</th>
           <th>Updated</th>
@@ -47,6 +50,30 @@
           <td v-if="showStatus" class="status-cell">
             <span v-if="item.status" class="status-badge">{{ item.status }}</span>
             <span v-else class="no-status">—</span>
+          </td>
+
+          <!-- Priority -->
+          <td v-if="showPriority" class="priority-cell">
+            <span v-if="item.priority || item.custom_fields['Priority']" class="priority-badge">
+              {{ item.priority || item.custom_fields['Priority'] }}
+            </span>
+            <span v-else class="no-priority">—</span>
+          </td>
+
+          <!-- Size -->
+          <td v-if="showSize" class="size-cell">
+            <span v-if="item.custom_fields['Size']" class="size-badge">
+              {{ item.custom_fields['Size'] }}
+            </span>
+            <span v-else class="no-size">—</span>
+          </td>
+
+          <!-- Parent Issue -->
+          <td v-if="showParentIssue" class="parent-issue-cell">
+            <span v-if="item.custom_fields['Parent issue']" class="parent-issue-text">
+              {{ item.custom_fields['Parent issue'] }}
+            </span>
+            <span v-else class="no-parent-issue">—</span>
           </td>
 
           <!-- Assignees -->
@@ -125,10 +152,16 @@ interface ProjectItem {
 interface Props {
   items: ProjectItem[]
   showStatus?: boolean
+  showPriority?: boolean
+  showSize?: boolean
+  showParentIssue?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  showStatus: false
+  showStatus: false,
+  showPriority: false,
+  showSize: false,
+  showParentIssue: false
 })
 
 const { getTypeIcon, getTypeText, getStateColor } = useProjectItemsTable()
@@ -232,7 +265,48 @@ const { formatDate } = useDateTime()
   font-weight: var(--font-weight-medium);
 }
 
-.no-status, .no-assignees, .no-labels {
+.priority-cell {
+  min-width: 90px;
+}
+
+.priority-badge {
+  background: var(--color-orange-50);
+  color: var(--color-orange-500);
+  padding: var(--spacing-1) var(--spacing-2);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+}
+
+.size-cell {
+  min-width: 70px;
+  text-align: center;
+}
+
+.size-badge {
+  background: var(--color-blue-50);
+  color: var(--color-primary-600);
+  padding: var(--spacing-1) var(--spacing-2);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+}
+
+.parent-issue-cell {
+  min-width: 200px;
+  max-width: 300px;
+}
+
+.parent-issue-text {
+  color: var(--color-gray-600);
+  font-size: var(--font-size-sm);
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.no-status, .no-priority, .no-size, .no-parent-issue, .no-assignees, .no-labels {
   color: var(--color-gray-400);
 }
 

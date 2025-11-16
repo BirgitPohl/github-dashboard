@@ -116,8 +116,17 @@ const clearFilters = () => {
   filters.value = createDefaultFilters()
 }
 
-// Show status column when status options are available
+// Show custom field columns when fields are available in items
 const showStatusColumn = computed(() => statusOptions.value.length > 1)
+const showPriorityColumn = computed(() =>
+  currentItems.value.some(item => item.priority || item.custom_fields['Priority'])
+)
+const showSizeColumn = computed(() =>
+  currentItems.value.some(item => item.custom_fields['Size'])
+)
+const showParentIssueColumn = computed(() =>
+  currentItems.value.some(item => item.custom_fields['Parent issue'])
+)
 </script>
 
 <template>
@@ -220,6 +229,9 @@ const showStatusColumn = computed(() => statusOptions.value.length > 1)
               <ProjectItemsTable
                 :items="group.items"
                 :show-status="showStatusColumn"
+                :show-priority="showPriorityColumn"
+                :show-size="showSizeColumn"
+                :show-parent-issue="showParentIssueColumn"
               />
             </div>
           </div>
@@ -229,6 +241,9 @@ const showStatusColumn = computed(() => statusOptions.value.length > 1)
             v-else
             :items="filteredItems"
             :show-status="showStatusColumn"
+            :show-priority="showPriorityColumn"
+            :show-size="showSizeColumn"
+            :show-parent-issue="showParentIssueColumn"
           />
         </div>
       </div>
