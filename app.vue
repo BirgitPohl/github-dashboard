@@ -1,3 +1,8 @@
+<script setup>
+// Import design tokens globally
+import '~/assets/styles/design-tokens.css'
+</script>
+
 <template>
   <div class="app">
     <Navigation />
@@ -11,17 +16,17 @@
 <style scoped>
 .app {
   min-height: 100vh;
-  background-color: #f9fafb;
+  background-color: var(--color-bg-secondary);
 }
 
 .main-content {
   padding: 0;
-  padding-top: 73px; /* Height of fixed navigation */
+  padding-top: var(--nav-height);
 }
 
 @media (max-width: 768px) {
   .main-content {
-    padding-top: 120px; /* Taller navigation on mobile */
+    padding-top: var(--nav-height-mobile);
   }
 }
 </style>

@@ -16,8 +16,8 @@ interface Props {
 
 const props = withDefaults(defineProps<Props>(), {
   width: '300px',
-  borderColor: '#e5e7eb',
-  bgColor: 'white'
+  borderColor: 'var(--color-border-default)',
+  bgColor: 'var(--color-bg-primary)'
 })
 
 const cardClasses = computed(() => {
@@ -49,17 +49,17 @@ const cardStyles = computed(() => ({
 
 <style scoped>
 .base-card {
-  background: white;
-  border: 2px solid #e5e7eb;
-  border-radius: 8px;
-  padding: 20px;
+  background: var(--color-bg-primary);
+  border: 2px solid var(--color-border-default);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-5);
   flex-shrink: 0;
-  transition: all 0.2s ease;
+  transition: all var(--transition-base);
   box-sizing: border-box;
 }
 
 .base-card:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-lg);
   transform: translateY(-2px);
 }
 
@@ -68,7 +68,7 @@ const cardStyles = computed(() => ({
 }
 
 .base-card__header {
-  margin-bottom: 16px;
+  margin-bottom: var(--spacing-4);
 }
 
 .base-card__body {
@@ -76,15 +76,15 @@ const cardStyles = computed(() => ({
 }
 
 .base-card__bottom {
-  margin-top: 16px;
-  padding-top: 16px;
-  border-top: 1px solid #f3f4f6;
+  margin-top: var(--spacing-4);
+  padding-top: var(--spacing-4);
+  border-top: 1px solid var(--color-gray-100);
 }
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .base-card {
-    padding: 16px;
+    padding: var(--spacing-4);
   }
 }
 </style>
