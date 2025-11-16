@@ -84,11 +84,11 @@ const cardClasses = computed(() => {
     <template #header>
       <div class="pr-card__header">
         <div class="pr-card__status">
-          <span class="pr-card__icon">{{ getStateIcon(pullRequest) }}</span>
-          <span class="pr-card__number">#{{ pullRequest.number }}</span>
+          <Icon :icon="getStateIcon(pullRequest)" size="base" decorative />
+          <Text variant="secondary" size="base" weight="semibold">#{{ pullRequest.number }}</Text>
         </div>
         <div v-if="showRepository" class="pr-card__repository">
-          {{ pullRequest.repository.name }}
+          <Text variant="tertiary" size="sm">{{ pullRequest.repository.name }}</Text>
         </div>
       </div>
     </template>
@@ -96,13 +96,13 @@ const cardClasses = computed(() => {
     <template #body>
       <Header
         :level="3"
-        size="md"
+        size="lg"
         variant="primary"
         class="pr-card__title"
       >
-        <a :href="pullRequest.html_url" target="_blank" rel="noopener noreferrer">
+        <Link :href="pullRequest.html_url" variant="default" external>
           {{ pullRequest.title }}
-        </a>
+        </Link>
       </Header>
 
       <div class="pr-card__meta">
@@ -113,7 +113,7 @@ const cardClasses = computed(() => {
             :tooltip="pullRequest.user.login"
             size="sm"
           />
-          <span class="author-name">{{ pullRequest.user.login }}</span>
+          <Text variant="secondary" size="sm">{{ pullRequest.user.login }}</Text>
         </div>
 
         <BranchIndicator
@@ -121,9 +121,7 @@ const cardClasses = computed(() => {
           :target-branch="pullRequest.base.ref"
         />
 
-        <div class="pr-card__time">
-          {{ formatTimeAgo(pullRequest.updated_at) }}
-        </div>
+        <Text variant="secondary" size="sm">{{ formatTimeAgo(pullRequest.updated_at) }}</Text>
       </div>
 
       <div v-if="pullRequest.labels.length > 0" class="pr-card__labels">
@@ -136,7 +134,7 @@ const cardClasses = computed(() => {
       </div>
 
       <div v-if="pullRequest.assignees.length > 0" class="pr-card__assignees">
-        <span class="assignees-label">Assigned to:</span>
+        <Text variant="secondary" size="sm">Assigned to:</Text>
         <div class="assignees-list">
           <UserAvatar
             v-for="assignee in pullRequest.assignees"
@@ -153,6 +151,7 @@ const cardClasses = computed(() => {
 </template>
 
 <style scoped>
+/* Layout structure only - typography and colors handled by atoms */
 .pr-card__header {
   display: flex;
   justify-content: space-between;
@@ -165,18 +164,7 @@ const cardClasses = computed(() => {
   gap: var(--spacing-2);
 }
 
-.pr-card__icon {
-  font-size: var(--font-size-base);
-}
-
-.pr-card__number {
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-text-secondary);
-}
-
 .pr-card__repository {
-  font-size: var(--font-size-sm);
-  color: var(--color-text-tertiary);
   background: var(--color-border-default);
   padding: var(--spacing-1) var(--spacing-2);
   border-radius: var(--radius-md);
@@ -184,18 +172,6 @@ const cardClasses = computed(() => {
 
 .pr-card__title {
   margin: 0 0 var(--spacing-3) 0;
-  font-size: var(--font-size-lg);
-  font-weight: var(--font-weight-semibold);
-  line-height: 1.4;
-}
-
-.pr-card__title a {
-  color: var(--color-text-primary);
-  text-decoration: none;
-}
-
-.pr-card__title a:hover {
-  text-decoration: underline;
 }
 
 .pr-card__meta {
@@ -204,8 +180,6 @@ const cardClasses = computed(() => {
   gap: var(--spacing-4);
   align-items: center;
   margin-bottom: var(--spacing-3);
-  font-size: var(--font-size-sm);
-  color: var(--color-text-secondary);
 }
 
 .pr-card__author {
@@ -225,8 +199,6 @@ const cardClasses = computed(() => {
   display: flex;
   align-items: center;
   gap: var(--spacing-2);
-  font-size: var(--font-size-sm);
-  color: var(--color-text-secondary);
 }
 
 .assignees-list {
@@ -263,10 +235,6 @@ const cardClasses = computed(() => {
     flex-direction: column;
     align-items: flex-start;
     gap: var(--spacing-2);
-  }
-
-  .pr-card__title {
-    font-size: var(--font-size-base);
   }
 }
 </style>

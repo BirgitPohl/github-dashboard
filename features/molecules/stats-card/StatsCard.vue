@@ -41,17 +41,16 @@ const cardClasses = computed(() => {
 
 <template>
   <div :class="cardClasses">
-    <div class="stats-card__icon">
-      {{ icon }}
-    </div>
+    <Icon :icon="icon" size="2xl" decorative class="stats-card__icon" />
     <div class="stats-card__content">
-      <div class="stats-card__value">{{ value }}</div>
-      <div class="stats-card__label">{{ label }}</div>
+      <Text variant="primary" size="2xl" weight="bold" class="stats-card__value">{{ value }}</Text>
+      <Text variant="secondary" size="sm" weight="medium" class="stats-card__label">{{ label }}</Text>
     </div>
   </div>
 </template>
 
 <style scoped>
+/* Layout structure only - typography and colors handled by atoms */
 .stats-card {
   background: var(--color-bg-primary);
   border-radius: var(--radius-xl);
@@ -70,7 +69,6 @@ const cardClasses = computed(() => {
 }
 
 .stats-card__icon {
-  font-size: var(--font-size-2xl);
   width: 48px;
   height: 48px;
   background: var(--color-gray-100);
@@ -86,17 +84,7 @@ const cardClasses = computed(() => {
 }
 
 .stats-card__value {
-  font-size: var(--font-size-2xl);
-  font-weight: var(--font-weight-bold);
-  color: var(--color-text-primary);
-  line-height: var(--line-height-tight);
   margin-bottom: var(--spacing-1);
-}
-
-.stats-card__label {
-  font-size: var(--font-size-sm);
-  color: var(--color-text-secondary);
-  font-weight: var(--font-weight-medium);
 }
 
 /* Variant styles */
@@ -146,15 +134,6 @@ const cardClasses = computed(() => {
   .stats-card__icon {
     width: 40px;
     height: 40px;
-    font-size: var(--font-size-xl);
-  }
-
-  .stats-card__value {
-    font-size: var(--font-size-xl);
-  }
-
-  .stats-card__label {
-    font-size: var(--font-size-xs);
   }
 }
 </style>

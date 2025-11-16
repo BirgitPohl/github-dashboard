@@ -55,34 +55,42 @@ const containerClasses = computed(() => {
         :key="index"
         class="breadcrumbs__item"
       >
-        <NuxtLink
+        <Link
           v-if="item.to && !item.current"
           :to="item.to"
+          variant="primary"
+          size="sm"
           class="breadcrumbs__link"
         >
           {{ item.label }}
-        </NuxtLink>
-        <span
+        </Link>
+        <Text
           v-else
+          variant="tertiary"
+          size="sm"
+          weight="normal"
           class="breadcrumbs__current"
           :aria-current="item.current ? 'page' : undefined"
         >
           {{ item.label }}
-        </span>
+        </Text>
 
-        <span
+        <Text
           v-if="index < items.length - 1"
+          variant="tertiary"
+          size="sm"
           class="breadcrumbs__separator"
           aria-hidden="true"
         >
           {{ separator }}
-        </span>
+        </Text>
       </li>
     </ol>
   </nav>
 </template>
 
 <style scoped>
+/* Layout structure only - typography and colors handled by atoms */
 .breadcrumbs {
   margin-bottom: var(--spacing-3);
 }
@@ -95,7 +103,6 @@ const containerClasses = computed(() => {
   list-style: none;
   margin: 0;
   padding: 0;
-  font-size: var(--font-size-sm);
 }
 
 .breadcrumbs__item {
@@ -104,31 +111,13 @@ const containerClasses = computed(() => {
   gap: var(--spacing-2);
 }
 
-.breadcrumbs__link {
-  color: var(--color-blue-600);
-  text-decoration: none;
-  transition: color var(--transition-base), text-decoration var(--transition-base);
-}
-
-.breadcrumbs__link:hover {
-  text-decoration: underline;
-  color: var(--color-blue-700);
-}
-
-.breadcrumbs__current {
-  color: var(--color-gray-500);
-  font-weight: var(--font-weight-normal);
-}
-
 .breadcrumbs__separator {
-  color: var(--color-gray-500);
   user-select: none;
 }
 
 /* Responsive adjustments */
 @media (max-width: 640px) {
   .breadcrumbs__list {
-    font-size: var(--font-size-sm);
     gap: var(--spacing-1-5);
   }
 

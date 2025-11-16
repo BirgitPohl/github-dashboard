@@ -115,8 +115,8 @@ const showStatusColumn = computed(() => statusOptions.value.length > 1)
         @retry="refresh"
       >
         <template #actions>
-          <p>Project ID: {{ projectId }}</p>
-          <NuxtLink to="/projects" class="back-link">← Back to Project Boards</NuxtLink>
+          <Text variant="secondary" size="base">Project ID: {{ projectId }}</Text>
+          <Link to="/projects" variant="primary" size="base">← Back to Project Boards</Link>
         </template>
       </ErrorBox>
     </div>
@@ -142,11 +142,13 @@ const showStatusColumn = computed(() => statusOptions.value.length > 1)
           >
             {{ project.title }}
           </Header>
-          <p v-if="project.shortDescription" class="project-description">{{ project.shortDescription }}</p>
+          <Text v-if="project.shortDescription" variant="tertiary" size="base" class="project-description">
+            {{ project.shortDescription }}
+          </Text>
 
           <div class="project-meta">
-            <span class="meta-item">{{ project.items.length }} items</span>
-            <a :href="project.url" target="_blank" class="meta-link">View on GitHub →</a>
+            <Text variant="tertiary" size="sm">{{ project.items.length }} items</Text>
+            <Link :href="project.url" variant="primary" size="sm" external>View on GitHub →</Link>
           </div>
         </div>
       </div>
@@ -174,7 +176,7 @@ const showStatusColumn = computed(() => statusOptions.value.length > 1)
         </div>
 
         <div v-else-if="filteredItems.length === 0" class="empty-items">
-          <p>No items match the current filters.</p>
+          <Text variant="tertiary" size="base">No items match the current filters.</Text>
         </div>
 
         <div v-else class="items-table-container">
@@ -184,13 +186,13 @@ const showStatusColumn = computed(() => statusOptions.value.length > 1)
               <div class="group-header">
                 <Header
                   :level="4"
-                  size="md"
+                  size="base"
                   variant="primary"
                   class="group-title"
                 >
                   {{ group.name }}
                 </Header>
-                <span class="group-count">{{ group.count }} items</span>
+                <Text variant="tertiary" size="sm" weight="medium">{{ group.count }} items</Text>
               </div>
 
               <ProjectItemsTable
@@ -213,6 +215,7 @@ const showStatusColumn = computed(() => statusOptions.value.length > 1)
 </template>
 
 <style scoped>
+/* Layout structure only - typography and colors handled by atoms */
 .project-detail-page {
   padding: var(--spacing-5);
   min-height: 100vh;
@@ -222,18 +225,6 @@ const showStatusColumn = computed(() => statusOptions.value.length > 1)
 .loading-state, .error-state {
   text-align: center;
   padding: var(--spacing-15) var(--spacing-5);
-}
-
-
-
-.back-link {
-  color: var(--color-blue-600);
-  text-decoration: none;
-  font-weight: var(--font-weight-medium);
-}
-
-.back-link:hover {
-  text-decoration: underline;
 }
 
 .project-content {
@@ -250,38 +241,17 @@ const showStatusColumn = computed(() => statusOptions.value.length > 1)
 }
 
 .project-title {
-  font-size: var(--font-size-2xl);
-  font-weight: var(--font-weight-bold);
-  color: var(--color-gray-900);
   margin: 0 0 var(--spacing-2) 0;
 }
 
 .project-description {
-  color: var(--color-gray-500);
   margin: 0 0 var(--spacing-4) 0;
-  line-height: var(--line-height-relaxed);
 }
 
 .project-meta {
   display: flex;
   align-items: center;
   gap: var(--spacing-4);
-}
-
-.meta-item {
-  color: var(--color-gray-500);
-  font-size: var(--font-size-sm);
-}
-
-.meta-link {
-  color: var(--color-blue-600);
-  text-decoration: none;
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
-}
-
-.meta-link:hover {
-  text-decoration: underline;
 }
 
 .items-section {
@@ -294,7 +264,6 @@ const showStatusColumn = computed(() => statusOptions.value.length > 1)
 .empty-items {
   text-align: center;
   padding: var(--spacing-10);
-  color: var(--color-gray-500);
 }
 
 .items-table-container {
@@ -307,7 +276,6 @@ const showStatusColumn = computed(() => statusOptions.value.length > 1)
   align-items: center;
   justify-content: center;
   padding: var(--spacing-15) var(--spacing-5);
-  color: var(--color-gray-500);
 }
 
 .group-section {
@@ -330,15 +298,6 @@ const showStatusColumn = computed(() => statusOptions.value.length > 1)
 
 .group-title {
   margin: 0;
-  font-size: var(--font-size-base);
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-slate-800);
-}
-
-.group-count {
-  font-size: var(--font-size-sm);
-  color: var(--color-slate-500);
-  font-weight: var(--font-weight-medium);
 }
 
 @media (max-width: 768px) {
