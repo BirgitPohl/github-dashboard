@@ -51,17 +51,6 @@
         />
       </div>
 
-      <!-- Status -->
-      <div v-if="statusOptions.length > 1" class="filter-group">
-        <label for="status-filter">Status</label>
-        <Select
-          id="status-filter"
-          :model-value="filters.status"
-          :options="statusOptions"
-          @update:model-value="updateFilter('status', $event)"
-        />
-      </div>
-
       <!-- Repository -->
       <div v-if="repositoryOptions.length > 1" class="filter-group">
         <label for="repository-filter">Repository</label>
@@ -73,14 +62,19 @@
         />
       </div>
 
-      <!-- Assignee -->
-      <div v-if="assigneeOptions.length > 1" class="filter-group">
-        <label for="assignee-filter">Assignee</label>
+      <!-- Dynamic Custom Field Filters -->
+      <div
+        v-for="(options, fieldName) in customFieldOptions"
+        :key="fieldName"
+        v-if="options.length > 1"
+        class="filter-group"
+      >
+        <label :for="`${fieldName}-filter`">{{ fieldName }}</label>
         <Select
-          id="assignee-filter"
-          :model-value="filters.assignee"
-          :options="assigneeOptions"
-          @update:model-value="updateFilter('assignee', $event)"
+          :id="`${fieldName}-filter`"
+          :model-value="filters[fieldName] || 'all'"
+          :options="options"
+          @update:model-value="updateFilter(fieldName, $event)"
         />
       </div>
     </div>
@@ -96,9 +90,8 @@ interface FilterOptions {
   search: string
   state: string
   type: string
-  status: string
-  assignee: string
   repository: string
+  [key: string]: string
 }
 
 interface SelectOption {
@@ -112,9 +105,8 @@ interface Props {
   groupByOptions: SelectOption[]
   stateOptions: SelectOption[]
   typeOptions: SelectOption[]
-  statusOptions: SelectOption[]
   repositoryOptions: SelectOption[]
-  assigneeOptions: SelectOption[]
+  customFieldOptions: Record<string, SelectOption[]>
   filteredCount: number
   totalCount: number
 }
@@ -128,7 +120,7 @@ const emit = defineEmits<{
 }>()
 
 
-const updateFilter = (key: keyof FilterOptions, value: string) => {
+const updateFilter = (key: string, value: string) => {
   emit('update:filters', {
     ...props.filters,
     [key]: value

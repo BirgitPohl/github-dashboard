@@ -39,9 +39,8 @@ const filters = ref(createDefaultFilters())
 const filterOptions = computed(() => createFilterOptions(currentItems.value))
 const stateOptions = computed(() => filterOptions.value.stateOptions.value)
 const typeOptions = computed(() => filterOptions.value.typeOptions)
-const statusOptions = computed(() => filterOptions.value.statusOptions.value)
 const repositoryOptions = computed(() => filterOptions.value.repositoryOptions.value)
-const assigneeOptions = computed(() => filterOptions.value.assigneeOptions.value)
+const customFieldOptions = computed(() => filterOptions.value.customFieldOptions.value)
 
 // Filtered items using composable
 const filteredItems = computed(() => {
@@ -72,9 +71,11 @@ const clearFilters = () => {
 }
 
 // Show custom field columns when fields are available in items
-const showStatusColumn = computed(() => statusOptions.value.length > 1)
+const showStatusColumn = computed(() =>
+  currentItems.value.some(item => item.custom_fields['Status'])
+)
 const showPriorityColumn = computed(() =>
-  currentItems.value.some(item => item.priority || item.custom_fields['Priority'])
+  currentItems.value.some(item => item.custom_fields['Priority'])
 )
 const showSizeColumn = computed(() =>
   currentItems.value.some(item => item.custom_fields['Size'])
@@ -144,9 +145,8 @@ const showParentIssueColumn = computed(() =>
         :group-by-options="groupByOptions"
         :state-options="stateOptions"
         :type-options="typeOptions"
-        :status-options="statusOptions"
         :repository-options="repositoryOptions"
-        :assignee-options="assigneeOptions"
+        :custom-field-options="customFieldOptions"
         :filtered-count="filteredItems.length"
         :total-count="currentItems.length"
         @clear-filters="clearFilters"
