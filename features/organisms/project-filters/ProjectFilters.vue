@@ -1,16 +1,11 @@
 <template>
   <div class="filters-section">
     <div class="filters-header">
-      <div class="title-with-toggle">
-        <h3>Filters</h3>
-        <button class="tiny-toggle" @click="isExpanded = !isExpanded">
-          {{ isExpanded ? '▼' : '▶' }}
-        </button>
-      </div>
+      <h3>Filters</h3>
       <Button variant="ghost" size="sm" @click="clearFilters">Clear All</Button>
     </div>
 
-    <div v-show="isExpanded" class="filters-grid">
+    <div class="filters-grid">
       <!-- Group By Selector -->
       <div class="filter-group">
         <label for="group-by-filter">Group By</label>
@@ -87,14 +82,13 @@
       </template>
     </div>
 
-    <div v-show="isExpanded" class="results-summary">
+    <div class="results-summary">
       <span>Showing {{ filteredCount }} of {{ totalCount }} items</span>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-const isExpanded = ref(false)
 
 interface FilterOptions {
   search: string
@@ -158,33 +152,11 @@ const clearFilters = () => {
   margin-bottom: var(--spacing-4);
 }
 
-.title-with-toggle {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-2);
-}
-
 .filters-header h3 {
   font-size: var(--font-size-lg);
   font-weight: var(--font-weight-semibold);
   color: var(--color-gray-900);
   margin: 0;
-}
-
-.tiny-toggle {
-  background: none;
-  border: 1px solid var(--color-gray-300);
-  border-radius: var(--radius-sm);
-  padding: 2px 6px;
-  font-size: var(--font-size-xs);
-  cursor: pointer;
-  color: var(--color-gray-600);
-  transition: all 0.2s;
-}
-
-.tiny-toggle:hover {
-  background: var(--color-gray-100);
-  border-color: var(--color-gray-400);
 }
 
 .filters-grid {

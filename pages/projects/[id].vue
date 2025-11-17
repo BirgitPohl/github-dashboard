@@ -28,6 +28,7 @@ const selectedGroupBy = ref<string>('')
 
 // UI state
 const isDescriptionExpanded = ref(false)
+const isFiltersExpanded = ref(false)
 
 // Current items from project (no views)
 const currentItems = computed(() => {
@@ -135,8 +136,16 @@ const showParentIssueColumn = computed(() =>
               v-if="project.shortDescription"
               class="tiny-toggle"
               @click="isDescriptionExpanded = !isDescriptionExpanded"
+              title="Toggle description"
             >
               {{ isDescriptionExpanded ? '▼' : '▶' }}
+            </button>
+            <button
+              class="tiny-toggle"
+              @click="isFiltersExpanded = !isFiltersExpanded"
+              title="Toggle filters"
+            >
+              🔍 {{ isFiltersExpanded ? '▼' : '▶' }}
             </button>
           </div>
 
@@ -158,6 +167,7 @@ const showParentIssueColumn = computed(() =>
 
       <!-- Filters -->
       <ProjectFilters
+        v-if="isFiltersExpanded"
         v-model:filters="filters"
         v-model:selected-group-by="selectedGroupBy"
         :group-by-options="groupByOptions"
