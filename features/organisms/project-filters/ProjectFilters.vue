@@ -71,15 +71,34 @@
         >
           <template v-if="options.length > 0">
             <label :for="`${fieldName}-filter`">{{ fieldName }}</label>
-            <USelectMenu
-              :id="`${fieldName}-filter`"
-              v-model="filters[fieldName]"
-              :options="options"
-              multiple
-              searchable
-              :placeholder="`Select ${fieldName}...`"
-              @update:model-value="updateFilter(fieldName, $event)"
-            />
+            <UPopover :id="`${fieldName}-filter`" :ui="{ width: 'w-full max-w-xs' }">
+              <template #default="{ open }">
+                <UButton
+                  color="white"
+                  variant="solid"
+                  :label="getMultiSelectLabel(fieldName, options)"
+                  trailing-icon="i-heroicons-chevron-down-20-solid"
+                  class="multi-select-trigger"
+                  block
+                />
+              </template>
+
+              <template #panel>
+                <div class="multi-select-panel">
+                  <div
+                    v-for="option in options"
+                    :key="option.value"
+                    class="multi-select-option"
+                  >
+                    <UCheckbox
+                      :model-value="isOptionSelected(fieldName, option.value)"
+                      :label="option.label"
+                      @update:model-value="toggleOption(fieldName, option.value, $event)"
+                    />
+                  </div>
+                </div>
+              </template>
+            </UPopover>
           </template>
         </div>
       </template>
@@ -137,6 +156,42 @@ const updateFilter = (key: string, value: string | string[]) => {
 const clearFilters = () => {
   emit('clear-filters')
 }
+
+// Multi-select helper methods
+const isOptionSelected = (fieldName: string, value: string): boolean => {
+  const fieldValue = props.filters[fieldName]
+  if (Array.isArray(fieldValue)) {
+    return fieldValue.includes(value)
+  }
+  return false
+}
+
+const toggleOption = (fieldName: string, value: string, checked: boolean) => {
+  const currentValue = props.filters[fieldName] || []
+  const valueArray = Array.isArray(currentValue) ? currentValue : []
+
+  let newValue: string[]
+  if (checked) {
+    newValue = [...valueArray, value]
+  } else {
+    newValue = valueArray.filter(v => v !== value)
+  }
+
+  updateFilter(fieldName, newValue)
+}
+
+const getMultiSelectLabel = (fieldName: string, options: SelectOption[]): string => {
+  const fieldValue = props.filters[fieldName]
+  if (!fieldValue || !Array.isArray(fieldValue) || fieldValue.length === 0) {
+    return `Select ${fieldName}...`
+  }
+
+  if (fieldValue.length === 1) {
+    return fieldValue[0]
+  }
+
+  return `${fieldValue.length} selected`
+}
 </script>
 
 <style scoped>
@@ -187,6 +242,26 @@ const clearFilters = () => {
   text-align: center;
   padding-top: var(--spacing-4);
   border-top: var(--border-width-thin) solid var(--color-gray-100);
+}
+
+.multi-select-trigger {
+  justify-content: space-between;
+  text-align: left;
+}
+
+.multi-select-panel {
+  max-height: 250px;
+  overflow-y: auto;
+  padding: var(--spacing-2);
+}
+
+.multi-select-option {
+  padding: var(--spacing-2);
+  border-radius: var(--radius-sm);
+}
+
+.multi-select-option:hover {
+  background-color: var(--color-gray-50);
 }
 
 .loading-text {
