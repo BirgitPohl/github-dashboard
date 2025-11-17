@@ -285,8 +285,15 @@ export function transformRESTItemToProjectItem(item: RESTProjectItem): ProjectIt
 
       case 'single_select':
         // Single select fields (Status, Priority, etc.)
-        if (typeof field.value === 'object' && field.value.name) {
-          customFields[field.name] = field.value.name
+        // Value structure: { id, name: { raw, html }, description, color }
+        if (typeof field.value === 'object') {
+          if (field.value.name?.raw) {
+            customFields[field.name] = field.value.name.raw
+          } else if (field.value.name) {
+            customFields[field.name] = String(field.value.name)
+          } else {
+            customFields[field.name] = String(field.value)
+          }
         } else {
           customFields[field.name] = String(field.value)
         }
@@ -307,9 +314,15 @@ export function transformRESTItemToProjectItem(item: RESTProjectItem): ProjectIt
         break
 
       case 'iteration':
-        // Iteration/Sprint fields
-        if (typeof field.value === 'object' && field.value.title) {
-          customFields[field.name] = field.value.title
+        // Iteration/Sprint fields - title has { raw, html } structure
+        if (typeof field.value === 'object') {
+          if (field.value.title?.raw) {
+            customFields[field.name] = field.value.title.raw
+          } else if (field.value.title) {
+            customFields[field.name] = String(field.value.title)
+          } else {
+            customFields[field.name] = String(field.value)
+          }
         } else {
           customFields[field.name] = String(field.value)
         }
@@ -349,9 +362,15 @@ export function transformRESTItemToProjectItem(item: RESTProjectItem): ProjectIt
         break
 
       case 'issue_type':
-        // Issue type field
-        if (typeof field.value === 'object' && field.value.name) {
-          customFields[field.name] = field.value.name
+        // Issue type field - similar structure to single_select
+        if (typeof field.value === 'object') {
+          if (field.value.name?.raw) {
+            customFields[field.name] = field.value.name.raw
+          } else if (field.value.name) {
+            customFields[field.name] = String(field.value.name)
+          } else {
+            customFields[field.name] = String(field.value)
+          }
         } else {
           customFields[field.name] = String(field.value)
         }
@@ -377,13 +396,17 @@ export function transformRESTItemToProjectItem(item: RESTProjectItem): ProjectIt
       default:
         // Generic fallback for any other field types
         if (typeof field.value === 'object') {
-          // Try to extract common properties
-          if (field.value.name) {
-            customFields[field.name] = field.value.name
-          } else if (field.value.title) {
-            customFields[field.name] = field.value.title
+          // Try to extract common properties in order of preference
+          if (field.value.name?.raw) {
+            customFields[field.name] = field.value.name.raw
+          } else if (field.value.title?.raw) {
+            customFields[field.name] = field.value.title.raw
           } else if (field.value.raw) {
             customFields[field.name] = field.value.raw
+          } else if (field.value.name) {
+            customFields[field.name] = String(field.value.name)
+          } else if (field.value.title) {
+            customFields[field.name] = String(field.value.title)
           } else {
             customFields[field.name] = JSON.stringify(field.value)
           }
