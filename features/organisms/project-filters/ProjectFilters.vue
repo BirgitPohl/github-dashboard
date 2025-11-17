@@ -69,12 +69,14 @@
           :key="fieldName"
           class="filter-group"
         >
-          <template v-if="options.length > 1">
+          <template v-if="options.length > 0">
             <label :for="`${fieldName}-filter`">{{ fieldName }}</label>
-            <Select
+            <SelectMenu
               :id="`${fieldName}-filter`"
-              :model-value="filters[fieldName] || 'all'"
+              :model-value="filters[fieldName] || []"
               :options="options"
+              multiple
+              :placeholder="`Select ${fieldName}...`"
               @update:model-value="updateFilter(fieldName, $event)"
             />
           </template>
@@ -95,7 +97,7 @@ interface FilterOptions {
   state: string
   type: string
   repository: string
-  [key: string]: string
+  [key: string]: string | string[]
 }
 
 interface SelectOption {
@@ -124,7 +126,7 @@ const emit = defineEmits<{
 }>()
 
 
-const updateFilter = (key: string, value: string) => {
+const updateFilter = (key: string, value: string | string[]) => {
   emit('update:filters', {
     ...props.filters,
     [key]: value

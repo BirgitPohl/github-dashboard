@@ -31,8 +31,8 @@ interface FilterOptions {
   state: string
   type: string
   repository: string
-  // Dynamic custom field filters
-  [key: string]: string
+  // Dynamic custom field filters (can be string or array for multi-select)
+  [key: string]: string | string[]
 }
 
 interface SelectOption {
@@ -96,13 +96,10 @@ export const useProjectFilters = () => {
         }
       }
 
-      // Convert to SelectOption arrays
+      // Convert to SelectOption arrays (no "All" option for multi-select)
       const result: Record<string, SelectOption[]> = {}
       for (const [fieldName, values] of Object.entries(fieldOptionsMap)) {
-        result[fieldName] = [
-          { value: 'all', label: `All ${fieldName}` },
-          ...Array.from(values).sort().map(value => ({ value, label: value }))
-        ]
+        result[fieldName] = Array.from(values).sort().map(value => ({ value, label: value }))
       }
 
       return result
@@ -158,7 +155,7 @@ export const useProjectFilters = () => {
       }
     }
 
-    // Dynamic custom field filters
+    // Dynamic custom field filters (support both single and multi-select)
     for (const [filterKey, filterValue] of Object.entries(filters)) {
       // Skip built-in filters
       if (['search', 'state', 'type', 'repository'].includes(filterKey)) {
@@ -166,9 +163,17 @@ export const useProjectFilters = () => {
       }
 
       // Check custom field filter
-      if (filterValue && filterValue !== 'all') {
+      if (filterValue) {
         const itemValue = item.custom_fields?.[filterKey]
-        if (itemValue !== filterValue) {
+
+        // Handle array (multi-select)
+        if (Array.isArray(filterValue)) {
+          if (filterValue.length > 0 && !filterValue.includes(itemValue)) {
+            return false
+          }
+        }
+        // Handle string (single select)
+        else if (filterValue !== 'all' && itemValue !== filterValue) {
           return false
         }
       }
