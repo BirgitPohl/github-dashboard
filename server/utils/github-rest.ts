@@ -22,6 +22,7 @@ export interface RESTProjectItem {
   id: number
   node_id: string
   project_url: string
+  content_type: 'Issue' | 'PullRequest' | 'DraftIssue'
   content: {
     // This is a full GitHub issue/PR object
     id?: number
@@ -38,17 +39,18 @@ export interface RESTProjectItem {
     milestone?: { title: string }
     created_at?: string
     updated_at?: string
-    pull_request?: any  // If this exists, it's a PR
+    pull_request?: any
     draft?: boolean
   }
   fields: Array<{
     id: number
     name: string
-    data_type: string  // REST API uses 'data_type' consistently
+    data_type: string
     value: any
   }>
   created_at: string
   updated_at: string
+  archived_at: string | null
 }
 
 export interface RESTProjectField {
@@ -233,7 +235,7 @@ export async function fetchProjectItemsREST(projectNumber: number): Promise<REST
 
 /**
  * Transform REST API project item to our internal format
- * Handles all field types including parent_issue, number (Size), etc.
+ * Dynamically handles all field types based on data_type
  */
 let _debugLogged = false
 export function transformRESTItemToProjectItem(item: RESTProjectItem): ProjectItem {
@@ -241,23 +243,38 @@ export function transformRESTItemToProjectItem(item: RESTProjectItem): ProjectIt
 
   // Debug: log item structure for first item
   if (!_debugLogged) {
-    console.log('Sample item content:', JSON.stringify(item.content, null, 2).substring(0, 800))
-    console.log('Sample item fields:', JSON.stringify(item.fields, null, 2).substring(0, 800))
+    console.log('Sample item:', JSON.stringify(item, null, 2).substring(0, 1000))
     _debugLogged = true
   }
 
-  // Extract ALL custom fields from the fields array
+  // Extract ALL custom fields dynamically based on data_type
   for (const field of item.fields) {
     if (field.value === null || field.value === undefined) continue
 
+    // Handle based on data_type (not field name!)
     switch (field.data_type) {
+      case 'title':
+        // Title field - extract raw text
+        if (typeof field.value === 'object' && field.value.raw) {
+          customFields[field.name] = field.value.raw
+        }
+        break
+
+      case 'assignees':
+        // Assignees field - skip, handled separately in content
+        break
+
+      case 'labels':
+        // Labels field - skip, handled separately in content
+        break
+
       case 'number':
-        // Size field and other numeric fields
-        customFields[field.name] = field.value.toString()
+        // Numeric fields (Size, Story Points, etc.)
+        customFields[field.name] = String(field.value)
         break
 
       case 'single_select':
-        // Status, Priority, etc.
+        // Single select fields (Status, Priority, etc.)
         if (typeof field.value === 'object' && field.value.name) {
           customFields[field.name] = field.value.name
         } else {
@@ -266,14 +283,21 @@ export function transformRESTItemToProjectItem(item: RESTProjectItem): ProjectIt
         break
 
       case 'text':
-        customFields[field.name] = field.value
+        // Text fields
+        if (typeof field.value === 'object' && field.value.raw) {
+          customFields[field.name] = field.value.raw
+        } else {
+          customFields[field.name] = String(field.value)
+        }
         break
 
       case 'date':
-        customFields[field.name] = field.value
+        // Date fields
+        customFields[field.name] = String(field.value)
         break
 
       case 'iteration':
+        // Iteration/Sprint fields
         if (typeof field.value === 'object' && field.value.title) {
           customFields[field.name] = field.value.title
         } else {
@@ -282,19 +306,19 @@ export function transformRESTItemToProjectItem(item: RESTProjectItem): ProjectIt
         break
 
       case 'parent_issue':
-        // THE FIELD WE'VE BEEN LOOKING FOR!
-        // This is the actual "Parent issue" field from Projects v2
-        const parent = field.value
-        if (parent && parent.number) {
+        // Parent issue field - cross-project references
+        if (typeof field.value === 'object' && field.value.number) {
+          const parent = field.value
           if (parent.repository) {
-            customFields['Parent issue'] = `${parent.repository}#${parent.number} ${parent.title}`
+            customFields[field.name] = `${parent.repository}#${parent.number} ${parent.title || ''}`
           } else {
-            customFields['Parent issue'] = `#${parent.number} ${parent.title}`
+            customFields[field.name] = `#${parent.number} ${parent.title || ''}`
           }
         }
         break
 
       case 'milestone':
+        // Milestone fields
         if (typeof field.value === 'object' && field.value.title) {
           customFields[field.name] = field.value.title
         } else {
@@ -303,18 +327,22 @@ export function transformRESTItemToProjectItem(item: RESTProjectItem): ProjectIt
         break
 
       default:
-        // Handle any other field types
+        // Generic fallback for any other field types
         if (typeof field.value === 'object') {
-          customFields[field.name] = JSON.stringify(field.value)
+          // Try to extract common properties
+          if (field.value.name) {
+            customFields[field.name] = field.value.name
+          } else if (field.value.title) {
+            customFields[field.name] = field.value.title
+          } else if (field.value.raw) {
+            customFields[field.name] = field.value.raw
+          } else {
+            customFields[field.name] = JSON.stringify(field.value)
+          }
         } else {
           customFields[field.name] = String(field.value)
         }
     }
-  }
-
-  // Add milestone from content if available
-  if (item.content.milestone?.title) {
-    customFields['Milestone'] = item.content.milestone.title
   }
 
   // Extract repository info from repository_url
@@ -329,13 +357,14 @@ export function transformRESTItemToProjectItem(item: RESTProjectItem): ProjectIt
     }
   }
 
-  // Determine item type from content
-  // If content has pull_request field, it's a PR; if draft, it's a draft issue
+  // Determine item type from content_type field
   let itemType: 'ISSUE' | 'PULL_REQUEST' | 'DRAFT_ISSUE' = 'ISSUE'
-  if (item.content.pull_request) {
+  if (item.content_type === 'PullRequest') {
     itemType = 'PULL_REQUEST'
-  } else if (item.content.draft) {
+  } else if (item.content_type === 'DraftIssue') {
     itemType = 'DRAFT_ISSUE'
+  } else {
+    itemType = 'ISSUE'
   }
 
   return {
