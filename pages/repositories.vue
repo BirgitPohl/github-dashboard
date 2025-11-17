@@ -7,315 +7,93 @@ useHead({
   title: 'Repositories - GitHub Dashboard'
 })
 
-interface Repository {
-  id: number
-  name: string
-  full_name: string
-  description: string
-  language: string
-  is_private: boolean
-  stars: number
-  forks: number
-  issues: number
-  updated_at: string
-  created_at: string
-  html_url: string
-  topics: string[]
-  size: number
-  default_branch: string
-  category: string
-  tech_stack: string[]
-}
-
-const { data: repositories, pending, error } = await useFetch<Repository[]>('/api/repositories')
-
-// Category stats
-const categoryStats = computed(() => {
-  if (!repositories.value) return {}
-  
-  const stats: Record<string, number> = {}
-  for (const repository of repositories.value) {
-    stats[repository.category] = (stats[repository.category] || 0) + 1
+const {
+  data: repositories,
+  error,
+  refresh,
+  isRefreshing,
+  lastUpdated,
+  showSkeleton,
+  showRefreshIndicator
+} = useCachedFetch<Repository[]>(
+  '/api/repositories',
+  {
+    key: 'repositories',
+    staleTime: 5 * 60 * 1000, // 5 minutes
   }
-  
-  return stats
-})
+)
 
-// Total stats
+const { computeSum, computeCount } = useStatsAggregation()
+
+// Total stats using the new composable
 const totalStats = computed(() => {
   if (!repositories.value) return { totalRepos: 0, totalStars: 0, totalForks: 0 }
-  
+
   return {
-    totalRepos: repositories.value.length,
-    totalStars: repositories.value.reduce((sum: number, repo: Repository) => sum + repo.stars, 0),
-    totalForks: repositories.value.reduce((sum: number, repo: Repository) => sum + repo.forks, 0)
+    totalRepos: computeCount(repositories.value),
+    totalStars: computeSum(repositories.value, 'stars'),
+    totalForks: computeSum(repositories.value, 'forks')
   }
 })
 </script>
 
 <template>
-  <div class="repositories-page">
-    <header class="page-header">
-      <h1>Repositories Dashboard</h1>
-      <p>Overview of all repositories and their details</p>
-    </header>
+  <PageLayout
+    :show-skeleton="showSkeleton"
+    :show-refresh-indicator="showRefreshIndicator"
+    :is-refreshing="isRefreshing"
+    :last-updated="lastUpdated"
+    :error="error"
+    :data="repositories"
+    :on-retry="refresh"
+    :skeleton-count="8"
+    :show-stats="true"
+  >
+    <template #stats>
+      <StatsCard
+        icon="📊"
+        :value="totalStats.totalRepos"
+        label="Total Repositories"
+      />
 
-    <!-- Loading State -->
-    <div v-if="pending" class="loading-state">
-      <div class="loading-spinner" />
-      <p>Loading repositories...</p>
-    </div>
+      <StatsCard
+        icon="⭐"
+        :value="totalStats.totalStars"
+        label="Total Stars"
+        variant="warning"
+      />
 
-    <!-- Error State -->
-    <div v-else-if="error" class="error-state">
-      <h3>Failed to load repositories</h3>
-      <p>{{ error }}</p>
-    </div>
+      <StatsCard
+        icon="🍴"
+        :value="totalStats.totalForks"
+        label="Total Forks"
+        variant="info"
+      />
+    </template>
 
-    <!-- Content -->
-    <div v-else-if="repositories">
-      <!-- Stats Overview -->
-      <div class="stats-overview">
-        <div class="stat-card">
-          <div class="stat-icon">📊</div>
-          <div class="stat-content">
-            <div class="stat-value">{{ totalStats.totalRepos }}</div>
-            <div class="stat-label">Total Repositories</div>
-          </div>
-        </div>
-        
-        <div class="stat-card">
-          <div class="stat-icon">⭐</div>
-          <div class="stat-content">
-            <div class="stat-value">{{ totalStats.totalStars }}</div>
-            <div class="stat-label">Total Stars</div>
-          </div>
-        </div>
-        
-        <div class="stat-card">
-          <div class="stat-icon">🍴</div>
-          <div class="stat-content">
-            <div class="stat-value">{{ totalStats.totalForks }}</div>
-            <div class="stat-label">Total Forks</div>
-          </div>
-        </div>
+    <template #content>
+      <div class="repositories-grid">
+        <RepositoryCard
+          v-for="repository in repositories"
+          :key="repository.id"
+          :repository="repository"
+        />
       </div>
-
-      <!-- Category Distribution -->
-      <div class="category-overview">
-        <h2>Repository Categories</h2>
-        <div class="category-grid">
-          <div 
-            v-for="(count, category) in categoryStats" 
-            :key="category"
-            class="category-stat"
-          >
-            <span class="category-name">{{ category }}</span>
-            <span class="category-count">{{ count }}</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Repositories Grid -->
-      <div class="repositories-section">
-        <h2>All Repositories</h2>
-        <div class="repositories-grid">
-          <RepositoryCard 
-            v-for="repository in repositories" 
-            :key="repository.id"
-            :repository="repository"
-          />
-        </div>
-      </div>
-    </div>
-  </div>
+    </template>
+  </PageLayout>
 </template>
 
 <style scoped>
-.repositories-page {
-  padding: 20px;
-  min-height: 100vh;
-  background: #f8fafc;
-}
-
-.page-header {
-  margin-bottom: 32px;
-  text-align: center;
-}
-
-.page-header h1 {
-  font-size: 32px;
-  font-weight: 700;
-  color: #111827;
-  margin: 0 0 8px 0;
-}
-
-.page-header p {
-  font-size: 16px;
-  color: #6b7280;
-  margin: 0;
-}
-
-.loading-state {
-  text-align: center;
-  padding: 60px 20px;
-}
-
-.loading-spinner {
-  width: 40px;
-  height: 40px;
-  border: 3px solid #e5e7eb;
-  border-top: 3px solid #3b82f6;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin: 0 auto 16px;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-.loading-state p {
-  color: #6b7280;
-  font-size: 16px;
-}
-
-.error-state {
-  text-align: center;
-  padding: 60px 20px;
-  color: #ef4444;
-}
-
-.error-state h3 {
-  margin: 0 0 8px 0;
-  font-size: 20px;
-}
-
-.error-state p {
-  margin: 0;
-  font-size: 14px;
-}
-
-.stats-overview {
-  display: flex;
-  gap: 20px;
-  margin-bottom: 32px;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-
-.stat-card {
-  background: white;
-  border-radius: 12px;
-  padding: 24px;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  min-width: 200px;
-}
-
-.stat-icon {
-  font-size: 24px;
-  width: 48px;
-  height: 48px;
-  background: #f3f4f6;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.stat-value {
-  font-size: 24px;
-  font-weight: 700;
-  color: #111827;
-}
-
-.stat-label {
-  font-size: 14px;
-  color: #6b7280;
-}
-
-.category-overview {
-  margin-bottom: 32px;
-  text-align: center;
-}
-
-.category-overview h2 {
-  font-size: 24px;
-  font-weight: 600;
-  color: #111827;
-  margin: 0 0 16px 0;
-}
-
-.category-grid {
-  display: flex;
-  gap: 12px;
-  justify-content: center;
-  flex-wrap: wrap;
-}
-
-.category-stat {
-  background: white;
-  border-radius: 8px;
-  padding: 12px 16px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-.category-name {
-  font-size: 14px;
-  color: #374151;
-}
-
-.category-count {
-  background: #3b82f6;
-  color: white;
-  font-size: 12px;
-  font-weight: 600;
-  padding: 2px 8px;
-  border-radius: 12px;
-}
-
-.repositories-section {
-  margin-bottom: 32px;
-}
-
-.repositories-section h2 {
-  font-size: 24px;
-  font-weight: 600;
-  color: #111827;
-  margin: 0 0 20px 0;
-  text-align: center;
-}
-
 .repositories-grid {
   display: flex;
   flex-wrap: wrap;
-  gap: 20px;
+  gap: var(--spacing-5);
   justify-content: center;
 }
 
 @media (max-width: 768px) {
-  .repositories-page {
-    padding: 16px;
-  }
-  
-  .stats-overview {
-    gap: 16px;
-  }
-  
-  .stat-card {
-    min-width: 160px;
-    padding: 20px;
-  }
-  
   .repositories-grid {
-    gap: 16px;
+    gap: var(--spacing-4);
   }
 }
 </style>

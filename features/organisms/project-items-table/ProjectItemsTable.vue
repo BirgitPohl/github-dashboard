@@ -8,6 +8,9 @@
           <th>Repository</th>
           <th>State</th>
           <th v-if="showStatus">Status</th>
+          <th v-if="showPriority">Priority</th>
+          <th v-if="showSize">Size</th>
+          <th v-if="showParentIssue">Parent Issue</th>
           <th>Assignees</th>
           <th>Labels</th>
           <th>Updated</th>
@@ -47,6 +50,30 @@
           <td v-if="showStatus" class="status-cell">
             <span v-if="item.status" class="status-badge">{{ item.status }}</span>
             <span v-else class="no-status">—</span>
+          </td>
+
+          <!-- Priority -->
+          <td v-if="showPriority" class="priority-cell">
+            <span v-if="item.priority || item.custom_fields['Priority']" class="priority-badge">
+              {{ item.priority || item.custom_fields['Priority'] }}
+            </span>
+            <span v-else class="no-priority">—</span>
+          </td>
+
+          <!-- Size -->
+          <td v-if="showSize" class="size-cell">
+            <span v-if="item.custom_fields['Size']" class="size-badge">
+              {{ item.custom_fields['Size'] }}
+            </span>
+            <span v-else class="no-size">—</span>
+          </td>
+
+          <!-- Parent Issue -->
+          <td v-if="showParentIssue" class="parent-issue-cell">
+            <span v-if="item.custom_fields['Parent issue']" class="parent-issue-text">
+              {{ item.custom_fields['Parent issue'] }}
+            </span>
+            <span v-else class="no-parent-issue">—</span>
           </td>
 
           <!-- Assignees -->
@@ -96,6 +123,8 @@
 </template>
 
 <script setup lang="ts">
+import { useProjectItemsTable } from './useProjectItemsTable'
+
 interface ProjectItem {
   id: string
   type: 'ISSUE' | 'PULL_REQUEST' | 'DRAFT_ISSUE'
@@ -123,49 +152,20 @@ interface ProjectItem {
 interface Props {
   items: ProjectItem[]
   showStatus?: boolean
+  showPriority?: boolean
+  showSize?: boolean
+  showParentIssue?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  showStatus: false
+  showStatus: false,
+  showPriority: false,
+  showSize: false,
+  showParentIssue: false
 })
 
-// Helper functions
-const getTypeIcon = (type: string): string => {
-  switch (type) {
-    case 'ISSUE': return '🐛'
-    case 'PULL_REQUEST': return '🔀'
-    case 'DRAFT_ISSUE': return '📝'
-    default: return '📋'
-  }
-}
-
-const getTypeText = (type: string): string => {
-  switch (type) {
-    case 'PULL_REQUEST': return 'PR'
-    case 'DRAFT_ISSUE': return 'Draft'
-    case 'ISSUE': return 'Issue'
-    default: return type
-  }
-}
-
-const getStateColor = (state: string): string => {
-  switch (state.toLowerCase()) {
-    case 'open': return '#10b981'
-    case 'closed': return '#6b7280'
-    case 'merged': return '#8b5cf6'
-    default: return '#6b7280'
-  }
-}
-
-const formatDate = (dateString: string): string => {
-  const date = new Date(dateString)
-  const currentYear = new Date().getFullYear()
-  return date.toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: date.getFullYear() === currentYear ? undefined : 'numeric'
-  })
-}
+const { getTypeIcon, getTypeText, getStateColor } = useProjectItemsTable()
+const { formatDate } = useDateTime()
 </script>
 
 <style scoped>
@@ -176,44 +176,44 @@ const formatDate = (dateString: string): string => {
 .items-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 14px;
+  font-size: var(--font-size-sm);
 }
 
 .items-table th {
-  background: #f9fafb;
-  padding: 12px;
+  background: var(--color-gray-50);
+  padding: var(--spacing-3);
   text-align: left;
-  font-weight: 600;
-  color: #374151;
-  border-bottom: 1px solid #e5e7eb;
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-gray-700);
+  border-bottom: var(--border-width-thin) solid var(--color-gray-200);
   white-space: nowrap;
 }
 
 .items-table td {
-  padding: 12px;
-  border-bottom: 1px solid #f3f4f6;
+  padding: var(--spacing-3);
+  border-bottom: var(--border-width-thin) solid var(--color-gray-100);
   vertical-align: middle;
 }
 
 .item-row:hover {
-  background: #f9fafb;
+  background: var(--color-gray-50);
 }
 
 .type-cell {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--spacing-1-5);
   min-width: 80px;
 }
 
 .type-icon {
-  font-size: 16px;
+  font-size: var(--font-size-base);
 }
 
 .type-text {
-  font-size: 12px;
-  color: #6b7280;
-  font-weight: 500;
+  font-size: var(--font-size-xs);
+  color: var(--color-gray-500);
+  font-weight: var(--font-weight-medium);
 }
 
 .title-cell {
@@ -221,9 +221,9 @@ const formatDate = (dateString: string): string => {
 }
 
 .item-title {
-  color: #2563eb;
+  color: var(--color-blue-600);
   text-decoration: none;
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
   line-height: 1.4;
 }
 
@@ -236,8 +236,8 @@ const formatDate = (dateString: string): string => {
 }
 
 .repository-name {
-  color: #6b7280;
-  font-size: 13px;
+  color: var(--color-gray-500);
+  font-size: var(--font-size-sm);
 }
 
 .state-cell {
@@ -245,10 +245,10 @@ const formatDate = (dateString: string): string => {
 }
 
 .state-badge {
-  padding: 4px 8px;
-  border-radius: 12px;
-  font-size: 12px;
-  font-weight: 500;
+  padding: var(--spacing-1) var(--spacing-2);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
   text-transform: capitalize;
 }
 
@@ -257,16 +257,57 @@ const formatDate = (dateString: string): string => {
 }
 
 .status-badge {
-  background: #f3f4f6;
-  color: #374151;
-  padding: 4px 8px;
-  border-radius: 12px;
-  font-size: 12px;
-  font-weight: 500;
+  background: var(--color-gray-100);
+  color: var(--color-gray-700);
+  padding: var(--spacing-1) var(--spacing-2);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
 }
 
-.no-status, .no-assignees, .no-labels {
-  color: #9ca3af;
+.priority-cell {
+  min-width: 90px;
+}
+
+.priority-badge {
+  background: var(--color-orange-50);
+  color: var(--color-orange-500);
+  padding: var(--spacing-1) var(--spacing-2);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+}
+
+.size-cell {
+  min-width: 70px;
+  text-align: center;
+}
+
+.size-badge {
+  background: var(--color-blue-50);
+  color: var(--color-primary-600);
+  padding: var(--spacing-1) var(--spacing-2);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+}
+
+.parent-issue-cell {
+  min-width: 200px;
+  max-width: 300px;
+}
+
+.parent-issue-text {
+  color: var(--color-gray-600);
+  font-size: var(--font-size-sm);
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.no-status, .no-priority, .no-size, .no-parent-issue, .no-assignees, .no-labels {
+  color: var(--color-gray-400);
 }
 
 .assignees-cell {
@@ -276,20 +317,20 @@ const formatDate = (dateString: string): string => {
 .assignees {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: var(--spacing-1);
 }
 
 .assignee-avatar {
   width: 24px;
   height: 24px;
-  border-radius: 50%;
-  border: 1px solid #e5e7eb;
+  border-radius: var(--radius-full);
+  border: var(--border-width-thin) solid var(--color-gray-200);
 }
 
 .assignee-more {
-  font-size: 12px;
-  color: #6b7280;
-  margin-left: 4px;
+  font-size: var(--font-size-xs);
+  color: var(--color-gray-500);
+  margin-left: var(--spacing-1);
 }
 
 .labels-cell {
@@ -299,21 +340,21 @@ const formatDate = (dateString: string): string => {
 .labels {
   display: flex;
   flex-wrap: wrap;
-  gap: 4px;
+  gap: var(--spacing-1);
   align-items: center;
 }
 
 .label-badge {
-  padding: 2px 6px;
-  border-radius: 8px;
-  font-size: 11px;
-  font-weight: 500;
+  padding: var(--spacing-0-5) var(--spacing-1-5);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
   white-space: nowrap;
 }
 
 .labels-more {
-  font-size: 12px;
-  color: #6b7280;
+  font-size: var(--font-size-xs);
+  color: var(--color-gray-500);
 }
 
 .updated-cell {
@@ -321,18 +362,18 @@ const formatDate = (dateString: string): string => {
 }
 
 .updated-date {
-  color: #6b7280;
-  font-size: 13px;
+  color: var(--color-gray-500);
+  font-size: var(--font-size-sm);
 }
 
 @media (max-width: 768px) {
   .items-table {
-    font-size: 13px;
+    font-size: var(--font-size-sm);
   }
 
   .items-table th,
   .items-table td {
-    padding: 8px;
+    padding: var(--spacing-2);
   }
 }
 </style>

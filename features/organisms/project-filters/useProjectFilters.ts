@@ -30,9 +30,9 @@ interface FilterOptions {
   search: string
   state: string
   type: string
-  status: string
-  assignee: string
   repository: string
+  // Dynamic custom field filters
+  [key: string]: string
 }
 
 interface SelectOption {
@@ -61,15 +61,6 @@ export const useProjectFilters = () => {
       { value: 'DRAFT_ISSUE', label: 'Draft Issues' }
     ]
 
-    const statusOptions = computed((): SelectOption[] => {
-      if (!items.length) return []
-      const statuses = [...new Set(items.map(item => item.status).filter(Boolean))]
-      return [
-        { value: 'all', label: 'All Statuses' },
-        ...statuses.map(status => ({ value: status!, label: status! }))
-      ]
-    })
-
     const repositoryOptions = computed((): SelectOption[] => {
       if (!items.length) return []
       const repositories = [...new Set(items.map(item => `${item.repository_owner}/${item.repository}`))]
@@ -79,26 +70,41 @@ export const useProjectFilters = () => {
       ]
     })
 
-    const assigneeOptions = computed((): SelectOption[] => {
-      if (!items.length) return []
-      const assignees = new Set<string>()
+    // Dynamically create filter options for all custom fields
+    const customFieldOptions = computed((): Record<string, SelectOption[]> => {
+      if (!items.length) return {}
+
+      const fieldOptionsMap: Record<string, Set<string>> = {}
+
+      // Collect all unique values for each custom field
       for (const item of items) {
-        for (const assignee of item.assignees) {
-          assignees.add(assignee.login)
+        for (const [fieldName, fieldValue] of Object.entries(item.custom_fields || {})) {
+          if (!fieldOptionsMap[fieldName]) {
+            fieldOptionsMap[fieldName] = new Set()
+          }
+          if (fieldValue) {
+            fieldOptionsMap[fieldName].add(fieldValue)
+          }
         }
       }
-      return [
-        { value: 'all', label: 'All Assignees' },
-        ...Array.from(assignees).map(assignee => ({ value: assignee, label: assignee }))
-      ]
+
+      // Convert to SelectOption arrays
+      const result: Record<string, SelectOption[]> = {}
+      for (const [fieldName, values] of Object.entries(fieldOptionsMap)) {
+        result[fieldName] = [
+          { value: 'all', label: `All ${fieldName}` },
+          ...Array.from(values).sort().map(value => ({ value, label: value }))
+        ]
+      }
+
+      return result
     })
 
     return {
       stateOptions,
       typeOptions,
-      statusOptions,
       repositoryOptions,
-      assigneeOptions
+      customFieldOptions
     }
   }
 
@@ -136,11 +142,6 @@ export const useProjectFilters = () => {
       return false
     }
 
-    // Status filter
-    if (filters.status !== 'all' && item.status !== filters.status) {
-      return false
-    }
-
     // Repository filter
     if (filters.repository !== 'all') {
       const itemRepo = `${item.repository_owner}/${item.repository}`
@@ -149,11 +150,19 @@ export const useProjectFilters = () => {
       }
     }
 
-    // Assignee filter
-    if (filters.assignee !== 'all') {
-      const hasAssignee = item.assignees.some(assignee => assignee.login === filters.assignee)
-      if (!hasAssignee) {
-        return false
+    // Dynamic custom field filters
+    for (const [filterKey, filterValue] of Object.entries(filters)) {
+      // Skip built-in filters
+      if (['search', 'state', 'type', 'repository'].includes(filterKey)) {
+        continue
+      }
+
+      // Check custom field filter
+      if (filterValue && filterValue !== 'all') {
+        const itemValue = item.custom_fields?.[filterKey]
+        if (itemValue !== filterValue) {
+          return false
+        }
       }
     }
 
@@ -181,8 +190,6 @@ export const useProjectFilters = () => {
     search: '',
     state: 'all',
     type: 'all',
-    status: 'all',
-    assignee: 'all',
     repository: 'all'
   })
 

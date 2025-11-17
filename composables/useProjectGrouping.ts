@@ -96,13 +96,8 @@ export const useProjectGrouping = () => {
           : 'No Labels'
       case 'parent issue':
       case 'parent_issue':
-        // TEMPORARY: Demonstrate grouping using Status field since Parent issue data isn't available
-        // TODO: Replace this with actual parent issue data when GitHub API is fixed
-        const status = item.status || item.custom_fields?.['Status']
-        if (status) {
-          return `Status: ${status}`
-        }
-        return 'Ungrouped Items'
+        // Use actual Parent issue field from REST API
+        return item.custom_fields?.['Parent issue'] || 'No Parent Issue'
       default:
         // If no value found, return "No [FieldName]"
         const fieldDisplayName = groupField.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())
@@ -111,21 +106,21 @@ export const useProjectGrouping = () => {
   }
 
   /**
-   * Group items based on view configuration
+   * Group items based on view configuration or manual override
+   * @param items - The items to group
+   * @param view - The project view (optional, used for default grouping)
+   * @param overrideGroupField - Manual grouping field that overrides view's groupByFields (optional)
    */
-  const groupItems = (items: ProjectItem[], view: ProjectView | null): GroupedItems[] => {
-    // If no view is selected or no grouping is configured, return items in a single group
-    if (!view || !view.groupByFields || view.groupByFields.length === 0) {
-      return [{
-        name: 'All Items',
-        items: items,
-        count: items.length
-      }]
+  const groupItems = (items: ProjectItem[], view: ProjectView | null, overrideGroupField?: string): GroupedItems[] => {
+    // Determine which group field to use
+    let groupField: string | undefined = overrideGroupField
+
+    // If no override provided, use view's grouping
+    if (!groupField && view?.groupByFields && view.groupByFields.length > 0) {
+      groupField = view.groupByFields[0]
     }
 
-    // Use the first group field (GitHub typically uses one group field at a time)
-    const groupField = view.groupByFields[0]
-
+    // If still no grouping field, return items in a single group
     if (!groupField) {
       return [{
         name: 'All Items',

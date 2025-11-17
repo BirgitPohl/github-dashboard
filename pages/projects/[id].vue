@@ -1,82 +1,15 @@
 <script setup lang="ts">
 import { useProjectGrouping } from '../../composables/useProjectGrouping'
-import { useProjectFilters } from '../../composables/useProjectFilters'
-import ProjectFilters from '../../components/ProjectFilters.vue'
-import ProjectItemsTable from '../../components/ProjectItemsTable.vue'
+import { useProjectFilters } from '../../features/organisms/project-filters/useProjectFilters'
+import ProjectFilters from '../../features/organisms/project-filters/ProjectFilters.vue'
+import ProjectItemsTable from '../../features/organisms/project-items-table/ProjectItemsTable.vue'
 
 definePageMeta({
   name: 'ProjectBoardDetail'
 })
 
-interface ProjectItem {
-  id: string
-  type: 'ISSUE' | 'PULL_REQUEST' | 'DRAFT_ISSUE'
-  number?: number
-  title: string
-  url: string
-  state: string
-  repository: string
-  repository_owner: string
-  assignees: Array<{
-    login: string
-    avatarUrl: string
-  }>
-  labels: Array<{
-    name: string
-    color: string
-  }>
-  created_at: string
-  updated_at: string
-  status?: string
-  priority?: string
-  custom_fields: Record<string, string>
-}
-
-interface ProjectView {
-  id: string
-  name: string
-  number: number
-  layout: 'TABLE_LAYOUT' | 'BOARD_LAYOUT' | 'ROADMAP_LAYOUT'
-  filter?: string
-  groupByFields?: string[]
-  sortByFields?: Array<{
-    fieldName: string
-    direction: 'ASC' | 'DESC'
-  }>
-  createdAt: string
-  updatedAt: string
-}
-
-interface ProjectDetails {
-  id: string
-  title: string
-  shortDescription: string | null
-  url: string
-  views: ProjectView[]
-  items: ProjectItem[]
-  fields: Array<{
-    name: string
-    dataType: string
-  }>
-}
-
-interface ViewData {
-  view: {
-    id: string
-    name: string
-    layout: string
-    groupByFields?: string[]
-    sortByFields?: Array<{
-      fieldName: string
-      direction: 'ASC' | 'DESC'
-    }>
-    filter?: string
-  }
-  items: ProjectItem[]
-}
-
 // Initialize composables
-const { groupItems, sortItemsInGroups } = useProjectGrouping()
+const { groupItems, sortItemsInGroups, getAvailableGroupFields } = useProjectGrouping()
 const { createFilterOptions, filterItems, createDefaultFilters } = useProjectFilters()
 
 const route = useRoute()
@@ -86,52 +19,21 @@ useHead({
   title: 'Project Board Details - GitHub Dashboard'
 })
 
-const { data: project, pending, error } = useFetch<ProjectDetails>(`/api/projects/${projectId}`, {
+const { data: project, pending, error, refresh } = useFetch<ProjectDetails>(`/api/projects/${projectId}`, {
   server: false
 })
 
-// Selected view
-const selectedView = ref<string>('')
+// Selected grouping
+const selectedGroupBy = ref<string>('')
 
-// View items state
-const viewItemsState = ref<{
-  data: ViewData | null
-  loading: boolean
-} | null>(null)
+// UI state
+const isDescriptionExpanded = ref(false)
+const isFiltersExpanded = ref(false)
 
-// Watch for view changes
-watch(selectedView, async (newViewId) => {
-  if (!newViewId) {
-    viewItemsState.value = null
-    return
-  }
-
-  viewItemsState.value = { data: null, loading: true }
-
-  try {
-    const response = await $fetch<ViewData>(`/api/projects/${projectId}/views/${newViewId}`)
-    viewItemsState.value = { data: response, loading: false }
-  } catch (error) {
-    console.error('Failed to fetch view items:', error)
-    viewItemsState.value = { data: null, loading: false }
-  }
-})
-
-// Reactive items based on selected view or project items
+// Current items from project (no views)
 const currentItems = computed(() => {
-  if (selectedView.value && viewItemsState.value?.data) {
-    return viewItemsState.value.data.items
-  }
   if (!project.value) return []
   return project.value.items
-})
-
-// Current view metadata
-const currentView = computed(() => {
-  if (selectedView.value && viewItemsState.value?.data) {
-    return viewItemsState.value.data.view
-  }
-  return null
 })
 
 // Filters
@@ -141,21 +43,30 @@ const filters = ref(createDefaultFilters())
 const filterOptions = computed(() => createFilterOptions(currentItems.value))
 const stateOptions = computed(() => filterOptions.value.stateOptions.value)
 const typeOptions = computed(() => filterOptions.value.typeOptions)
-const statusOptions = computed(() => filterOptions.value.statusOptions.value)
 const repositoryOptions = computed(() => filterOptions.value.repositoryOptions.value)
-const assigneeOptions = computed(() => filterOptions.value.assigneeOptions.value)
+const customFieldOptions = computed(() => filterOptions.value.customFieldOptions.value)
 
 // Filtered items using composable
 const filteredItems = computed(() => {
   return filterItems(currentItems.value, filters.value)
 })
 
-// Grouped items using composable
+// Group By options - available grouping fields from items
+const groupByOptions = computed(() => {
+  const fields = getAvailableGroupFields(currentItems.value)
+  return [
+    { value: '', label: 'None (flat list)' },
+    ...fields.map(field => ({ value: field, label: field }))
+  ]
+})
+
+// Grouped items using composable with manual grouping (no views)
 const groupedItems = computed(() => {
   const items = filteredItems.value
-  const view = currentView.value
-  const grouped = groupItems(items, view)
-  return sortItemsInGroups(grouped, view)
+  // Use selectedGroupBy (empty string means no grouping)
+  const groupField = selectedGroupBy.value || undefined
+  const grouped = groupItems(items, null, groupField)
+  return sortItemsInGroups(grouped, null)
 })
 
 // Clear filters
@@ -163,24 +74,40 @@ const clearFilters = () => {
   filters.value = createDefaultFilters()
 }
 
-// Show status column when status options are available
-const showStatusColumn = computed(() => statusOptions.value.length > 1)
+// Show custom field columns when fields are available in items
+const showStatusColumn = computed(() =>
+  currentItems.value.some(item => item.custom_fields['Status'])
+)
+const showPriorityColumn = computed(() =>
+  currentItems.value.some(item => item.custom_fields['Priority'])
+)
+const showSizeColumn = computed(() =>
+  currentItems.value.some(item => item.custom_fields['Size'])
+)
+const showParentIssueColumn = computed(() =>
+  currentItems.value.some(item => item.custom_fields['Parent issue'])
+)
 </script>
 
 <template>
   <div class="project-detail-page">
     <!-- Loading State -->
     <div v-if="pending" class="loading-state">
-      <div class="loading-spinner" />
-      <p>Loading project board...</p>
+      <LoadingSpinner message="Loading project board..." />
     </div>
 
     <!-- Error State -->
     <div v-else-if="error" class="error-state">
-      <h3>Failed to load project board</h3>
-      <p>{{ error.data?.message || error.message || 'Unknown error occurred' }}</p>
-      <p>Project ID: {{ projectId }}</p>
-      <NuxtLink to="/projects" class="back-link">← Back to Project Boards</NuxtLink>
+      <ErrorBox
+        :error="error"
+        title="Failed to load project board"
+        @retry="refresh"
+      >
+        <template #actions>
+          <Text variant="secondary" size="base">Project ID: {{ projectId }}</Text>
+          <Link to="/projects" variant="primary" size="base">← Back to Project Boards</Link>
+        </template>
+      </ErrorBox>
     </div>
 
     <!-- Content -->
@@ -189,61 +116,98 @@ const showStatusColumn = computed(() => statusOptions.value.length > 1)
       <!-- Header -->
       <div class="project-header">
         <div class="header-content">
-          <div class="breadcrumb">
-            <NuxtLink to="/projects" class="breadcrumb-link">Project Boards</NuxtLink>
-            <span class="breadcrumb-separator">/</span>
-            <span class="breadcrumb-current">{{ project.title }}</span>
+          <Breadcrumbs
+            :items="[
+              { label: 'Project Boards', to: '/projects' },
+              { label: project.title, current: true }
+            ]"
+          />
+
+          <div class="title-row">
+            <Header
+              :level="1"
+              size="3xl"
+              variant="primary"
+              class="project-title"
+            >
+              {{ project.title }}
+            </Header>
+            <button
+              v-if="project.shortDescription"
+              class="tiny-toggle"
+              @click="isDescriptionExpanded = !isDescriptionExpanded"
+              title="Toggle description"
+            >
+              {{ isDescriptionExpanded ? '▼' : '▶' }}
+            </button>
+            <button
+              class="tiny-toggle"
+              @click="isFiltersExpanded = !isFiltersExpanded"
+              title="Toggle filters"
+            >
+              🔍 {{ isFiltersExpanded ? '▼' : '▶' }}
+            </button>
           </div>
 
-          <h1 class="project-title">{{ project.title }}</h1>
-          <p v-if="project.shortDescription" class="project-description">{{ project.shortDescription }}</p>
+          <Text
+            v-if="project.shortDescription && isDescriptionExpanded"
+            variant="tertiary"
+            size="base"
+            class="project-description"
+          >
+            {{ project.shortDescription }}
+          </Text>
 
           <div class="project-meta">
-            <span class="meta-item">{{ project.items.length }} items</span>
-            <a :href="project.url" target="_blank" class="meta-link">View on GitHub →</a>
+            <Text variant="tertiary" size="sm">{{ project.items.length }} items</Text>
+            <Link :href="project.url" variant="primary" size="sm" external>View on GitHub →</Link>
           </div>
         </div>
       </div>
 
       <!-- Filters -->
       <ProjectFilters
+        v-if="isFiltersExpanded"
         v-model:filters="filters"
-        v-model:selected-view="selectedView"
-        :views="project.views"
+        v-model:selected-group-by="selectedGroupBy"
+        :group-by-options="groupByOptions"
         :state-options="stateOptions"
         :type-options="typeOptions"
-        :status-options="statusOptions"
         :repository-options="repositoryOptions"
-        :assignee-options="assigneeOptions"
+        :custom-field-options="customFieldOptions"
         :filtered-count="filteredItems.length"
         :total-count="currentItems.length"
-        :is-loading="viewItemsState?.loading || false"
         @clear-filters="clearFilters"
       />
 
       <!-- Items Table -->
       <div class="items-section">
-        <div v-if="viewItemsState?.loading" class="loading-items">
-          <div class="loading-spinner" />
-          <p>Loading view items...</p>
-        </div>
-
-        <div v-else-if="filteredItems.length === 0" class="empty-items">
-          <p>No items match the current filters.</p>
+        <div v-if="filteredItems.length === 0" class="empty-items">
+          <Text variant="tertiary" size="base">No items match the current filters.</Text>
         </div>
 
         <div v-else class="items-table-container">
-          <!-- Show groups when view has grouping, otherwise show flat table -->
-          <div v-if="currentView && currentView.groupByFields && currentView.groupByFields.length > 0">
+          <!-- Show groups when grouping is selected, otherwise show flat table -->
+          <div v-if="selectedGroupBy">
             <div v-for="group in groupedItems" :key="group.name" class="group-section">
               <div class="group-header">
-                <h4 class="group-title">{{ group.name }}</h4>
-                <span class="group-count">{{ group.count }} items</span>
+                <Header
+                  :level="4"
+                  size="base"
+                  variant="primary"
+                  class="group-title"
+                >
+                  {{ group.name }}
+                </Header>
+                <Text variant="tertiary" size="sm" weight="medium">{{ group.count }} items</Text>
               </div>
 
               <ProjectItemsTable
                 :items="group.items"
                 :show-status="showStatusColumn"
+                :show-priority="showPriorityColumn"
+                :show-size="showSizeColumn"
+                :show-parent-issue="showParentIssueColumn"
               />
             </div>
           </div>
@@ -253,6 +217,9 @@ const showStatusColumn = computed(() => statusOptions.value.length > 1)
             v-else
             :items="filteredItems"
             :show-status="showStatusColumn"
+            :show-priority="showPriorityColumn"
+            :show-size="showSizeColumn"
+            :show-parent-issue="showParentIssueColumn"
           />
         </div>
       </div>
@@ -261,56 +228,16 @@ const showStatusColumn = computed(() => statusOptions.value.length > 1)
 </template>
 
 <style scoped>
+/* Layout structure only - typography and colors handled by atoms */
 .project-detail-page {
-  padding: 20px;
+  padding: var(--spacing-5);
   min-height: 100vh;
-  background: #f8fafc;
+  background: var(--color-slate-50);
 }
 
 .loading-state, .error-state {
   text-align: center;
-  padding: 60px 20px;
-}
-
-.loading-spinner {
-  width: 40px;
-  height: 40px;
-  border: 3px solid #e5e7eb;
-  border-top: 3px solid #3b82f6;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin: 0 auto 16px;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-.loading-state p {
-  color: #6b7280;
-  font-size: 16px;
-}
-
-.error-state h3 {
-  color: #ef4444;
-  margin: 0 0 8px 0;
-  font-size: 20px;
-}
-
-.error-state p {
-  color: #6b7280;
-  margin: 0 0 16px 0;
-}
-
-.back-link {
-  color: #2563eb;
-  text-decoration: none;
-  font-weight: 500;
-}
-
-.back-link:hover {
-  text-decoration: underline;
+  padding: var(--spacing-15) var(--spacing-5);
 }
 
 .project-content {
@@ -319,84 +246,61 @@ const showStatusColumn = computed(() => statusOptions.value.length > 1)
 }
 
 .project-header {
-  background: white;
-  border-radius: 12px;
-  padding: 24px;
-  margin-bottom: 24px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  background: var(--color-white);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-6);
+  margin-bottom: var(--spacing-6);
+  box-shadow: var(--shadow-sm);
 }
 
-.breadcrumb {
+.title-row {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-bottom: 12px;
-  font-size: 14px;
-}
-
-.breadcrumb-link {
-  color: #2563eb;
-  text-decoration: none;
-}
-
-.breadcrumb-link:hover {
-  text-decoration: underline;
-}
-
-.breadcrumb-separator {
-  color: #6b7280;
-}
-
-.breadcrumb-current {
-  color: #6b7280;
+  gap: var(--spacing-3);
+  margin-bottom: var(--spacing-2);
 }
 
 .project-title {
-  font-size: 28px;
-  font-weight: 700;
-  color: #111827;
-  margin: 0 0 8px 0;
+  margin: 0;
+}
+
+.tiny-toggle {
+  background: none;
+  border: 1px solid var(--color-gray-300);
+  border-radius: var(--radius-sm);
+  padding: 2px 6px;
+  font-size: var(--font-size-xs);
+  cursor: pointer;
+  color: var(--color-gray-600);
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.tiny-toggle:hover {
+  background: var(--color-gray-100);
+  border-color: var(--color-gray-400);
 }
 
 .project-description {
-  color: #6b7280;
-  margin: 0 0 16px 0;
-  line-height: 1.5;
+  margin: 0 0 var(--spacing-4) 0;
 }
 
 .project-meta {
   display: flex;
   align-items: center;
-  gap: 16px;
-}
-
-.meta-item {
-  color: #6b7280;
-  font-size: 14px;
-}
-
-.meta-link {
-  color: #2563eb;
-  text-decoration: none;
-  font-size: 14px;
-  font-weight: 500;
-}
-
-.meta-link:hover {
-  text-decoration: underline;
+  gap: var(--spacing-4);
 }
 
 .items-section {
-  background: white;
-  border-radius: 12px;
-  padding: 24px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  background: var(--color-white);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-6);
+  box-shadow: var(--shadow-sm);
 }
 
 .empty-items {
   text-align: center;
-  padding: 40px;
-  color: #6b7280;
+  padding: var(--spacing-10);
 }
 
 .items-table-container {
@@ -408,22 +312,11 @@ const showStatusColumn = computed(() => statusOptions.value.length > 1)
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 60px 20px;
-  color: #6b7280;
-}
-
-.loading-items .loading-spinner {
-  width: 32px;
-  height: 32px;
-  border: 3px solid #e5e7eb;
-  border-top: 3px solid #3b82f6;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin-bottom: 16px;
+  padding: var(--spacing-15) var(--spacing-5);
 }
 
 .group-section {
-  margin-bottom: 32px;
+  margin-bottom: var(--spacing-8);
 }
 
 .group-section:last-child {
@@ -434,33 +327,24 @@ const showStatusColumn = computed(() => statusOptions.value.length > 1)
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 16px;
-  background: #f1f5f9;
-  border-bottom: 1px solid #e2e8f0;
-  border-radius: 8px 8px 0 0;
+  padding: var(--spacing-3) var(--spacing-4);
+  background: var(--color-slate-100);
+  border-bottom: var(--border-width-thin) solid var(--color-slate-200);
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
 }
 
 .group-title {
   margin: 0;
-  font-size: 16px;
-  font-weight: 600;
-  color: #1e293b;
-}
-
-.group-count {
-  font-size: 14px;
-  color: #64748b;
-  font-weight: 500;
 }
 
 @media (max-width: 768px) {
   .project-detail-page {
-    padding: 16px;
+    padding: var(--spacing-4);
   }
 
   .project-header,
   .items-section {
-    padding: 16px;
+    padding: var(--spacing-4);
   }
 }
 </style>
