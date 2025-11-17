@@ -2,10 +2,15 @@
   <div class="filters-section">
     <div class="filters-header">
       <h3>Filters</h3>
-      <Button variant="ghost" size="sm" @click="clearFilters">Clear All</Button>
+      <div class="header-actions">
+        <Button variant="ghost" size="sm" @click="isExpanded = !isExpanded">
+          {{ isExpanded ? 'Hide' : 'Show' }}
+        </Button>
+        <Button variant="ghost" size="sm" @click="clearFilters">Clear All</Button>
+      </div>
     </div>
 
-    <div class="filters-grid">
+    <div v-show="isExpanded" class="filters-grid">
       <!-- Group By Selector -->
       <div class="filter-group">
         <label for="group-by-filter">Group By</label>
@@ -82,13 +87,15 @@
       </template>
     </div>
 
-    <div class="results-summary">
+    <div v-show="isExpanded" class="results-summary">
       <span>Showing {{ filteredCount }} of {{ totalCount }} items</span>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+const isExpanded = ref(false)
+
 interface FilterOptions {
   search: string
   state: string
@@ -156,6 +163,11 @@ const clearFilters = () => {
   font-weight: var(--font-weight-semibold);
   color: var(--color-gray-900);
   margin: 0;
+}
+
+.header-actions {
+  display: flex;
+  gap: var(--spacing-2);
 }
 
 .filters-grid {

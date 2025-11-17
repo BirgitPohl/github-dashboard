@@ -26,6 +26,9 @@ const { data: project, pending, error, refresh } = useFetch<ProjectDetails>(`/ap
 // Selected grouping
 const selectedGroupBy = ref<string>('')
 
+// UI state
+const isDescriptionExpanded = ref(false)
+
 // Current items from project (no views)
 const currentItems = computed(() => {
   if (!project.value) return []
@@ -119,15 +122,31 @@ const showParentIssueColumn = computed(() =>
             ]"
           />
 
-          <Header
-            :level="1"
-            size="3xl"
-            variant="primary"
-            class="project-title"
+          <div class="title-row">
+            <Header
+              :level="1"
+              size="3xl"
+              variant="primary"
+              class="project-title"
+            >
+              {{ project.title }}
+            </Header>
+            <Button
+              v-if="project.shortDescription"
+              variant="ghost"
+              size="sm"
+              @click="isDescriptionExpanded = !isDescriptionExpanded"
+            >
+              {{ isDescriptionExpanded ? 'Hide Description' : 'Show Description' }}
+            </Button>
+          </div>
+
+          <Text
+            v-if="project.shortDescription && isDescriptionExpanded"
+            variant="tertiary"
+            size="base"
+            class="project-description"
           >
-            {{ project.title }}
-          </Header>
-          <Text v-if="project.shortDescription" variant="tertiary" size="base" class="project-description">
             {{ project.shortDescription }}
           </Text>
 
@@ -225,8 +244,16 @@ const showParentIssueColumn = computed(() =>
   box-shadow: var(--shadow-sm);
 }
 
+.title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-4);
+  margin-bottom: var(--spacing-2);
+}
+
 .project-title {
-  margin: 0 0 var(--spacing-2) 0;
+  margin: 0;
 }
 
 .project-description {
