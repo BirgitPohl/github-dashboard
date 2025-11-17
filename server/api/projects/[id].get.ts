@@ -58,12 +58,16 @@ export default defineEventHandler(async (event) => {
 
     console.log(`Fetching project ${projectNum} via PURE REST API (NO GraphQL)`)
 
-    // Fetch all data using REST API only - NO GraphQL!
-    const [project, restItems, fields] = await Promise.all([
+    // Step 1: Fetch project metadata and field definitions
+    const [project, fields] = await Promise.all([
       fetchProjectREST(projectNum),           // Project metadata
-      fetchProjectItemsREST(projectNum),       // All items with fields
       fetchProjectFieldsREST(projectNum)       // Project field definitions
     ])
+
+    // Step 2: Fetch items with ALL field IDs so we get all custom field values
+    const fieldIds = fields.map(f => f.id)
+    console.log(`Fetching items with ${fieldIds.length} field IDs: ${fieldIds.join(', ')}`)
+    const restItems = await fetchProjectItemsREST(projectNum, fieldIds)
 
     // Transform REST items to our internal format
     // This automatically extracts ALL custom fields: Size, Parent issue, Priority, etc.

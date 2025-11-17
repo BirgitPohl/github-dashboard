@@ -179,8 +179,10 @@ export async function fetchProjectFieldsREST(projectNumber: number): Promise<RES
 
 /**
  * Fetch all items for a specific project with pagination support
+ * @param projectNumber - The project number
+ * @param fieldIds - Optional array of field IDs to include in response (if not provided, only Title is returned)
  */
-export async function fetchProjectItemsREST(projectNumber: number): Promise<RESTProjectItem[]> {
+export async function fetchProjectItemsREST(projectNumber: number, fieldIds?: number[]): Promise<RESTProjectItem[]> {
   const owner = getGitHubOwner()
   const headers = getGitHubHeaders()
 
@@ -190,10 +192,13 @@ export async function fetchProjectItemsREST(projectNumber: number): Promise<REST
   let cursor: string | null = null
   let page = 1
 
+  // Build fields parameter if provided
+  const fieldsParam = fieldIds && fieldIds.length > 0 ? `&fields=${fieldIds.join(',')}` : ''
+
   do {
     const url = cursor
-      ? `https://api.github.com/orgs/${owner}/projectsV2/${projectNumber}/items?per_page=100&after=${cursor}`
-      : `https://api.github.com/orgs/${owner}/projectsV2/${projectNumber}/items?per_page=100`
+      ? `https://api.github.com/orgs/${owner}/projectsV2/${projectNumber}/items?per_page=100&after=${cursor}${fieldsParam}`
+      : `https://api.github.com/orgs/${owner}/projectsV2/${projectNumber}/items?per_page=100${fieldsParam}`
 
     console.log(`Fetching page ${page} of project items...`)
 
@@ -241,9 +246,14 @@ let _debugLogged = false
 export function transformRESTItemToProjectItem(item: RESTProjectItem): ProjectItem {
   const customFields: Record<string, string> = {}
 
-  // Debug: log item structure for first item
+  // Debug: log item structure for first few items
   if (!_debugLogged) {
-    console.log('Sample item:', JSON.stringify(item, null, 2).substring(0, 1000))
+    console.log('=== SAMPLE ITEM STRUCTURE ===')
+    console.log('Content type:', item.content_type)
+    console.log('Content keys:', Object.keys(item.content || {}))
+    console.log('Number of fields:', item.fields.length)
+    console.log('Fields:', JSON.stringify(item.fields, null, 2))
+    console.log('Content sample:', JSON.stringify(item.content, null, 2).substring(0, 500))
     _debugLogged = true
   }
 
@@ -323,6 +333,44 @@ export function transformRESTItemToProjectItem(item: RESTProjectItem): ProjectIt
           customFields[field.name] = field.value.title
         } else {
           customFields[field.name] = String(field.value)
+        }
+        break
+
+      case 'sub_issues_progress':
+        // Sub-issues progress field
+        if (typeof field.value === 'object') {
+          const progress = field.value
+          if (progress.completed !== undefined && progress.total !== undefined) {
+            customFields[field.name] = `${progress.completed}/${progress.total}`
+          } else {
+            customFields[field.name] = JSON.stringify(field.value)
+          }
+        }
+        break
+
+      case 'issue_type':
+        // Issue type field
+        if (typeof field.value === 'object' && field.value.name) {
+          customFields[field.name] = field.value.name
+        } else {
+          customFields[field.name] = String(field.value)
+        }
+        break
+
+      case 'repository':
+        // Repository field
+        if (typeof field.value === 'object' && field.value.name) {
+          customFields[field.name] = field.value.name
+        } else {
+          customFields[field.name] = String(field.value)
+        }
+        break
+
+      case 'linked_pull_requests':
+      case 'reviewers':
+        // Array fields - convert to count or list
+        if (Array.isArray(field.value)) {
+          customFields[field.name] = `${field.value.length} items`
         }
         break
 
