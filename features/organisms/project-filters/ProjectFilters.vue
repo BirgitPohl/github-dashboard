@@ -71,7 +71,7 @@
         >
           <template v-if="options.length > 0">
             <label :for="`${fieldName}-filter`">{{ fieldName }}</label>
-            <SelectMenu
+            <USelectMenu
               :id="`${fieldName}-filter`"
               :model-value="filters[fieldName] || []"
               :options="options"
