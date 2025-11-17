@@ -131,14 +131,13 @@ const showParentIssueColumn = computed(() =>
             >
               {{ project.title }}
             </Header>
-            <Button
+            <button
               v-if="project.shortDescription"
-              variant="ghost"
-              size="sm"
+              class="tiny-toggle"
               @click="isDescriptionExpanded = !isDescriptionExpanded"
             >
-              {{ isDescriptionExpanded ? 'Hide Description' : 'Show Description' }}
-            </Button>
+              {{ isDescriptionExpanded ? '▼' : '▶' }}
+            </button>
           </div>
 
           <Text
@@ -247,13 +246,29 @@ const showParentIssueColumn = computed(() =>
 .title-row {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: var(--spacing-4);
+  gap: var(--spacing-3);
   margin-bottom: var(--spacing-2);
 }
 
 .project-title {
   margin: 0;
+}
+
+.tiny-toggle {
+  background: none;
+  border: 1px solid var(--color-gray-300);
+  border-radius: var(--radius-sm);
+  padding: 2px 6px;
+  font-size: var(--font-size-xs);
+  cursor: pointer;
+  color: var(--color-gray-600);
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.tiny-toggle:hover {
+  background: var(--color-gray-100);
+  border-color: var(--color-gray-400);
 }
 
 .project-description {

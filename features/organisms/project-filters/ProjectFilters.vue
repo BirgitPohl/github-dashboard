@@ -1,13 +1,13 @@
 <template>
   <div class="filters-section">
     <div class="filters-header">
-      <h3>Filters</h3>
-      <div class="header-actions">
-        <Button variant="ghost" size="sm" @click="isExpanded = !isExpanded">
-          {{ isExpanded ? 'Hide' : 'Show' }}
-        </Button>
-        <Button variant="ghost" size="sm" @click="clearFilters">Clear All</Button>
+      <div class="title-with-toggle">
+        <h3>Filters</h3>
+        <button class="tiny-toggle" @click="isExpanded = !isExpanded">
+          {{ isExpanded ? '▼' : '▶' }}
+        </button>
       </div>
+      <Button variant="ghost" size="sm" @click="clearFilters">Clear All</Button>
     </div>
 
     <div v-show="isExpanded" class="filters-grid">
@@ -158,6 +158,12 @@ const clearFilters = () => {
   margin-bottom: var(--spacing-4);
 }
 
+.title-with-toggle {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+}
+
 .filters-header h3 {
   font-size: var(--font-size-lg);
   font-weight: var(--font-weight-semibold);
@@ -165,9 +171,20 @@ const clearFilters = () => {
   margin: 0;
 }
 
-.header-actions {
-  display: flex;
-  gap: var(--spacing-2);
+.tiny-toggle {
+  background: none;
+  border: 1px solid var(--color-gray-300);
+  border-radius: var(--radius-sm);
+  padding: 2px 6px;
+  font-size: var(--font-size-xs);
+  cursor: pointer;
+  color: var(--color-gray-600);
+  transition: all 0.2s;
+}
+
+.tiny-toggle:hover {
+  background: var(--color-gray-100);
+  border-color: var(--color-gray-400);
 }
 
 .filters-grid {
