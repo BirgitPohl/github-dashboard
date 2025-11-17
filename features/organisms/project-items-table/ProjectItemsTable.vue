@@ -4,6 +4,7 @@
       <thead>
         <tr>
           <th>Type</th>
+          <th>#</th>
           <th>Title</th>
           <th>Repository</th>
           <th>State</th>
@@ -25,11 +26,18 @@
             <span class="type-text">{{ getTypeText(item.type) }}</span>
           </td>
 
+          <!-- Number -->
+          <td class="number-cell">
+            <a v-if="item.number" :href="item.url" target="_blank" class="item-number-link">
+              #{{ item.number }}
+            </a>
+            <span v-else class="no-number">—</span>
+          </td>
+
           <!-- Title -->
           <td class="title-cell">
             <a :href="item.url" target="_blank" class="item-title">
-              <span v-if="item.number" class="item-number">#{{ item.number }}</span>
-              <span class="item-title-text">{{ item.title }}</span>
+              {{ item.title }}
             </a>
           </td>
 
@@ -270,6 +278,27 @@ const calculateBarWidth = (total: number): string => {
   font-weight: var(--font-weight-medium);
 }
 
+.number-cell {
+  min-width: 60px;
+  text-align: right;
+}
+
+.item-number-link {
+  color: var(--color-gray-500);
+  text-decoration: none;
+  font-weight: var(--font-weight-normal);
+  font-size: var(--font-size-sm);
+}
+
+.item-number-link:hover {
+  color: var(--color-blue-600);
+  text-decoration: underline;
+}
+
+.no-number {
+  color: var(--color-gray-400);
+}
+
 .title-cell {
   min-width: 300px;
 }
@@ -279,23 +308,10 @@ const calculateBarWidth = (total: number): string => {
   text-decoration: none;
   font-weight: var(--font-weight-medium);
   line-height: 1.4;
-  display: flex;
-  align-items: baseline;
-  gap: var(--spacing-2);
 }
 
-.item-title:hover .item-title-text {
+.item-title:hover {
   text-decoration: underline;
-}
-
-.item-number {
-  color: var(--color-gray-500);
-  font-weight: var(--font-weight-normal);
-  flex-shrink: 0;
-}
-
-.item-title-text {
-  color: var(--color-blue-600);
 }
 
 .repository-cell {
