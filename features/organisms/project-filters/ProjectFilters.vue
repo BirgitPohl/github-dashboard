@@ -63,20 +63,23 @@
       </div>
 
       <!-- Dynamic Custom Field Filters -->
-      <div
-        v-for="(options, fieldName) in customFieldOptions"
-        :key="fieldName"
-        v-if="options.length > 1"
-        class="filter-group"
-      >
-        <label :for="`${fieldName}-filter`">{{ fieldName }}</label>
-        <Select
-          :id="`${fieldName}-filter`"
-          :model-value="filters[fieldName] || 'all'"
-          :options="options"
-          @update:model-value="updateFilter(fieldName, $event)"
-        />
-      </div>
+      <template v-if="customFieldOptions">
+        <div
+          v-for="(options, fieldName) in customFieldOptions"
+          :key="fieldName"
+          class="filter-group"
+        >
+          <template v-if="options.length > 1">
+            <label :for="`${fieldName}-filter`">{{ fieldName }}</label>
+            <Select
+              :id="`${fieldName}-filter`"
+              :model-value="filters[fieldName] || 'all'"
+              :options="options"
+              @update:model-value="updateFilter(fieldName, $event)"
+            />
+          </template>
+        </div>
+      </template>
     </div>
 
     <div class="results-summary">
