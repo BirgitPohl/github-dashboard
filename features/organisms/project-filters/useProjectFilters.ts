@@ -74,11 +74,19 @@ export const useProjectFilters = () => {
     const customFieldOptions = computed((): Record<string, SelectOption[]> => {
       if (!items.length) return {}
 
+      // Fields to exclude from filters
+      const excludedFields = ['Devs', 'Sub-issues progress_data']
+
       const fieldOptionsMap: Record<string, Set<string>> = {}
 
       // Collect all unique values for each custom field
       for (const item of items) {
         for (const [fieldName, fieldValue] of Object.entries(item.custom_fields || {})) {
+          // Skip excluded fields
+          if (excludedFields.includes(fieldName)) {
+            continue
+          }
+
           if (!fieldOptionsMap[fieldName]) {
             fieldOptionsMap[fieldName] = new Set()
           }
