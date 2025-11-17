@@ -87,6 +87,9 @@ const showSizeColumn = computed(() =>
 const showParentIssueColumn = computed(() =>
   currentItems.value.some(item => item.custom_fields['Parent issue'])
 )
+const showSubIssuesColumn = computed(() =>
+  currentItems.value.some(item => item.custom_fields['Sub-issues progress'])
+)
 </script>
 
 <template>
@@ -208,6 +211,7 @@ const showParentIssueColumn = computed(() =>
                 :show-priority="showPriorityColumn"
                 :show-size="showSizeColumn"
                 :show-parent-issue="showParentIssueColumn"
+                :show-sub-issues-progress="showSubIssuesColumn"
               />
             </div>
           </div>
@@ -220,6 +224,7 @@ const showParentIssueColumn = computed(() =>
             :show-priority="showPriorityColumn"
             :show-size="showSizeColumn"
             :show-parent-issue="showParentIssueColumn"
+            :show-sub-issues-progress="showSubIssuesColumn"
           />
         </div>
       </div>
