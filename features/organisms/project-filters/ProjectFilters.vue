@@ -73,9 +73,10 @@
             <label :for="`${fieldName}-filter`">{{ fieldName }}</label>
             <USelectMenu
               :id="`${fieldName}-filter`"
-              :model-value="filters[fieldName] || []"
+              v-model="filters[fieldName]"
               :options="options"
               multiple
+              searchable
               :placeholder="`Select ${fieldName}...`"
               @update:model-value="updateFilter(fieldName, $event)"
             />
