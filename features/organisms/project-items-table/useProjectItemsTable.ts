@@ -8,7 +8,7 @@ export const useProjectItemsTable = () => {
    */
   const getTypeIcon = (type: string): string => {
     switch (type) {
-      case 'ISSUE': return '🐛'
+      case 'ISSUE': return '📘'
       case 'PULL_REQUEST': return '🔀'
       case 'DRAFT_ISSUE': return '📝'
       default: return '📋'
