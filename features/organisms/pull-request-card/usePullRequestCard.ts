@@ -90,10 +90,10 @@ export const usePullRequestCard = () => {
    */
   const getCheckIcon = (status: 'success' | 'failure' | 'pending' | 'neutral'): string => {
     switch (status) {
-      case 'success': return 'heroicons:check-circle'
-      case 'failure': return 'heroicons:x-circle'
-      case 'pending': return 'heroicons:clock'
-      case 'neutral': return 'heroicons:minus-circle'
+      case 'success': return '✅'
+      case 'failure': return '❌'
+      case 'pending': return '⏳'
+      case 'neutral': return '⚪'
     }
   }
 
@@ -114,10 +114,10 @@ export const usePullRequestCard = () => {
    */
   const getReviewIcon = (status: 'approved' | 'changes_requested' | 'pending' | 'commented'): string => {
     switch (status) {
-      case 'approved': return 'heroicons:hand-thumb-up'
-      case 'changes_requested': return 'heroicons:exclamation-triangle'
-      case 'commented': return 'heroicons:chat-bubble-bottom-center-text'
-      case 'pending': return 'heroicons:eye'
+      case 'approved': return '👍'
+      case 'changes_requested': return '⚠️'
+      case 'commented': return '💬'
+      case 'pending': return '👀'
     }
   }
 

@@ -130,7 +130,7 @@ const cardClasses = computed(() => {
 
         <!-- Comment Count -->
         <div v-if="pullRequest.comments && pullRequest.comments.total > 0" class="pr-card__comments">
-          <Icon icon="heroicons:chat-bubble-left-ellipsis" size="sm" decorative />
+          <Icon icon="💬" size="sm" decorative />
           <Text variant="secondary" size="sm">
             {{ pullRequest.comments.unresolved }}/{{ pullRequest.comments.total }}
           </Text>
