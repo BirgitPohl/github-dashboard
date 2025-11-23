@@ -1,5 +1,138 @@
 import { fetchRepositories, getGitHubHeaders, type GitHubRepository } from '../utils/github'
 
+// Helper to fetch review status for a PR
+async function fetchReviewStatus(
+  repoFullName: string,
+  prNumber: number,
+  headers: HeadersInit
+): Promise<'approved' | 'changes_requested' | 'pending' | 'commented'> {
+  try {
+    const response = await fetch(
+      `https://api.github.com/repos/${repoFullName}/pulls/${prNumber}/reviews`,
+      { headers }
+    )
+    if (!response.ok) return 'pending'
+
+    const reviews = await response.json()
+    // Get the latest review state per reviewer
+    const latestByReviewer = new Map<string, string>()
+    for (const review of reviews) {
+      if (review.state !== 'PENDING' && review.state !== 'COMMENTED') {
+        latestByReviewer.set(review.user.login, review.state)
+      }
+    }
+
+    const states = Array.from(latestByReviewer.values())
+    if (states.includes('CHANGES_REQUESTED')) return 'changes_requested'
+    if (states.includes('APPROVED')) return 'approved'
+    if (reviews.some((r: { state: string }) => r.state === 'COMMENTED')) return 'commented'
+    return 'pending'
+  } catch {
+    return 'pending'
+  }
+}
+
+// Helper to fetch check/CI status for a PR
+async function fetchCheckStatus(
+  repoFullName: string,
+  commitSha: string,
+  headers: HeadersInit
+): Promise<'success' | 'failure' | 'pending' | 'neutral'> {
+  try {
+    // Fetch combined status (legacy status API)
+    const statusResponse = await fetch(
+      `https://api.github.com/repos/${repoFullName}/commits/${commitSha}/status`,
+      { headers }
+    )
+
+    // Fetch check runs (newer checks API)
+    const checksResponse = await fetch(
+      `https://api.github.com/repos/${repoFullName}/commits/${commitSha}/check-runs`,
+      { headers }
+    )
+
+    let hasFailure = false
+    let hasPending = false
+    let hasSuccess = false
+
+    if (statusResponse.ok) {
+      const status = await statusResponse.json()
+      if (status.state === 'failure' || status.state === 'error') hasFailure = true
+      else if (status.state === 'pending') hasPending = true
+      else if (status.state === 'success') hasSuccess = true
+    }
+
+    if (checksResponse.ok) {
+      const checks = await checksResponse.json()
+      for (const check of checks.check_runs || []) {
+        if (check.conclusion === 'failure' || check.conclusion === 'timed_out' || check.conclusion === 'cancelled') {
+          hasFailure = true
+        } else if (check.status === 'in_progress' || check.status === 'queued') {
+          hasPending = true
+        } else if (check.conclusion === 'success') {
+          hasSuccess = true
+        }
+      }
+    }
+
+    if (hasFailure) return 'failure'
+    if (hasPending) return 'pending'
+    if (hasSuccess) return 'success'
+    return 'neutral'
+  } catch {
+    return 'neutral'
+  }
+}
+
+// Helper to fetch comment counts for a PR
+async function fetchCommentCounts(
+  repoFullName: string,
+  prNumber: number,
+  headers: HeadersInit
+): Promise<{ total: number; unresolved: number }> {
+  try {
+    // Fetch review comments (inline comments on diff)
+    const reviewCommentsResponse = await fetch(
+      `https://api.github.com/repos/${repoFullName}/pulls/${prNumber}/comments?per_page=100`,
+      { headers }
+    )
+
+    let total = 0
+    let unresolved = 0
+
+    if (reviewCommentsResponse.ok) {
+      const comments = await reviewCommentsResponse.json()
+
+      // Group by thread (in_reply_to_id)
+      const threads = new Map<number, Array<{ id: number }>>()
+
+      for (const comment of comments) {
+        total++
+        const threadId = comment.in_reply_to_id || comment.id
+        if (!threads.has(threadId)) {
+          threads.set(threadId, [])
+        }
+        threads.get(threadId)!.push(comment)
+      }
+
+      // Check which threads are unresolved (no resolution marker)
+      // GitHub doesn't provide resolution status via REST API directly for review comments
+      // We'll count root comments as potentially unresolved threads
+      for (const [threadId, threadComments] of threads) {
+        // If this is a root comment (not a reply), count as unresolved
+        const rootComment = comments.find((c: { id: number }) => c.id === threadId)
+        if (rootComment) {
+          unresolved++
+        }
+      }
+    }
+
+    return { total, unresolved }
+  } catch {
+    return { total: 0, unresolved: 0 }
+  }
+}
+
 interface PullRequest {
   id: number
   number: number
@@ -26,6 +159,7 @@ interface PullRequest {
   }>
   head: {
     ref: string
+    sha: string
     repo: {
       name: string
       full_name: string
@@ -41,6 +175,13 @@ interface PullRequest {
   additions: number
   deletions: number
   changed_files: number
+  // Additional data fetched separately
+  review_status?: 'approved' | 'changes_requested' | 'pending' | 'commented'
+  check_status?: 'success' | 'failure' | 'pending' | 'neutral'
+  comments: {
+    total: number
+    unresolved: number
+  }
 }
 
 export default defineEventHandler(async (event) => {
@@ -76,14 +217,29 @@ export default defineEventHandler(async (event) => {
 
           const prs = await prResponse.json()
 
-          // Add repository information to each PR
-          return prs.map((pr: PullRequest) => ({
-            ...pr,
-            repository: {
-              name: repo.name,
-              full_name: repo.full_name
-            }
-          }))
+          // Fetch additional data for each PR in parallel
+          const enrichedPrs = await Promise.all(
+            prs.map(async (pr: PullRequest) => {
+              const [review_status, check_status, comments] = await Promise.all([
+                fetchReviewStatus(repo.full_name, pr.number, headers),
+                fetchCheckStatus(repo.full_name, pr.head.sha, headers),
+                fetchCommentCounts(repo.full_name, pr.number, headers)
+              ])
+
+              return {
+                ...pr,
+                repository: {
+                  name: repo.name,
+                  full_name: repo.full_name
+                },
+                review_status,
+                check_status,
+                comments
+              }
+            })
+          )
+
+          return enrichedPrs
         } catch (error) {
           console.warn(`Error fetching PRs for ${repo.full_name}:`, error)
           return []
