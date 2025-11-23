@@ -84,6 +84,9 @@ const emit = defineEmits<{
 }>()
 
 const inputRef = ref<HTMLInputElement | null>(null)
+const slots = useSlots()
+
+const hasTrailing = computed(() => !!slots.trailing)
 
 const inputClasses = computed(() => {
   const classes = [
@@ -162,7 +165,7 @@ const handleBlur = (event: FocusEvent) => {
 </script>
 
 <template>
-  <div v-if="$slots.trailing" :class="wrapperClasses">
+  <div v-if="hasTrailing" :class="wrapperClasses">
     <input
       :id="id"
       ref="inputRef"
