@@ -83,6 +83,8 @@ const emit = defineEmits<{
   'blur': [event: FocusEvent]
 }>()
 
+const inputRef = ref<HTMLInputElement | null>(null)
+
 const inputClasses = computed(() => {
   const classes = [
     'input',
@@ -110,6 +112,36 @@ const inputClasses = computed(() => {
   return classes.join(' ')
 })
 
+const wrapperClasses = computed(() => {
+  const classes = [
+    'input-wrapper',
+    `input-wrapper--${props.size}`
+  ]
+
+  if (props.error) {
+    classes.push('input-wrapper--error')
+  } else if (props.success) {
+    classes.push('input-wrapper--success')
+  }
+
+  if (props.disabled) {
+    classes.push('input-wrapper--disabled')
+  }
+
+  if (props.class) {
+    classes.push(props.class)
+  }
+
+  return classes.join(' ')
+})
+
+// Expose input ref for parent components to focus
+defineExpose({
+  focus: () => inputRef.value?.focus(),
+  blur: () => inputRef.value?.blur(),
+  inputRef
+})
+
 const handleInput = (event: Event) => {
   const target = event.target as HTMLInputElement
   emit('update:modelValue', target.value)
@@ -130,8 +162,32 @@ const handleBlur = (event: FocusEvent) => {
 </script>
 
 <template>
+  <div v-if="$slots.trailing" :class="wrapperClasses">
+    <input
+      :id="id"
+      ref="inputRef"
+      :type="type"
+      :value="modelValue"
+      :placeholder="placeholder"
+      :disabled="disabled"
+      :readonly="readonly"
+      :required="required"
+      :name="name"
+      :autocomplete="autocomplete"
+      class="input-field"
+      @input="handleInput"
+      @change="handleChange"
+      @focus="handleFocus"
+      @blur="handleBlur"
+    >
+    <span class="input-trailing">
+      <slot name="trailing" />
+    </span>
+  </div>
   <input
+    v-else
     :id="id"
+    ref="inputRef"
     :type="type"
     :value="modelValue"
     :placeholder="placeholder"
@@ -149,6 +205,99 @@ const handleBlur = (event: FocusEvent) => {
 </template>
 
 <style scoped>
+/* Wrapper for input with trailing icon */
+.input-wrapper {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  border: var(--border-width-thin) solid var(--color-border-default);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-primary);
+  transition: all var(--transition-base);
+  box-sizing: border-box;
+}
+
+.input-wrapper:focus-within {
+  border-color: var(--color-primary-500);
+  box-shadow: 0 0 0 3px var(--color-primary-100);
+}
+
+.input-wrapper--sm {
+  padding: var(--spacing-1-5) var(--spacing-2-5);
+}
+
+.input-wrapper--md {
+  padding: var(--spacing-2) var(--spacing-3);
+}
+
+.input-wrapper--lg {
+  padding: var(--spacing-3) var(--spacing-4);
+}
+
+.input-wrapper--error {
+  border-color: var(--color-danger-500);
+}
+
+.input-wrapper--error:focus-within {
+  border-color: var(--color-danger-500);
+  box-shadow: 0 0 0 3px var(--color-danger-100);
+}
+
+.input-wrapper--success {
+  border-color: var(--color-success-500);
+}
+
+.input-wrapper--success:focus-within {
+  border-color: var(--color-success-500);
+  box-shadow: 0 0 0 3px var(--color-success-100);
+}
+
+.input-wrapper--disabled {
+  background: var(--color-gray-100);
+  opacity: 0.6;
+}
+
+.input-field {
+  flex: 1;
+  border: none;
+  background: transparent;
+  font-family: inherit;
+  color: var(--color-text-primary);
+  outline: none;
+  width: 100%;
+  padding: 0;
+}
+
+.input-wrapper--sm .input-field {
+  font-size: var(--font-size-sm);
+}
+
+.input-wrapper--md .input-field {
+  font-size: var(--font-size-base);
+}
+
+.input-wrapper--lg .input-field {
+  font-size: var(--font-size-lg);
+}
+
+.input-field::placeholder {
+  color: var(--color-text-muted);
+}
+
+.input-field:disabled {
+  color: var(--color-text-muted);
+  cursor: not-allowed;
+}
+
+.input-trailing {
+  display: flex;
+  align-items: center;
+  margin-left: var(--spacing-2);
+  color: var(--color-text-muted);
+  flex-shrink: 0;
+}
+
+/* Standalone input (no trailing slot) */
 .input {
   font-family: inherit;
   border: var(--border-width-thin) solid var(--color-border-default);

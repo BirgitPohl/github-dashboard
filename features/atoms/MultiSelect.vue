@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import Input from './Input.vue'
+
 interface SelectOption {
   value: string
   label: string
@@ -46,7 +48,7 @@ const emit = defineEmits<{
 const isOpen = ref(false)
 const dropdownRef = ref<HTMLElement | null>(null)
 const searchQuery = ref('')
-const searchInputRef = ref<HTMLInputElement | null>(null)
+const inputRef = ref<InstanceType<typeof Input> | null>(null)
 
 const openDropdown = () => {
   if (!props.disabled && !isOpen.value) {
@@ -84,17 +86,6 @@ const filteredOptions = computed(() => {
   return props.options.filter(option =>
     option.label.toLowerCase().includes(query)
   )
-})
-
-const triggerClasses = computed(() => {
-  const classes = ['multi-select-trigger', `multi-select-trigger--${props.size}`]
-  if (props.disabled) {
-    classes.push('multi-select-trigger--disabled')
-  }
-  if (isOpen.value) {
-    classes.push('multi-select-trigger--open')
-  }
-  return classes.join(' ')
 })
 
 // Close dropdown when clicking outside
@@ -138,25 +129,26 @@ onUnmounted(() => {
 
 <template>
   <div ref="dropdownRef" class="multi-select" :class="{ 'multi-select--disabled': disabled }">
-    <div :class="triggerClasses">
-      <input
-        :id="id"
-        ref="searchInputRef"
-        type="text"
-        class="multi-select-trigger__input"
-        :value="inputDisplayValue"
-        :placeholder="inputPlaceholder"
-        :disabled="disabled"
-        @input="searchQuery = ($event.target as HTMLInputElement).value"
-        @focus="openDropdown"
-        @click="openDropdown"
-      >
-      <span class="multi-select-trigger__icon" :class="{ 'multi-select-trigger__icon--open': isOpen }">
-        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12">
-          <path fill="currentColor" d="M6 9L1 4h10z"/>
-        </svg>
-      </span>
-    </div>
+    <Input
+      :id="id"
+      ref="inputRef"
+      type="text"
+      :model-value="inputDisplayValue"
+      :placeholder="inputPlaceholder"
+      :disabled="disabled"
+      :size="size"
+      @update:model-value="searchQuery = String($event)"
+      @focus="openDropdown"
+      @click="openDropdown"
+    >
+      <template #trailing>
+        <span class="multi-select-icon" :class="{ 'multi-select-icon--open': isOpen }">
+          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12">
+            <path fill="currentColor" d="M6 9L1 4h10z"/>
+          </svg>
+        </span>
+      </template>
+    </Input>
 
     <Transition name="dropdown">
       <div v-if="isOpen" class="multi-select-dropdown">
@@ -195,85 +187,13 @@ onUnmounted(() => {
   width: 100%;
 }
 
-.multi-select-trigger {
+.multi-select-icon {
   display: flex;
   align-items: center;
-  width: 100%;
-  border: var(--border-width-thin) solid var(--color-border-default);
-  border-radius: var(--radius-md);
-  background: var(--color-bg-primary);
-  transition: all var(--transition-base);
-  position: relative;
-}
-
-.multi-select-trigger:focus-within {
-  border-color: var(--color-primary-500);
-  box-shadow: 0 0 0 3px var(--color-primary-100);
-}
-
-.multi-select-trigger--open {
-  border-color: var(--color-primary-500);
-  box-shadow: 0 0 0 3px var(--color-primary-100);
-}
-
-.multi-select-trigger__input {
-  flex: 1;
-  width: 100%;
-  border: none;
-  background: transparent;
-  font-family: inherit;
-  color: var(--color-text-primary);
-  outline: none;
-  cursor: pointer;
-}
-
-.multi-select-trigger__input::placeholder {
-  color: var(--color-text-muted);
-}
-
-/* Size variants */
-.multi-select-trigger--sm {
-  padding: var(--spacing-1-5) var(--spacing-2-5);
-}
-
-.multi-select-trigger--sm .multi-select-trigger__input {
-  font-size: var(--font-size-sm);
-}
-
-.multi-select-trigger--md {
-  padding: var(--spacing-2) var(--spacing-3);
-}
-
-.multi-select-trigger--md .multi-select-trigger__input {
-  font-size: var(--font-size-base);
-}
-
-.multi-select-trigger--lg {
-  padding: var(--spacing-3) var(--spacing-4);
-}
-
-.multi-select-trigger--lg .multi-select-trigger__input {
-  font-size: var(--font-size-lg);
-}
-
-.multi-select-trigger--disabled {
-  background: var(--color-gray-100);
-  cursor: not-allowed;
-  opacity: 0.6;
-}
-
-.multi-select-trigger--disabled .multi-select-trigger__input {
-  color: var(--color-text-muted);
-  cursor: not-allowed;
-}
-
-.multi-select-trigger__icon {
-  margin-left: var(--spacing-2);
-  color: var(--color-text-muted);
   transition: transform var(--transition-base);
 }
 
-.multi-select-trigger__icon--open {
+.multi-select-icon--open {
   transform: rotate(180deg);
 }
 
