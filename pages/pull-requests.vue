@@ -245,6 +245,13 @@ const stats = computed(() => pullRequestsData.value?.stats || {
   color: var(--color-gray-900);
 }
 
+.pr-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4);
+  padding: var(--spacing-4);
+}
+
 @media (max-width: 768px) {
   .filters {
     flex-direction: column;
