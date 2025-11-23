@@ -79,6 +79,7 @@ const cardClasses = computed(() => {
   <BaseCard
     width="full"
     :border-color="getStateBorderColor(pullRequest)"
+    :href="pullRequest.html_url"
     :class="cardClasses"
   >
     <template #header>
@@ -100,9 +101,7 @@ const cardClasses = computed(() => {
         variant="primary"
         class="pr-card__title"
       >
-        <Link :href="pullRequest.html_url" variant="default" external>
-          {{ pullRequest.title }}
-        </Link>
+        {{ pullRequest.title }}
       </Header>
 
       <div class="pr-card__meta">

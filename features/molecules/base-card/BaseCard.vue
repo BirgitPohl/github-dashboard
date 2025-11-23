@@ -12,16 +12,28 @@ interface Props {
    * Background color (hex or rgb)
    */
   bgColor?: string
+  /**
+   * External link URL - makes the entire card clickable
+   */
+  href?: string
 }
 
 const props = withDefaults(defineProps<Props>(), {
   width: '300px',
   borderColor: 'var(--color-border-default)',
-  bgColor: 'var(--color-bg-primary)'
+  bgColor: 'var(--color-bg-primary)',
+  href: ''
 })
 
 const cardClasses = computed(() => {
-  return props.width === 'full' ? 'base-card base-card--full' : 'base-card'
+  const classes = ['base-card']
+  if (props.width === 'full') {
+    classes.push('base-card--full')
+  }
+  if (props.href) {
+    classes.push('base-card--clickable')
+  }
+  return classes.join(' ')
 })
 
 const cardStyles = computed(() => ({
@@ -32,7 +44,27 @@ const cardStyles = computed(() => ({
 </script>
 
 <template>
-  <div :class="cardClasses" :style="cardStyles">
+  <a
+    v-if="href"
+    :href="href"
+    target="_blank"
+    rel="noopener noreferrer"
+    :class="cardClasses"
+    :style="cardStyles"
+  >
+    <div v-if="$slots.header" class="base-card__header">
+      <slot name="header" />
+    </div>
+
+    <div class="base-card__body">
+      <slot name="body" />
+    </div>
+
+    <div v-if="$slots.bottom" class="base-card__bottom">
+      <slot name="bottom" />
+    </div>
+  </a>
+  <div v-else :class="cardClasses" :style="cardStyles">
     <div v-if="$slots.header" class="base-card__header">
       <slot name="header" />
     </div>
@@ -65,6 +97,13 @@ const cardStyles = computed(() => ({
 
 .base-card--full {
   width: 100%;
+}
+
+.base-card--clickable {
+  cursor: pointer;
+  text-decoration: none;
+  color: inherit;
+  display: block;
 }
 
 .base-card__header {
