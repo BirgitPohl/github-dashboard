@@ -11,7 +11,7 @@ interface Props {
   /**
    * Size variant (independent of heading level for accessibility)
    */
-  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl'
+  size?: 'xs' | 'sm' | 'base' | 'md' | 'lg' | 'xl' | '2xl' | '3xl'
   /**
    * Custom classes to apply
    */
@@ -85,6 +85,10 @@ const headerClasses = computed(() => {
 
 .typography-header--sm {
   font-size: var(--font-size-sm); /* 14px */
+}
+
+.typography-header--base {
+  font-size: var(--font-size-base); /* 16px */
 }
 
 .typography-header--md {
