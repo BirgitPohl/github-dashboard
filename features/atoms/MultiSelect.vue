@@ -48,16 +48,15 @@ const dropdownRef = ref<HTMLElement | null>(null)
 const searchQuery = ref('')
 const searchInputRef = ref<HTMLInputElement | null>(null)
 
-const toggleDropdown = () => {
-  if (!props.disabled) {
-    isOpen.value = !isOpen.value
-    if (isOpen.value) {
-      searchQuery.value = ''
-      nextTick(() => {
-        searchInputRef.value?.focus()
-      })
-    }
+const openDropdown = () => {
+  if (!props.disabled && !isOpen.value) {
+    isOpen.value = true
   }
+}
+
+const closeDropdown = () => {
+  isOpen.value = false
+  searchQuery.value = ''
 }
 
 const isSelected = (value: string): boolean => {
@@ -77,18 +76,6 @@ const toggleOption = (value: string) => {
   emit('update:modelValue', newValue)
 }
 
-const displayLabel = computed(() => {
-  const selected = props.modelValue || []
-  if (selected.length === 0) {
-    return props.placeholder
-  }
-  if (selected.length === 1) {
-    const option = props.options.find(o => o.value === selected[0])
-    return option?.label || selected[0]
-  }
-  return `${selected.length} selected`
-})
-
 const filteredOptions = computed(() => {
   if (!searchQuery.value.trim()) {
     return props.options
@@ -107,18 +94,38 @@ const triggerClasses = computed(() => {
   if (isOpen.value) {
     classes.push('multi-select-trigger--open')
   }
-  if ((props.modelValue?.length ?? 0) === 0) {
-    classes.push('multi-select-trigger--placeholder')
-  }
   return classes.join(' ')
 })
 
 // Close dropdown when clicking outside
 const handleClickOutside = (event: MouseEvent) => {
   if (dropdownRef.value && !dropdownRef.value.contains(event.target as Node)) {
-    isOpen.value = false
+    closeDropdown()
   }
 }
+
+// Input display value - shows selection summary or search query
+const inputDisplayValue = computed(() => {
+  if (isOpen.value) {
+    return searchQuery.value
+  }
+  const selected = props.modelValue || []
+  if (selected.length === 0) {
+    return ''
+  }
+  if (selected.length === 1) {
+    const option = props.options.find(o => o.value === selected[0])
+    return option?.label || selected[0]
+  }
+  return `${selected.length} selected`
+})
+
+const inputPlaceholder = computed(() => {
+  if (isOpen.value) {
+    return 'Type to filter...'
+  }
+  return props.placeholder
+})
 
 onMounted(() => {
   document.addEventListener('click', handleClickOutside)
@@ -131,33 +138,28 @@ onUnmounted(() => {
 
 <template>
   <div ref="dropdownRef" class="multi-select" :class="{ 'multi-select--disabled': disabled }">
-    <button
-      :id="id"
-      type="button"
-      :class="triggerClasses"
-      :disabled="disabled"
-      @click="toggleDropdown"
-    >
-      <span class="multi-select-trigger__label">{{ displayLabel }}</span>
+    <div :class="triggerClasses">
+      <input
+        :id="id"
+        ref="searchInputRef"
+        type="text"
+        class="multi-select-trigger__input"
+        :value="inputDisplayValue"
+        :placeholder="inputPlaceholder"
+        :disabled="disabled"
+        @input="searchQuery = ($event.target as HTMLInputElement).value"
+        @focus="openDropdown"
+        @click="openDropdown"
+      >
       <span class="multi-select-trigger__icon" :class="{ 'multi-select-trigger__icon--open': isOpen }">
         <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12">
           <path fill="currentColor" d="M6 9L1 4h10z"/>
         </svg>
       </span>
-    </button>
+    </div>
 
     <Transition name="dropdown">
       <div v-if="isOpen" class="multi-select-dropdown">
-        <div class="multi-select-search">
-          <input
-            ref="searchInputRef"
-            v-model="searchQuery"
-            type="text"
-            class="multi-select-search__input"
-            placeholder="Type to filter..."
-            @click.stop
-          >
-        </div>
         <div class="multi-select-options">
           <label
             v-for="option in filteredOptions"
@@ -196,20 +198,15 @@ onUnmounted(() => {
 .multi-select-trigger {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   width: 100%;
-  font-family: inherit;
   border: var(--border-width-thin) solid var(--color-border-default);
   border-radius: var(--radius-md);
   background: var(--color-bg-primary);
-  color: var(--color-text-primary);
   transition: all var(--transition-base);
-  cursor: pointer;
-  text-align: left;
+  position: relative;
 }
 
-.multi-select-trigger:focus {
-  outline: none;
+.multi-select-trigger:focus-within {
   border-color: var(--color-primary-500);
   box-shadow: 0 0 0 3px var(--color-primary-100);
 }
@@ -219,38 +216,55 @@ onUnmounted(() => {
   box-shadow: 0 0 0 3px var(--color-primary-100);
 }
 
-.multi-select-trigger--placeholder {
+.multi-select-trigger__input {
+  flex: 1;
+  width: 100%;
+  border: none;
+  background: transparent;
+  font-family: inherit;
+  color: var(--color-text-primary);
+  outline: none;
+  cursor: pointer;
+}
+
+.multi-select-trigger__input::placeholder {
   color: var(--color-text-muted);
 }
 
 /* Size variants */
 .multi-select-trigger--sm {
   padding: var(--spacing-1-5) var(--spacing-2-5);
+}
+
+.multi-select-trigger--sm .multi-select-trigger__input {
   font-size: var(--font-size-sm);
 }
 
 .multi-select-trigger--md {
   padding: var(--spacing-2) var(--spacing-3);
+}
+
+.multi-select-trigger--md .multi-select-trigger__input {
   font-size: var(--font-size-base);
 }
 
 .multi-select-trigger--lg {
   padding: var(--spacing-3) var(--spacing-4);
+}
+
+.multi-select-trigger--lg .multi-select-trigger__input {
   font-size: var(--font-size-lg);
 }
 
 .multi-select-trigger--disabled {
   background: var(--color-gray-100);
-  color: var(--color-text-muted);
   cursor: not-allowed;
   opacity: 0.6;
 }
 
-.multi-select-trigger__label {
-  flex: 1;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+.multi-select-trigger--disabled .multi-select-trigger__input {
+  color: var(--color-text-muted);
+  cursor: not-allowed;
 }
 
 .multi-select-trigger__icon {
@@ -274,33 +288,6 @@ onUnmounted(() => {
   border: var(--border-width-thin) solid var(--color-border-default);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-lg);
-}
-
-.multi-select-search {
-  padding: var(--spacing-2);
-  border-bottom: var(--border-width-thin) solid var(--color-border-default);
-}
-
-.multi-select-search__input {
-  width: 100%;
-  padding: var(--spacing-2) var(--spacing-3);
-  font-size: var(--font-size-sm);
-  font-family: inherit;
-  border: var(--border-width-thin) solid var(--color-border-default);
-  border-radius: var(--radius-sm);
-  background: var(--color-bg-primary);
-  color: var(--color-text-primary);
-  transition: all var(--transition-base);
-}
-
-.multi-select-search__input:focus {
-  outline: none;
-  border-color: var(--color-primary-500);
-  box-shadow: 0 0 0 2px var(--color-primary-100);
-}
-
-.multi-select-search__input::placeholder {
-  color: var(--color-text-muted);
 }
 
 .multi-select-options {
