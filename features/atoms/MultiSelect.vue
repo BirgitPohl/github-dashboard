@@ -45,10 +45,18 @@ const emit = defineEmits<{
 
 const isOpen = ref(false)
 const dropdownRef = ref<HTMLElement | null>(null)
+const searchQuery = ref('')
+const searchInputRef = ref<HTMLInputElement | null>(null)
 
 const toggleDropdown = () => {
   if (!props.disabled) {
     isOpen.value = !isOpen.value
+    if (isOpen.value) {
+      searchQuery.value = ''
+      nextTick(() => {
+        searchInputRef.value?.focus()
+      })
+    }
   }
 }
 
@@ -79,6 +87,16 @@ const displayLabel = computed(() => {
     return option?.label || selected[0]
   }
   return `${selected.length} selected`
+})
+
+const filteredOptions = computed(() => {
+  if (!searchQuery.value.trim()) {
+    return props.options
+  }
+  const query = searchQuery.value.toLowerCase()
+  return props.options.filter(option =>
+    option.label.toLowerCase().includes(query)
+  )
 })
 
 const triggerClasses = computed(() => {
@@ -130,9 +148,19 @@ onUnmounted(() => {
 
     <Transition name="dropdown">
       <div v-if="isOpen" class="multi-select-dropdown">
+        <div class="multi-select-search">
+          <input
+            ref="searchInputRef"
+            v-model="searchQuery"
+            type="text"
+            class="multi-select-search__input"
+            placeholder="Type to filter..."
+            @click.stop
+          >
+        </div>
         <div class="multi-select-options">
           <label
-            v-for="option in options"
+            v-for="option in filteredOptions"
             :key="option.value"
             class="multi-select-option"
             :class="{ 'multi-select-option--selected': isSelected(option.value) }"
@@ -150,6 +178,9 @@ onUnmounted(() => {
             </span>
             <span class="multi-select-option__label">{{ option.label }}</span>
           </label>
+          <div v-if="filteredOptions.length === 0" class="multi-select-empty">
+            No matches found
+          </div>
         </div>
       </div>
     </Transition>
@@ -243,12 +274,46 @@ onUnmounted(() => {
   border: var(--border-width-thin) solid var(--color-border-default);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-lg);
-  max-height: 250px;
-  overflow-y: auto;
+}
+
+.multi-select-search {
+  padding: var(--spacing-2);
+  border-bottom: var(--border-width-thin) solid var(--color-border-default);
+}
+
+.multi-select-search__input {
+  width: 100%;
+  padding: var(--spacing-2) var(--spacing-3);
+  font-size: var(--font-size-sm);
+  font-family: inherit;
+  border: var(--border-width-thin) solid var(--color-border-default);
+  border-radius: var(--radius-sm);
+  background: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  transition: all var(--transition-base);
+}
+
+.multi-select-search__input:focus {
+  outline: none;
+  border-color: var(--color-primary-500);
+  box-shadow: 0 0 0 2px var(--color-primary-100);
+}
+
+.multi-select-search__input::placeholder {
+  color: var(--color-text-muted);
 }
 
 .multi-select-options {
   padding: var(--spacing-1);
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.multi-select-empty {
+  padding: var(--spacing-3);
+  text-align: center;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
 }
 
 .multi-select-option {
