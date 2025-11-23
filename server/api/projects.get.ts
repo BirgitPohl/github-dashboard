@@ -1,4 +1,4 @@
-import { fetchProjectsREST } from '../utils/github-rest'
+import { fetchProjectsREST, fetchProjectItemsREST } from '../utils/github-rest'
 
 interface Project {
   id: string
@@ -20,22 +20,36 @@ export default defineEventHandler(async (_event) => {
 
     const projects = await fetchProjectsREST()
 
-    // Transform to frontend format
-    const transformedProjects: Project[] = projects
-      .filter(p => p.state === 'open')
-      .map(p => ({
-        id: p.node_id,         // GraphQL node_id for consistency
-        number: p.number,       // REST API project number - used for detail pages
-        title: p.title,
-        shortDescription: p.description || undefined,
-        url: p.url,
-        createdAt: p.created_at,
-        updatedAt: p.updated_at,
-        state: 'OPEN' as const,
-        items: {
-          totalCount: 0 // Can be fetched separately if needed
+    // Filter open projects
+    const openProjects = projects.filter(p => p.state === 'open')
+
+    // Fetch item counts for each project in parallel
+    const itemCounts = await Promise.all(
+      openProjects.map(async (p) => {
+        try {
+          const items = await fetchProjectItemsREST(p.number)
+          return items.length
+        } catch (error) {
+          console.warn(`Failed to fetch item count for project ${p.number}:`, error)
+          return 0
         }
-      }))
+      })
+    )
+
+    // Transform to frontend format
+    const transformedProjects: Project[] = openProjects.map((p, index) => ({
+      id: p.node_id,         // GraphQL node_id for consistency
+      number: p.number,       // REST API project number - used for detail pages
+      title: p.title,
+      shortDescription: p.description || undefined,
+      url: p.url,
+      createdAt: p.created_at,
+      updatedAt: p.updated_at,
+      state: 'OPEN' as const,
+      items: {
+        totalCount: itemCounts[index]
+      }
+    }))
 
     // Sort by most recently updated
     transformedProjects.sort((a, b) =>

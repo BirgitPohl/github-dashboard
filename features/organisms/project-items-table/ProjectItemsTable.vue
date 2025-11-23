@@ -4,6 +4,7 @@
       <thead>
         <tr>
           <th>Type</th>
+          <th>#</th>
           <th>Title</th>
           <th>Repository</th>
           <th>State</th>
@@ -11,6 +12,7 @@
           <th v-if="showPriority">Priority</th>
           <th v-if="showSize">Size</th>
           <th v-if="showParentIssue">Parent Issue</th>
+          <th v-if="showSubIssuesProgress">Sub-Issues</th>
           <th>Assignees</th>
           <th>Labels</th>
           <th>Updated</th>
@@ -24,10 +26,18 @@
             <span class="type-text">{{ getTypeText(item.type) }}</span>
           </td>
 
+          <!-- Number -->
+          <td class="number-cell">
+            <a v-if="item.number" :href="item.url" target="_blank" class="item-number-link">
+              #{{ item.number }}
+            </a>
+            <span v-else class="no-number">—</span>
+          </td>
+
           <!-- Title -->
           <td class="title-cell">
             <a :href="item.url" target="_blank" class="item-title">
-              <span v-if="item.number">#{{ item.number }}</span> {{ item.title }}
+              {{ item.title }}
             </a>
           </td>
 
@@ -74,6 +84,28 @@
               {{ item.custom_fields['Parent issue'] }}
             </span>
             <span v-else class="no-parent-issue">—</span>
+          </td>
+
+          <!-- Sub-Issues Progress -->
+          <td v-if="showSubIssuesProgress" class="sub-issues-cell">
+            <div v-if="getSubIssuesData(item)" class="sub-issues-progress">
+              <div class="progress-bar-container">
+                <div
+                  v-for="i in getSubIssuesData(item).total"
+                  :key="i"
+                  class="progress-bar"
+                  :class="{
+                    completed: i <= getSubIssuesData(item).completed,
+                    incomplete: i > getSubIssuesData(item).completed
+                  }"
+                  :style="{ width: calculateBarWidth(getSubIssuesData(item).total) }"
+                />
+              </div>
+              <span class="progress-text">
+                {{ getSubIssuesData(item).completed }}/{{ getSubIssuesData(item).total }}
+              </span>
+            </div>
+            <span v-else class="no-sub-issues">—</span>
           </td>
 
           <!-- Assignees -->
@@ -155,17 +187,47 @@ interface Props {
   showPriority?: boolean
   showSize?: boolean
   showParentIssue?: boolean
+  showSubIssuesProgress?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
   showStatus: false,
   showPriority: false,
   showSize: false,
-  showParentIssue: false
+  showParentIssue: false,
+  showSubIssuesProgress: false
 })
 
 const { getTypeIcon, getTypeText, getStateColor } = useProjectItemsTable()
 const { formatDate } = useDateTime()
+
+// Helper function to parse sub-issues progress data
+const getSubIssuesData = (item: ProjectItem): { completed: number; total: number } | null => {
+  const dataStr = item.custom_fields['Sub-issues progress_data']
+  if (!dataStr) return null
+
+  try {
+    const data = JSON.parse(dataStr)
+    if (data.completed !== undefined && data.total !== undefined && data.total > 0) {
+      return data
+    }
+  } catch (e) {
+    console.error('Failed to parse sub-issues progress data:', e)
+  }
+  return null
+}
+
+// Calculate bar width based on total number of sub-issues
+const calculateBarWidth = (total: number): string => {
+  const containerWidth = 100 // px
+  const gap = 1 // px between bars
+  const availableWidth = containerWidth - (gap * (total - 1))
+  const barWidth = availableWidth / total
+
+  // Clamp between min (2px) and max (10px)
+  const clampedWidth = Math.max(2, Math.min(10, barWidth))
+  return `${clampedWidth}px`
+}
 </script>
 
 <style scoped>
@@ -214,6 +276,27 @@ const { formatDate } = useDateTime()
   font-size: var(--font-size-xs);
   color: var(--color-gray-500);
   font-weight: var(--font-weight-medium);
+}
+
+.number-cell {
+  min-width: 60px;
+  text-align: right;
+}
+
+.item-number-link {
+  color: var(--color-gray-500);
+  text-decoration: none;
+  font-weight: var(--font-weight-normal);
+  font-size: var(--font-size-sm);
+}
+
+.item-number-link:hover {
+  color: var(--color-blue-600);
+  text-decoration: underline;
+}
+
+.no-number {
+  color: var(--color-gray-400);
 }
 
 .title-cell {
@@ -306,8 +389,50 @@ const { formatDate } = useDateTime()
   white-space: nowrap;
 }
 
-.no-status, .no-priority, .no-size, .no-parent-issue, .no-assignees, .no-labels {
+.no-status, .no-priority, .no-size, .no-parent-issue, .no-sub-issues, .no-assignees, .no-labels {
   color: var(--color-gray-400);
+}
+
+.sub-issues-cell {
+  min-width: 160px;
+  max-width: 200px;
+}
+
+.sub-issues-progress {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+}
+
+.progress-bar-container {
+  width: 100px;
+  height: 8px;
+  display: flex;
+  gap: 1px;
+  background: var(--color-gray-100);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.progress-bar {
+  height: 100%;
+  transition: background-color 0.2s;
+}
+
+.progress-bar.completed {
+  background-color: var(--color-success-500);
+}
+
+.progress-bar.incomplete {
+  background-color: var(--color-gray-200);
+}
+
+.progress-text {
+  font-size: var(--font-size-xs);
+  color: var(--color-gray-600);
+  white-space: nowrap;
+  font-weight: var(--font-weight-medium);
 }
 
 .assignees-cell {

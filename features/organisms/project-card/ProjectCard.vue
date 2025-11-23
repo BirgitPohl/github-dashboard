@@ -37,9 +37,9 @@ const createdAgo = computed(() => formatTimeAgoDetailed(props.project.createdAt)
       <div class="project-title">
         <Icon :icon="statusConfig.icon" size="lg" decorative />
         <Header :level="3" size="base" class="project-name">
-          <Link :to="`/projects/${project.number}`" variant="secondary">
+          <NuxtLink :to="`/projects/${project.number}`" class="project-link">
             {{ project.title }}
-          </Link>
+          </NuxtLink>
         </Header>
         <Tag
           :label="statusConfig.label"
@@ -176,5 +176,15 @@ const createdAgo = computed(() => formatTimeAgoDetailed(props.project.createdAt)
 
 .view-button {
   flex: 1;
+}
+
+.project-link {
+  color: var(--color-text-secondary);
+  text-decoration: none;
+}
+
+.project-link:hover {
+  color: var(--color-text-primary);
+  text-decoration: underline;
 }
 </style>

@@ -85,11 +85,63 @@ export const usePullRequestCard = () => {
     return '#ef4444'
   }
 
+  /**
+   * Get icon for CI/check status
+   */
+  const getCheckIcon = (status: 'success' | 'failure' | 'pending' | 'neutral'): string => {
+    switch (status) {
+      case 'success': return '✅'
+      case 'failure': return '❌'
+      case 'pending': return '⏳'
+      case 'neutral': return '⚪'
+    }
+  }
+
+  /**
+   * Get label for CI/check status
+   */
+  const getCheckLabel = (status: 'success' | 'failure' | 'pending' | 'neutral'): string => {
+    switch (status) {
+      case 'success': return 'Checks passed'
+      case 'failure': return 'Checks failed'
+      case 'pending': return 'Checks running'
+      case 'neutral': return 'No checks'
+    }
+  }
+
+  /**
+   * Get icon for review status
+   */
+  const getReviewIcon = (status: 'approved' | 'changes_requested' | 'pending' | 'commented'): string => {
+    switch (status) {
+      case 'approved': return '👍'
+      case 'changes_requested': return '⚠️'
+      case 'commented': return '💬'
+      case 'pending': return '👀'
+    }
+  }
+
+  /**
+   * Get label for review status
+   */
+  const getReviewLabel = (status: 'approved' | 'changes_requested' | 'pending' | 'commented'): string => {
+    switch (status) {
+      case 'approved': return 'Approved'
+      case 'changes_requested': return 'Changes requested'
+      case 'commented': return 'Reviewed'
+      case 'pending': return 'Review pending'
+    }
+  }
+
   return {
     formatTimeAgo,
     getStateClass,
     getStateIcon,
     getStateLabel,
-    getStateBorderColor
+    getStateBorderColor,
+    getCheckIcon,
+    getCheckLabel,
+    getReviewIcon,
+    getReviewLabel
   }
 }

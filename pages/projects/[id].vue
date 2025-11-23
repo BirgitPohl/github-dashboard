@@ -3,6 +3,7 @@ import { useProjectGrouping } from '../../composables/useProjectGrouping'
 import { useProjectFilters } from '../../features/organisms/project-filters/useProjectFilters'
 import ProjectFilters from '../../features/organisms/project-filters/ProjectFilters.vue'
 import ProjectItemsTable from '../../features/organisms/project-items-table/ProjectItemsTable.vue'
+import ProjectProgressGraph from '../../features/organisms/project-graph/ProjectProgressGraph.vue'
 
 definePageMeta({
   name: 'ProjectBoardDetail'
@@ -29,6 +30,7 @@ const selectedGroupBy = ref<string>('')
 // UI state
 const isDescriptionExpanded = ref(false)
 const isFiltersExpanded = ref(false)
+const isGraphExpanded = ref(false)
 
 // Current items from project (no views)
 const currentItems = computed(() => {
@@ -86,6 +88,9 @@ const showSizeColumn = computed(() =>
 )
 const showParentIssueColumn = computed(() =>
   currentItems.value.some(item => item.custom_fields['Parent issue'])
+)
+const showSubIssuesColumn = computed(() =>
+  currentItems.value.some(item => item.custom_fields['Sub-issues progress'])
 )
 </script>
 
@@ -147,6 +152,13 @@ const showParentIssueColumn = computed(() =>
             >
               🔍 {{ isFiltersExpanded ? '▼' : '▶' }}
             </button>
+            <button
+              class="tiny-toggle"
+              @click="isGraphExpanded = !isGraphExpanded"
+              title="Toggle progress graph"
+            >
+              📊 {{ isGraphExpanded ? '▼' : '▶' }}
+            </button>
           </div>
 
           <Text
@@ -180,6 +192,12 @@ const showParentIssueColumn = computed(() =>
         @clear-filters="clearFilters"
       />
 
+      <!-- Progress Graph -->
+      <ProjectProgressGraph
+        v-if="isGraphExpanded"
+        :items="filteredItems"
+      />
+
       <!-- Items Table -->
       <div class="items-section">
         <div v-if="filteredItems.length === 0" class="empty-items">
@@ -208,6 +226,7 @@ const showParentIssueColumn = computed(() =>
                 :show-priority="showPriorityColumn"
                 :show-size="showSizeColumn"
                 :show-parent-issue="showParentIssueColumn"
+                :show-sub-issues-progress="showSubIssuesColumn"
               />
             </div>
           </div>
@@ -220,6 +239,7 @@ const showParentIssueColumn = computed(() =>
             :show-priority="showPriorityColumn"
             :show-size="showSizeColumn"
             :show-parent-issue="showParentIssueColumn"
+            :show-sub-issues-progress="showSubIssuesColumn"
           />
         </div>
       </div>

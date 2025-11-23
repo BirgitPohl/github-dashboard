@@ -8,7 +8,7 @@ export const useProjectItemsTable = () => {
    */
   const getTypeIcon = (type: string): string => {
     switch (type) {
-      case 'ISSUE': return '🐛'
+      case 'ISSUE': return '📘'
       case 'PULL_REQUEST': return '🔀'
       case 'DRAFT_ISSUE': return '📝'
       default: return '📋'
@@ -28,14 +28,14 @@ export const useProjectItemsTable = () => {
   }
 
   /**
-   * Get color for item state
+   * Get color for item state using design system tokens
    */
   const getStateColor = (state: string): string => {
     switch (state.toLowerCase()) {
-      case 'open': return '#10b981'
-      case 'closed': return '#6b7280'
-      case 'merged': return '#8b5cf6'
-      default: return '#6b7280'
+      case 'open': return 'var(--color-success-500)'
+      case 'closed': return 'var(--color-gray-500)'
+      case 'merged': return 'var(--color-purple-500)'
+      default: return 'var(--color-gray-500)'
     }
   }
 

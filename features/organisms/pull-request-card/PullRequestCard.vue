@@ -39,6 +39,12 @@ interface PullRequest {
     name: string
     full_name: string
   }
+  review_status?: 'approved' | 'changes_requested' | 'pending' | 'commented'
+  check_status?: 'success' | 'failure' | 'pending' | 'neutral'
+  comments?: {
+    total: number
+    unresolved: number
+  }
 }
 
 interface Props {
@@ -61,7 +67,16 @@ const props = withDefaults(defineProps<Props>(), {
   class: ''
 })
 
-const { formatTimeAgo, getStateClass, getStateIcon, getStateBorderColor } = usePullRequestCard()
+const {
+  formatTimeAgo,
+  getStateClass,
+  getStateIcon,
+  getStateBorderColor,
+  getCheckIcon,
+  getCheckLabel,
+  getReviewIcon,
+  getReviewLabel
+} = usePullRequestCard()
 
 // Compute CSS classes
 const cardClasses = computed(() => {
@@ -79,31 +94,48 @@ const cardClasses = computed(() => {
   <BaseCard
     width="full"
     :border-color="getStateBorderColor(pullRequest)"
+    :href="pullRequest.html_url"
     :class="cardClasses"
   >
     <template #header>
       <div class="pr-card__header">
-        <div class="pr-card__status">
+        <div class="pr-card__title-row">
           <Icon :icon="getStateIcon(pullRequest)" size="base" decorative />
           <Text variant="secondary" size="base" weight="semibold">#{{ pullRequest.number }}</Text>
+          <Header :level="3" size="base" variant="primary" class="pr-card__title">
+            {{ pullRequest.title }}
+          </Header>
         </div>
-        <div v-if="showRepository" class="pr-card__repository">
-          <Text variant="tertiary" size="sm">{{ pullRequest.repository.name }}</Text>
+        <div class="pr-card__header-right">
+          <div v-if="showRepository" class="pr-card__repository">
+            <Text variant="tertiary" size="sm">{{ pullRequest.repository.name }}</Text>
+          </div>
         </div>
       </div>
     </template>
 
     <template #body>
-      <Header
-        :level="3"
-        size="lg"
-        variant="primary"
-        class="pr-card__title"
-      >
-        <Link :href="pullRequest.html_url" variant="default" external>
-          {{ pullRequest.title }}
-        </Link>
-      </Header>
+      <div class="pr-card__status-row">
+        <!-- CI/Pipeline Status -->
+        <div v-if="pullRequest.check_status" class="pr-card__check-status" :class="`check-status--${pullRequest.check_status}`">
+          <Icon :icon="getCheckIcon(pullRequest.check_status)" size="sm" decorative />
+          <Text variant="secondary" size="sm">{{ getCheckLabel(pullRequest.check_status) }}</Text>
+        </div>
+
+        <!-- Review Status -->
+        <div v-if="pullRequest.review_status" class="pr-card__review-status" :class="`review-status--${pullRequest.review_status}`">
+          <Icon :icon="getReviewIcon(pullRequest.review_status)" size="sm" decorative />
+          <Text variant="secondary" size="sm">{{ getReviewLabel(pullRequest.review_status) }}</Text>
+        </div>
+
+        <!-- Comment Count -->
+        <div v-if="pullRequest.comments && pullRequest.comments.total > 0" class="pr-card__comments">
+          <Icon icon="💬" size="sm" decorative />
+          <Text variant="secondary" size="sm">
+            {{ pullRequest.comments.unresolved }}/{{ pullRequest.comments.total }}
+          </Text>
+        </div>
+      </div>
 
       <div class="pr-card__meta">
         <div class="pr-card__author">
@@ -155,13 +187,27 @@ const cardClasses = computed(() => {
 .pr-card__header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
+  gap: var(--spacing-2);
 }
 
-.pr-card__status {
+.pr-card__title-row {
   display: flex;
   align-items: center;
   gap: var(--spacing-2);
+  flex: 1;
+  min-width: 0;
+}
+
+.pr-card__title {
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pr-card__header-right {
+  flex-shrink: 0;
 }
 
 .pr-card__repository {
@@ -170,8 +216,58 @@ const cardClasses = computed(() => {
   border-radius: var(--radius-md);
 }
 
-.pr-card__title {
-  margin: 0 0 var(--spacing-3) 0;
+.pr-card__status-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-4);
+  align-items: center;
+  margin-bottom: var(--spacing-3);
+}
+
+.pr-card__check-status,
+.pr-card__review-status,
+.pr-card__comments {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-1);
+}
+
+/* Check status colors */
+.check-status--success {
+  color: var(--color-success-500);
+}
+
+.check-status--failure {
+  color: var(--color-error-500);
+}
+
+.check-status--pending {
+  color: var(--color-warning-500);
+}
+
+.check-status--neutral {
+  color: var(--color-gray-500);
+}
+
+/* Review status colors */
+.review-status--approved {
+  color: var(--color-success-500);
+}
+
+.review-status--changes_requested {
+  color: var(--color-error-500);
+}
+
+.review-status--commented {
+  color: var(--color-info-500);
+}
+
+.review-status--pending {
+  color: var(--color-gray-500);
+}
+
+.pr-card__comments {
+  color: var(--color-gray-500);
 }
 
 .pr-card__meta {
@@ -226,6 +322,15 @@ const cardClasses = computed(() => {
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .pr-card__header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .pr-card__title-row {
+    flex-wrap: wrap;
+  }
+
+  .pr-card__status-row {
     flex-direction: column;
     align-items: flex-start;
     gap: var(--spacing-2);

@@ -166,16 +166,6 @@ const stats = computed(() => pullRequestsData.value?.stats || {
 
     <template #content>
       <div v-if="filteredPullRequests.length > 0" class="pull-requests-list">
-        <div class="list-header">
-          <Header
-            :level="2"
-            size="xl"
-            variant="primary"
-          >
-            {{ filteredPullRequests.length }} Pull Request{{ filteredPullRequests.length !== 1 ? 's' : '' }}
-          </Header>
-        </div>
-
         <div class="pr-list">
           <PullRequestCard
             v-for="pr in filteredPullRequests"
@@ -233,16 +223,11 @@ const stats = computed(() => pullRequestsData.value?.stats || {
   overflow: hidden;
 }
 
-.list-header {
-  padding: var(--spacing-6);
-  border-bottom: var(--border-width-thin) solid var(--color-gray-200);
-}
-
-.list-header h2 {
-  margin: 0;
-  font-size: var(--font-size-xl);
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-gray-900);
+.pr-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4);
+  padding: var(--spacing-4);
 }
 
 @media (max-width: 768px) {

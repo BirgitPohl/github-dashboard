@@ -354,7 +354,12 @@ export function transformRESTItemToProjectItem(item: RESTProjectItem): ProjectIt
         if (typeof field.value === 'object') {
           const progress = field.value
           if (progress.completed !== undefined && progress.total !== undefined) {
+            // Store both string for display and structured data for visualization
             customFields[field.name] = `${progress.completed}/${progress.total}`
+            customFields[`${field.name}_data`] = JSON.stringify({
+              completed: progress.completed,
+              total: progress.total
+            })
           } else {
             customFields[field.name] = JSON.stringify(field.value)
           }
