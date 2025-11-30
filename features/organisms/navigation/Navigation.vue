@@ -17,6 +17,9 @@
         <NuxtLink to="/projects" class="nav-link">
           <Text variant="secondary" size="base" weight="medium">Project Boards</Text>
         </NuxtLink>
+        <NuxtLink to="/project-views" class="nav-link">
+          <Text variant="secondary" size="base" weight="medium">Project Views</Text>
+        </NuxtLink>
       </div>
     </div>
   </nav>
