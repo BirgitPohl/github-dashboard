@@ -23,6 +23,24 @@ const getStateColor = (item: ViewItem): string => {
   if (state === 'OPEN') return 'var(--color-success-500)'
   return 'var(--color-gray-400)'
 }
+
+// Map GitHub color names to CSS colors
+const mapGitHubColor = (color: string | undefined): string => {
+  if (!color) return 'var(--color-gray-500)'
+
+  const colorMap: Record<string, string> = {
+    GRAY: '#6e7781',
+    BLUE: '#0969da',
+    GREEN: '#1a7f37',
+    YELLOW: '#d29922',
+    ORANGE: '#bc4c00',
+    RED: '#cf222e',
+    PINK: '#bf3989',
+    PURPLE: '#8250df'
+  }
+
+  return colorMap[color.toUpperCase()] || 'var(--color-gray-500)'
+}
 </script>
 
 <template>
@@ -30,10 +48,19 @@ const getStateColor = (item: ViewItem): string => {
     <div class="board-layout__columns">
       <div v-for="group in groups" :key="group.name" class="board-layout__column">
         <!-- Column Header -->
-        <div class="board-layout__column-header">
-          <Header :level="4" size="sm" variant="primary" class="board-layout__column-title">
-            {{ group.name }}
-          </Header>
+        <div
+          class="board-layout__column-header"
+          :style="{ borderLeftColor: mapGitHubColor(group.color) }"
+        >
+          <div class="board-layout__column-title-wrapper">
+            <span
+              class="board-layout__column-indicator"
+              :style="{ backgroundColor: mapGitHubColor(group.color) }"
+            />
+            <Header :level="4" size="sm" variant="primary" class="board-layout__column-title">
+              {{ group.name }}
+            </Header>
+          </div>
           <span class="board-layout__column-count">
             {{ group.count }}
           </span>
@@ -135,8 +162,22 @@ const getStateColor = (item: ViewItem): string => {
   justify-content: space-between;
   padding: var(--spacing-3) var(--spacing-4);
   border-bottom: 1px solid var(--color-border-default);
+  border-left: 3px solid var(--color-gray-300);
   background: var(--color-white);
   border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+}
+
+.board-layout__column-title-wrapper {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+}
+
+.board-layout__column-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-gray-400);
 }
 
 .board-layout__column-title {

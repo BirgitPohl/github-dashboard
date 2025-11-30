@@ -3,11 +3,13 @@
  */
 
 import type { ViewItem } from './useViewFiltering'
+import type { ProjectV2FieldConfiguration } from '../server/utils/github-graphql'
 
 export interface GroupedItems {
   name: string
   count: number
   items: ViewItem[]
+  color?: string // Color from field options (e.g., Status options)
 }
 
 export const useViewGrouping = () => {
@@ -66,7 +68,11 @@ export const useViewGrouping = () => {
   /**
    * Group items by field
    */
-  function groupItems(items: ViewItem[], fieldName: string | null | undefined): GroupedItems[] {
+  function groupItems(
+    items: ViewItem[],
+    fieldName: string | null | undefined,
+    fieldConfig?: ProjectV2FieldConfiguration | null
+  ): GroupedItems[] {
     if (!fieldName) {
       // No grouping - return single group with all items
       return [{
@@ -74,6 +80,14 @@ export const useViewGrouping = () => {
         count: items.length,
         items
       }]
+    }
+
+    // Build color map from field options (for SingleSelectField)
+    const colorMap = new Map<string, string>()
+    if (fieldConfig?.options) {
+      for (const option of fieldConfig.options) {
+        colorMap.set(option.name, option.color)
+      }
     }
 
     // Group items by field value
@@ -94,12 +108,18 @@ export const useViewGrouping = () => {
       .map(([name, items]) => ({
         name,
         count: items.length,
-        items
+        items,
+        color: colorMap.get(name)
       }))
       .sort((a, b) => {
-        // Sort special groups first
-        if (a.name === 'No Value' || a.name === 'Unknown') return 1
-        if (b.name === 'No Value' || b.name === 'Unknown') return -1
+        // Empty/no value groups come FIRST
+        const aIsEmpty = a.name === 'No Value' || a.name === 'No Status' || a.name === 'Unknown' || a.name === 'Unassigned'
+        const bIsEmpty = b.name === 'No Value' || b.name === 'No Status' || b.name === 'Unknown' || b.name === 'Unassigned'
+
+        if (aIsEmpty && !bIsEmpty) return -1
+        if (!aIsEmpty && bIsEmpty) return 1
+
+        // Otherwise sort alphabetically
         return a.name.localeCompare(b.name)
       })
 

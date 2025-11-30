@@ -40,11 +40,13 @@ const processedItems = computed(() => {
 // Group items (after filtering and sorting)
 const groupedItems = computed(() => {
   // Board layouts use verticalGroupByFields, other layouts use groupByFields
-  const groupByField = props.view.layout === 'BOARD_LAYOUT'
-    ? props.view.verticalGroupByFields.nodes[0]?.name
-    : props.view.groupByFields.nodes[0]?.name
+  const groupByFieldConfig = props.view.layout === 'BOARD_LAYOUT'
+    ? props.view.verticalGroupByFields.nodes[0]
+    : props.view.groupByFields.nodes[0]
 
-  return groupItems(processedItems.value, groupByField)
+  const groupByFieldName = groupByFieldConfig?.name
+
+  return groupItems(processedItems.value, groupByFieldName, groupByFieldConfig)
 })
 
 // Extract visible fields from view
