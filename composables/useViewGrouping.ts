@@ -15,7 +15,7 @@ export const useViewGrouping = () => {
    * Get the value of a field from an item
    */
   function getFieldValue(item: ViewItem, fieldName: string): string {
-    // Check custom fields first
+    // Try exact match in custom fields first
     if (item.custom_fields[fieldName] !== undefined) {
       const value = item.custom_fields[fieldName]
 
@@ -27,8 +27,20 @@ export const useViewGrouping = () => {
       return String(value)
     }
 
+    // Try case-insensitive match in custom fields
+    const fieldNameLower = fieldName.toLowerCase()
+    for (const [key, value] of Object.entries(item.custom_fields)) {
+      if (key.toLowerCase() === fieldNameLower) {
+        // Handle iteration fields (object with title)
+        if (typeof value === 'object' && value !== null && 'title' in value) {
+          return String((value as { title: string }).title)
+        }
+        return String(value)
+      }
+    }
+
     // Check built-in fields
-    switch (fieldName.toLowerCase()) {
+    switch (fieldNameLower) {
       case 'status':
         return item.status || 'No Status'
 
@@ -45,6 +57,12 @@ export const useViewGrouping = () => {
       case 'assignee':
       case 'assignees':
         return item.assignees.length > 0 ? item.assignees[0].login : 'Unassigned'
+
+      // Common GitHub project field names
+      case 'column':
+      case 'column by':
+        // Column is often mapped to Status
+        return item.custom_fields['Status'] || item.status || 'No Column'
 
       default:
         return 'No Value'
