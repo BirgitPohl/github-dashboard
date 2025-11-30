@@ -7,14 +7,6 @@ interface Props {
 
 defineProps<Props>()
 
-// Get item icon based on type
-const getItemIcon = (item: ViewItem): string => {
-  if (item.type === 'PULL_REQUEST') return '🔀'
-  if (item.type === 'ISSUE') return '📋'
-  if (item.type === 'DRAFT_ISSUE') return '📝'
-  return '📄'
-}
-
 // Get item state color
 const getStateColor = (item: ViewItem): string => {
   const state = item.state?.toUpperCase()
@@ -32,10 +24,6 @@ const getStateColor = (item: ViewItem): string => {
     class="item-card"
     :style="{ borderLeftColor: getStateColor(item) }"
   >
-    <div class="item-card__header">
-      <Icon :icon="getItemIcon(item)" size="sm" decorative />
-    </div>
-
     <Text variant="primary" size="sm" weight="medium" class="item-card__title">
       {{ item.title || 'Untitled' }}
     </Text>
@@ -87,12 +75,6 @@ const getStateColor = (item: ViewItem): string => {
 .item-card:hover {
   box-shadow: var(--shadow-md);
   transform: translateY(-2px);
-}
-
-.item-card__header {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-2);
 }
 
 .item-card__title {
