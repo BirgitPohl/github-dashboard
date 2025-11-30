@@ -38,9 +38,9 @@ export const useViewFiltering = () => {
 
     if (!filterString) return filters
 
-    // Simple regex to match field:value pairs
-    // Handles: field:value, field:"quoted value", -field:value (negation)
-    const filterRegex = /(-)?(\w+):(?:"([^"]+)"|(\S+))/g
+    // Match field:values patterns where values can be comma-separated or quoted
+    // Handles: field:value, field:"quoted value", field:val1,val2,val3, parent-issue:repo#123
+    const filterRegex = /(-)?(\w+(?:-\w+)*):(?:"([^"]+)"|([^\s]+))/g
     let match
 
     while ((match = filterRegex.exec(filterString)) !== null) {
@@ -54,7 +54,9 @@ export const useViewFiltering = () => {
         filters.set(key, [])
       }
 
-      filters.get(key)!.push(value.toLowerCase())
+      // Split comma-separated values
+      const values = value.split(',').map(v => v.trim().toLowerCase())
+      filters.get(key)!.push(...values)
     }
 
     return filters
@@ -101,6 +103,26 @@ export const useViewFiltering = () => {
         case 'state':
           itemValue = item.state?.toLowerCase()
           break
+
+        case 'parent-issue':
+          // Parent issue filter format: repo#number or just #number
+          // We need to match against the parent issue stored in custom_fields
+          const parentIssue = item.custom_fields['Parent issue']
+          if (parentIssue && typeof parentIssue === 'string') {
+            // Try to match by issue number from the filter values
+            // Filter values look like: "oracommit/issues#416"
+            const matches = filterValues.some(fv => {
+              const numberMatch = fv.match(/#(\d+)/)
+              if (numberMatch) {
+                // Check if parent issue title contains this number
+                const issueNumber = numberMatch[1]
+                return parentIssue.toLowerCase().includes(`#${issueNumber}`)
+              }
+              return false
+            })
+            return matches
+          }
+          return false
 
         default:
           // Check custom fields
