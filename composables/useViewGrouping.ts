@@ -82,12 +82,14 @@ export const useViewGrouping = () => {
       }]
     }
 
-    // Build color map from field options (for SingleSelectField)
+    // Build color map and order index from field options (for SingleSelectField)
     const colorMap = new Map<string, string>()
+    const orderMap = new Map<string, number>()
     if (fieldConfig?.options) {
-      for (const option of fieldConfig.options) {
+      fieldConfig.options.forEach((option, index) => {
         colorMap.set(option.name, option.color)
-      }
+        orderMap.set(option.name, index)
+      })
     }
 
     // Group items by field value
@@ -103,13 +105,14 @@ export const useViewGrouping = () => {
       groups.get(groupValue)!.push(item)
     }
 
-    // Convert to array and sort by group name
+    // Convert to array and sort by field option order
     const groupedArray = Array.from(groups.entries())
       .map(([name, items]) => ({
         name,
         count: items.length,
         items,
-        color: colorMap.get(name)
+        color: colorMap.get(name),
+        order: orderMap.get(name) ?? Number.MAX_SAFE_INTEGER // Unknown values go last
       }))
       .sort((a, b) => {
         // Empty/no value groups come FIRST
@@ -119,8 +122,8 @@ export const useViewGrouping = () => {
         if (aIsEmpty && !bIsEmpty) return -1
         if (!aIsEmpty && bIsEmpty) return 1
 
-        // Otherwise sort alphabetically
-        return a.name.localeCompare(b.name)
+        // Otherwise sort by field option order
+        return a.order - b.order
       })
 
     return groupedArray
