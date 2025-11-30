@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { computed, ref } from 'vue'
 import type { GroupedItems } from '../../../composables/useViewGrouping'
 import type { ViewItem } from '../../../composables/useViewFiltering'
 
@@ -6,7 +7,72 @@ interface Props {
   groups: GroupedItems[]
 }
 
-defineProps<Props>()
+const props = defineProps<Props>()
+
+// Track which swimlanes are collapsed (by swimlane name)
+const collapsedSwimlanes = ref<Set<string>>(new Set())
+
+// Toggle swimlane collapsed state
+const toggleSwimlane = (swimlaneName: string) => {
+  if (collapsedSwimlanes.value.has(swimlaneName)) {
+    collapsedSwimlanes.value.delete(swimlaneName)
+  } else {
+    collapsedSwimlanes.value.add(swimlaneName)
+  }
+  // Trigger reactivity
+  collapsedSwimlanes.value = new Set(collapsedSwimlanes.value)
+}
+
+// Check if swimlane is collapsed
+const isSwimlaneCollapsed = (swimlaneName: string) => {
+  return collapsedSwimlanes.value.has(swimlaneName)
+}
+
+// Compute all unique swimlanes across all columns
+const allSwimlanes = computed(() => {
+  if (props.groups.length === 0 || !props.groups[0].subgroups) {
+    return []
+  }
+
+  // Collect all unique swimlane names from all columns
+  const swimlaneMap = new Map<string, GroupedItems>()
+
+  for (const column of props.groups) {
+    if (!column.subgroups) continue
+
+    for (const swimlane of column.subgroups) {
+      if (!swimlaneMap.has(swimlane.name)) {
+        swimlaneMap.set(swimlane.name, swimlane)
+      }
+    }
+  }
+
+  // Sort swimlanes - numeric prefixes first (01, 02, etc), then alphabetically
+  return Array.from(swimlaneMap.values()).sort((a, b) => {
+    // Extract leading numbers if they exist
+    const aMatch = a.name.match(/^(\d+)/)
+    const bMatch = b.name.match(/^(\d+)/)
+
+    // Both have numeric prefixes
+    if (aMatch && bMatch) {
+      const aNum = parseInt(aMatch[1])
+      const bNum = parseInt(bMatch[1])
+      if (aNum !== bNum) {
+        return aNum - bNum
+      }
+      // If numbers are equal, fall through to string comparison
+    }
+
+    // Only a has numeric prefix - a comes first
+    if (aMatch && !bMatch) return -1
+
+    // Only b has numeric prefix - b comes first
+    if (!aMatch && bMatch) return 1
+
+    // Neither has numeric prefix, or numbers were equal - alphabetical sort
+    return a.name.localeCompare(b.name)
+  })
+})
 
 // Get item icon based on type
 const getItemIcon = (item: ViewItem): string => {
@@ -46,27 +112,39 @@ const mapGitHubColor = (color: string | undefined): string => {
 <template>
   <div class="board-layout">
     <!-- Check if we have swimlanes (columns with subgroups) -->
-    <template v-if="groups.length > 0 && groups[0].subgroups">
-      <!-- Get unique swimlane names from first column -->
+    <template v-if="allSwimlanes.length > 0">
+      <!-- Get unique swimlane names from all columns -->
       <div class="board-layout__swimlane-container">
-        <!-- Iterate through swimlanes (using first column's subgroups as reference) -->
+        <!-- Iterate through all unique swimlanes -->
         <div
-          v-for="(_, swimlaneIndex) in groups[0].subgroups"
-          :key="groups[0].subgroups[swimlaneIndex].name"
+          v-for="(swimlane, swimlaneIndex) in allSwimlanes"
+          :key="swimlane.name"
           class="board-layout__swimlane-row"
         >
           <!-- Swimlane header (left side) -->
-          <div class="board-layout__swimlane-header-vertical">
-            <Header :level="4" size="sm" variant="primary">
-              {{ groups[0].subgroups[swimlaneIndex].name }}
-            </Header>
+          <div
+            class="board-layout__swimlane-header-vertical"
+            :class="{ 'board-layout__swimlane-header-vertical--collapsed': isSwimlaneCollapsed(swimlane.name) }"
+            @click="toggleSwimlane(swimlane.name)"
+          >
+            <div class="board-layout__swimlane-header-content">
+              <span class="board-layout__swimlane-toggle">
+                {{ isSwimlaneCollapsed(swimlane.name) ? '▶' : '▼' }}
+              </span>
+              <Header :level="4" size="sm" variant="primary">
+                {{ swimlane.name }}
+              </Header>
+            </div>
             <span class="board-layout__swimlane-count">
-              {{ groups[0].subgroups[swimlaneIndex].count }}
+              {{ swimlane.count }}
             </span>
           </div>
 
           <!-- Columns for this swimlane -->
-          <div class="board-layout__columns-horizontal">
+          <div
+            v-if="!isSwimlaneCollapsed(swimlane.name)"
+            class="board-layout__columns-horizontal"
+          >
             <div
               v-for="column in groups"
               :key="column.name"
@@ -95,7 +173,7 @@ const mapGitHubColor = (color: string | undefined): string => {
               <!-- Items for this column and swimlane -->
               <div class="board-layout__column-items">
                 <a
-                  v-for="item in column.subgroups[swimlaneIndex]?.items || []"
+                  v-for="item in column.subgroups?.find(s => s.name === swimlane.name)?.items || []"
                   :key="item.id"
                   :href="item.url"
                   target="_blank"
@@ -265,6 +343,32 @@ const mapGitHubColor = (color: string | undefined): string => {
   background: var(--color-gray-50);
   border-radius: var(--radius-md);
   border-right: 2px solid var(--color-border-default);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  user-select: none;
+}
+
+.board-layout__swimlane-header-vertical:hover {
+  background: var(--color-gray-100);
+}
+
+.board-layout__swimlane-header-vertical--collapsed {
+  background: var(--color-gray-100);
+}
+
+.board-layout__swimlane-header-content {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+}
+
+.board-layout__swimlane-toggle {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  flex-shrink: 0;
+  width: 16px;
+  display: inline-block;
+  transition: transform var(--transition-base);
 }
 
 .board-layout__swimlane-count {

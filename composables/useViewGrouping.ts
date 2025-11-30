@@ -108,7 +108,8 @@ export const useViewGrouping = () => {
       groups.get(groupValue)!.push(item)
     }
 
-    // Convert to array and sort by field option order
+    // Convert to array and sort
+    const hasFieldOptions = orderMap.size > 0
     const groupedArray = Array.from(groups.entries())
       .map(([name, items]) => ({
         name,
@@ -125,8 +126,13 @@ export const useViewGrouping = () => {
         if (aIsEmpty && !bIsEmpty) return -1
         if (!aIsEmpty && bIsEmpty) return 1
 
-        // Otherwise sort by field option order
-        return a.order - b.order
+        // If field has options, sort by field option order
+        if (hasFieldOptions) {
+          return a.order - b.order
+        }
+
+        // Otherwise sort alphabetically
+        return a.name.localeCompare(b.name)
       })
     return groupedArray
   }

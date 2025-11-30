@@ -120,6 +120,14 @@ export const useViewFiltering = () => {
           itemValue = item.state?.toLowerCase()
           break
 
+        case 'status':
+          // Status is a custom field, not the built-in state
+          const statusValue = item.custom_fields['Status']
+          if (statusValue !== undefined && statusValue !== null) {
+            itemValue = String(statusValue).toLowerCase()
+          }
+          break
+
         case 'parent-issue':
           // Parent issue filter format: repo#number or just #number
           // We need to match against the parent issue number stored in custom_fields
@@ -137,7 +145,9 @@ export const useViewFiltering = () => {
               }
               return false
             })
-            if (!hasParentMatch) return false
+            if (!hasParentMatch) {
+              return false
+            }
           } else {
             return false
           }
@@ -175,15 +185,10 @@ export const useViewFiltering = () => {
     if (!filterString) return items
 
     const filters = parseFilterString(filterString)
-    console.log('Filter string:', filterString)
-    console.log('Parsed filters:', filters)
 
     if (filters.size === 0) return items
 
-    const filtered = items.filter(item => matchesFilters(item, filters))
-    console.log(`Filtered ${items.length} items down to ${filtered.length} items`)
-
-    return filtered
+    return items.filter(item => matchesFilters(item, filters))
   }
 
   return {
