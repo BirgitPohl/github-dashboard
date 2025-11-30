@@ -74,12 +74,28 @@ export async function executeGraphQLQuery<T>(
 
 // Type definitions for GraphQL responses
 
+// Union type: can be ProjectV2Field | ProjectV2SingleSelectField | ProjectV2IterationField
 export interface ProjectV2FieldConfiguration {
-  field: {
-    __typename: string
+  __typename?: string
+  id: string
+  name: string
+  dataType?: string
+  // SingleSelectField specific
+  options?: Array<{
     id: string
     name: string
-    dataType?: string
+    color: string
+  }>
+  // IterationField specific
+  configuration?: {
+    duration: number
+    startDay: number
+    iterations: Array<{
+      id: string
+      title: string
+      startDate: string
+      duration: number
+    }>
   }
 }
 

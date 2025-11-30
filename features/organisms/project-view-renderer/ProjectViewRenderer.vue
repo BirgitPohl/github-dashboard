@@ -28,7 +28,7 @@ const processedItems = computed(() => {
   // 2. Apply sorting
   if (props.view.sortByFields.nodes.length > 0) {
     const sortConfigs = props.view.sortByFields.nodes.map(sort => ({
-      field: sort.field.field.name,
+      field: sort.field.name,
       direction: sort.direction
     }))
     result = sortItemsMultiple(result, sortConfigs)
@@ -39,13 +39,13 @@ const processedItems = computed(() => {
 
 // Group items (after filtering and sorting)
 const groupedItems = computed(() => {
-  const groupByField = props.view.groupByFields.nodes[0]?.field?.name
+  const groupByField = props.view.groupByFields.nodes[0]?.name
   return groupItems(processedItems.value, groupByField)
 })
 
 // Extract visible fields from view
 const visibleFields = computed(() => {
-  return props.view.fields.nodes.map(f => f.field.name)
+  return props.view.fields.nodes.map(f => f.name)
 })
 </script>
 

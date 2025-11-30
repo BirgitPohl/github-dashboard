@@ -31,87 +31,72 @@ const PROJECT_DETAIL_QUERY = `
               nodes {
                 direction
                 field {
-                  ... on ProjectV2FieldConfiguration {
-                    field {
-                      __typename
-                      ... on ProjectV2Field {
-                        id
-                        name
-                        dataType
-                      }
-                      ... on ProjectV2SingleSelectField {
-                        id
-                        name
-                        dataType
-                      }
-                      ... on ProjectV2IterationField {
-                        id
-                        name
-                        dataType
-                      }
-                    }
+                  ... on ProjectV2Field {
+                    id
+                    name
+                    dataType
+                  }
+                  ... on ProjectV2SingleSelectField {
+                    id
+                    name
+                    dataType
+                  }
+                  ... on ProjectV2IterationField {
+                    id
+                    name
+                    dataType
                   }
                 }
               }
             }
             groupByFields(first: 10) {
               nodes {
-                ... on ProjectV2FieldConfiguration {
-                  field {
-                    __typename
-                    ... on ProjectV2Field {
-                      id
-                      name
-                      dataType
-                    }
-                    ... on ProjectV2SingleSelectField {
-                      id
-                      name
-                      dataType
-                    }
-                    ... on ProjectV2IterationField {
-                      id
-                      name
-                      dataType
-                    }
-                  }
+                ... on ProjectV2Field {
+                  id
+                  name
+                  dataType
+                }
+                ... on ProjectV2SingleSelectField {
+                  id
+                  name
+                  dataType
+                }
+                ... on ProjectV2IterationField {
+                  id
+                  name
+                  dataType
                 }
               }
             }
             fields(first: 50) {
               nodes {
-                ... on ProjectV2FieldConfiguration {
-                  field {
-                    __typename
-                    ... on ProjectV2Field {
+                ... on ProjectV2Field {
+                  id
+                  name
+                  dataType
+                }
+                ... on ProjectV2SingleSelectField {
+                  id
+                  name
+                  dataType
+                  options {
+                    id
+                    name
+                    color
+                  }
+                }
+                ... on ProjectV2IterationField {
+                  id
+                  name
+                  dataType
+                  configuration {
+                    duration
+                    startDay
+                    iterations {
                       id
-                      name
-                      dataType
-                    }
-                    ... on ProjectV2SingleSelectField {
-                      id
-                      name
-                      dataType
-                      options {
-                        id
-                        name
-                        color
-                      }
-                    }
-                    ... on ProjectV2IterationField {
-                      id
-                      name
-                      dataType
-                      configuration {
-                        duration
-                        startDay
-                        iterations {
-                          id
-                          title
-                          startDate
-                          duration
-                        }
-                      }
+                      title
+                      startDate
+                      duration
                     }
                   }
                 }
