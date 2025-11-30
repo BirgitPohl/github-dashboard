@@ -28,6 +28,13 @@ const {
 // Selected project
 const selectedProjectId = ref<string | null>(null)
 
+// Auto-select first project when projects load
+watch(projects, (newProjects) => {
+  if (newProjects && newProjects.length > 0 && !selectedProjectId.value) {
+    selectedProjectId.value = newProjects[0].id
+  }
+}, { immediate: true })
+
 // Project selector options
 const projectOptions = computed(() => {
   if (!projects.value) return []
