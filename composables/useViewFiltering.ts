@@ -87,6 +87,22 @@ export const useViewFiltering = () => {
           }
           break
 
+        case 'has':
+          // has:field means field has a value
+          for (const fieldName of filterValues) {
+            const hasValue = item.custom_fields[fieldName] !== undefined && item.custom_fields[fieldName] !== null
+            if (!hasValue) return false
+          }
+          continue
+
+        case 'no':
+          // no:field means field has no value
+          for (const fieldName of filterValues) {
+            const hasValue = item.custom_fields[fieldName] !== undefined && item.custom_fields[fieldName] !== null
+            if (hasValue) return false
+          }
+          continue
+
         case 'assignee':
           itemValue = item.assignees.map(a => a.login.toLowerCase())
           break
@@ -111,7 +127,7 @@ export const useViewFiltering = () => {
           if (parentIssue && typeof parentIssue === 'string') {
             // Try to match by issue number from the filter values
             // Filter values look like: "oracommit/issues#416"
-            const matches = filterValues.some(fv => {
+            const hasParentMatch = filterValues.some(fv => {
               const numberMatch = fv.match(/#(\d+)/)
               if (numberMatch) {
                 // Check if parent issue title contains this number
@@ -120,9 +136,11 @@ export const useViewFiltering = () => {
               }
               return false
             })
-            return matches
+            if (!hasParentMatch) return false
+          } else {
+            return false
           }
-          return false
+          continue
 
         default:
           // Check custom fields
@@ -156,9 +174,15 @@ export const useViewFiltering = () => {
     if (!filterString) return items
 
     const filters = parseFilterString(filterString)
+    console.log('Filter string:', filterString)
+    console.log('Parsed filters:', filters)
+
     if (filters.size === 0) return items
 
-    return items.filter(item => matchesFilters(item, filters))
+    const filtered = items.filter(item => matchesFilters(item, filters))
+    console.log(`Filtered ${items.length} items down to ${filtered.length} items`)
+
+    return filtered
   }
 
   return {
