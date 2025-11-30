@@ -204,7 +204,27 @@ const mapGitHubColor = (color: string | undefined): string => {
   gap: var(--spacing-3);
   padding: var(--spacing-4);
   overflow-x: auto;
-  min-width: min-content;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-gray-300) transparent;
+}
+
+.board-layout__columns::-webkit-scrollbar {
+  height: 8px;
+}
+
+.board-layout__columns::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.board-layout__columns::-webkit-scrollbar-thumb {
+  background: var(--color-gray-300);
+  border-radius: var(--radius-full);
+}
+
+.board-layout__columns::-webkit-scrollbar-thumb:hover {
+  background: var(--color-gray-400);
 }
 
 .board-layout__columns--no-swimlanes {
