@@ -10,15 +10,15 @@ defineProps<Props>()
 // Get iteration/milestone info from item
 const getTimelineInfo = (item: any): string => {
   // Check for iteration field
-  for (const [key, value] of Object.entries(item.customFields)) {
+  for (const [key, value] of Object.entries(item.custom_fields)) {
     if (typeof value === 'object' && value !== null && 'title' in value) {
       return (value as { title: string }).title
     }
   }
 
   // Fallback to dates
-  if (item.content?.createdAt) {
-    const date = new Date(item.content.createdAt)
+  if (item.created_at) {
+    const date = new Date(item.created_at)
     return date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
   }
 
@@ -50,22 +50,22 @@ const getTimelineInfo = (item: any): string => {
           <a
             v-for="item in group.items"
             :key="item.id"
-            :href="item.content?.url"
+            :href="item.url"
             target="_blank"
             rel="noopener noreferrer"
             class="roadmap-layout__item"
           >
             <div class="roadmap-layout__item-marker">
-              <Icon :icon="item.content?.__typename === 'PullRequest' ? '🔀' : '📋'" size="sm" decorative />
+              <Icon :icon="item.type === 'PULL_REQUEST' ? '🔀' : '📋'" size="sm" decorative />
             </div>
 
             <div class="roadmap-layout__item-content">
               <Text variant="primary" size="sm" weight="medium">
-                {{ item.content?.title || 'Untitled' }}
+                {{ item.title || 'Untitled' }}
               </Text>
               <div class="roadmap-layout__item-meta">
                 <Text variant="tertiary" size="xs">
-                  {{ item.content?.repository?.name || 'Draft' }}
+                  {{ item.repository || 'Draft' }}
                 </Text>
                 <Text variant="tertiary" size="xs">•</Text>
                 <Text variant="tertiary" size="xs">
@@ -74,9 +74,9 @@ const getTimelineInfo = (item: any): string => {
               </div>
 
               <!-- Labels -->
-              <div v-if="item.content?.labels?.nodes && item.content.labels.nodes.length > 0" class="roadmap-layout__item-labels">
+              <div v-if="item.labels && item.labels.length > 0" class="roadmap-layout__item-labels">
                 <LabelBadge
-                  v-for="label in item.content.labels.nodes.slice(0, 5)"
+                  v-for="label in item.labels.slice(0, 5)"
                   :key="label.name"
                   :name="label.name"
                   :color="label.color"

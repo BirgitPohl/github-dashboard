@@ -10,17 +10,17 @@ defineProps<Props>()
 
 // Get item icon based on type
 const getItemIcon = (item: ViewItem): string => {
-  const typename = item.content?.__typename
-  if (typename === 'PullRequest') return '🔀'
-  if (typename === 'Issue') return '📋'
-  if (typename === 'DraftIssue') return '📝'
+  if (item.type === 'PULL_REQUEST') return '🔀'
+  if (item.type === 'ISSUE') return '📋'
+  if (item.type === 'DRAFT_ISSUE') return '📝'
   return '📄'
 }
 
 // Get item state color
 const getStateColor = (item: ViewItem): string => {
-  if (item.content?.closed) return 'var(--color-gray-500)'
-  if (item.content?.state === 'OPEN') return 'var(--color-success-500)'
+  const state = item.state?.toUpperCase()
+  if (state === 'CLOSED' || state === 'MERGED') return 'var(--color-gray-500)'
+  if (state === 'OPEN') return 'var(--color-success-500)'
   return 'var(--color-gray-400)'
 }
 </script>
@@ -44,7 +44,7 @@ const getStateColor = (item: ViewItem): string => {
           <a
             v-for="item in group.items"
             :key="item.id"
-            :href="item.content?.url"
+            :href="item.url"
             target="_blank"
             rel="noopener noreferrer"
             class="board-layout__card"
@@ -53,18 +53,18 @@ const getStateColor = (item: ViewItem): string => {
             <div class="board-layout__card-header">
               <Icon :icon="getItemIcon(item)" size="sm" decorative />
               <Text variant="tertiary" size="xs">
-                {{ item.content?.repository?.name || 'Draft' }}
+                {{ item.repository || 'Draft' }}
               </Text>
             </div>
 
             <Text variant="primary" size="sm" weight="medium" class="board-layout__card-title">
-              {{ item.content?.title || 'Untitled' }}
+              {{ item.title || 'Untitled' }}
             </Text>
 
             <!-- Labels -->
-            <div v-if="item.content?.labels?.nodes && item.content.labels.nodes.length > 0" class="board-layout__card-labels">
+            <div v-if="item.labels && item.labels.length > 0" class="board-layout__card-labels">
               <LabelBadge
-                v-for="label in item.content.labels.nodes.slice(0, 3)"
+                v-for="label in item.labels.slice(0, 3)"
                 :key="label.name"
                 :name="label.name"
                 :color="label.color"
@@ -73,9 +73,9 @@ const getStateColor = (item: ViewItem): string => {
             </div>
 
             <!-- Assignees -->
-            <div v-if="item.content?.assignees?.nodes && item.content.assignees.nodes.length > 0" class="board-layout__card-assignees">
+            <div v-if="item.assignees && item.assignees.length > 0" class="board-layout__card-assignees">
               <UserAvatar
-                v-for="assignee in item.content.assignees.nodes.slice(0, 3)"
+                v-for="assignee in item.assignees.slice(0, 3)"
                 :key="assignee.login"
                 :src="assignee.avatarUrl"
                 :alt="assignee.login"
@@ -85,8 +85,8 @@ const getStateColor = (item: ViewItem): string => {
             </div>
 
             <!-- Custom Fields (simplified) -->
-            <div v-if="Object.keys(item.customFields).length > 0" class="board-layout__card-fields">
-              <div v-for="(value, key) in item.customFields" :key="String(key)" class="board-layout__card-field">
+            <div v-if="Object.keys(item.custom_fields).length > 0" class="board-layout__card-fields">
+              <div v-for="(value, key) in item.custom_fields" :key="String(key)" class="board-layout__card-field">
                 <Text variant="tertiary" size="xs">{{ key }}:</Text>
                 <Text variant="secondary" size="xs" weight="medium">{{ String(value) }}</Text>
               </div>
