@@ -3,29 +3,29 @@
  * Note: This is a simplified implementation of GitHub's filter syntax
  */
 
+// ViewItem matches the ProjectItem format expected by the table
 export interface ViewItem {
   id: string
-  type: string
-  content?: {
-    __typename?: string
-    title?: string
-    state?: string
-    closed?: boolean
-    repository?: {
-      name: string
-    }
-    assignees?: {
-      nodes: Array<{
-        login: string
-      }>
-    }
-    labels?: {
-      nodes: Array<{
-        name: string
-      }>
-    }
-  }
-  customFields: Record<string, unknown>
+  type: 'ISSUE' | 'PULL_REQUEST' | 'DRAFT_ISSUE'
+  number?: number
+  title: string
+  url: string
+  state: string
+  repository: string
+  repository_owner: string
+  assignees: Array<{
+    login: string
+    avatarUrl: string
+  }>
+  labels: Array<{
+    name: string
+    color: string
+  }>
+  created_at: string
+  updated_at: string
+  status?: string
+  priority?: string
+  custom_fields: Record<string, unknown>
 }
 
 export const useViewFiltering = () => {
@@ -75,36 +75,36 @@ export const useViewFiltering = () => {
         case 'is':
           // Special: is:open, is:closed, is:draft, is:issue, is:pr
           if (filterValues.includes('open')) {
-            itemValue = item.content?.state?.toLowerCase() === 'open' ? 'open' : undefined
+            itemValue = item.state?.toLowerCase() === 'open' ? 'open' : undefined
           } else if (filterValues.includes('closed')) {
-            itemValue = item.content?.closed ? 'closed' : undefined
+            itemValue = item.state?.toLowerCase() === 'closed' ? 'closed' : undefined
           } else if (filterValues.includes('issue')) {
-            itemValue = item.content?.__typename === 'Issue' ? 'issue' : undefined
+            itemValue = item.type === 'ISSUE' ? 'issue' : undefined
           } else if (filterValues.includes('pr')) {
-            itemValue = item.content?.__typename === 'PullRequest' ? 'pr' : undefined
+            itemValue = item.type === 'PULL_REQUEST' ? 'pr' : undefined
           }
           break
 
         case 'assignee':
-          itemValue = item.content?.assignees?.nodes.map(a => a.login.toLowerCase()) || []
+          itemValue = item.assignees.map(a => a.login.toLowerCase())
           break
 
         case 'label':
-          itemValue = item.content?.labels?.nodes.map(l => l.name.toLowerCase()) || []
+          itemValue = item.labels.map(l => l.name.toLowerCase())
           break
 
         case 'repo':
         case 'repository':
-          itemValue = item.content?.repository?.name.toLowerCase()
+          itemValue = item.repository.toLowerCase()
           break
 
         case 'state':
-          itemValue = item.content?.state?.toLowerCase()
+          itemValue = item.state?.toLowerCase()
           break
 
         default:
           // Check custom fields
-          const customValue = item.customFields[field]
+          const customValue = item.custom_fields[field]
           if (customValue !== undefined) {
             itemValue = String(customValue).toLowerCase()
           }

@@ -16,8 +16,8 @@ export const useViewGrouping = () => {
    */
   function getFieldValue(item: ViewItem, fieldName: string): string {
     // Check custom fields first
-    if (item.customFields[fieldName] !== undefined) {
-      const value = item.customFields[fieldName]
+    if (item.custom_fields[fieldName] !== undefined) {
+      const value = item.custom_fields[fieldName]
 
       // Handle iteration fields (object with title)
       if (typeof value === 'object' && value !== null && 'title' in value) {
@@ -30,20 +30,21 @@ export const useViewGrouping = () => {
     // Check built-in fields
     switch (fieldName.toLowerCase()) {
       case 'status':
+        return item.status || 'No Status'
+
       case 'state':
-        return item.content?.state || 'Unknown'
+        return item.state || 'Unknown'
 
       case 'type':
-        return item.content?.__typename || 'Unknown'
+        return item.type || 'Unknown'
 
       case 'repository':
       case 'repo':
-        return item.content?.repository?.name || 'No Repository'
+        return item.repository || 'No Repository'
 
       case 'assignee':
       case 'assignees':
-        const assignees = item.content?.assignees?.nodes
-        return assignees && assignees.length > 0 ? assignees[0].login : 'Unassigned'
+        return item.assignees.length > 0 ? item.assignees[0].login : 'Unassigned'
 
       default:
         return 'No Value'

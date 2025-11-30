@@ -192,7 +192,7 @@ export default defineEventHandler(async (event) => {
 
     console.log(`Successfully fetched ${items.length} items`)
 
-    // Transform items to simpler format
+    // Transform items to match REST API format (expected by ProjectItemsTable)
     return items.map(item => {
       // Build custom fields object from fieldValues
       const customFields: Record<string, unknown> = {}
@@ -220,11 +220,39 @@ export default defineEventHandler(async (event) => {
         }
       }
 
+      // Extract content data
+      const content = item.content
+      const contentType = content?.__typename
+
+      // Normalize type
+      let normalizedType: 'ISSUE' | 'PULL_REQUEST' | 'DRAFT_ISSUE' = 'DRAFT_ISSUE'
+      if (contentType === 'Issue') normalizedType = 'ISSUE'
+      else if (contentType === 'PullRequest') normalizedType = 'PULL_REQUEST'
+      else if (contentType === 'DraftIssue') normalizedType = 'DRAFT_ISSUE'
+
+      // Transform to expected format
       return {
         id: item.id,
-        type: item.type,
-        content: item.content,
-        customFields
+        type: normalizedType,
+        number: content?.number,
+        title: content?.title || 'Untitled',
+        url: content?.url || '',
+        state: content?.state || 'UNKNOWN',
+        repository: content?.repository?.name || 'No Repository',
+        repository_owner: '', // Not available in GraphQL response
+        assignees: content?.assignees?.nodes?.map(a => ({
+          login: a.login,
+          avatarUrl: a.avatarUrl
+        })) || [],
+        labels: content?.labels?.nodes?.map(l => ({
+          name: l.name,
+          color: l.color
+        })) || [],
+        created_at: content?.createdAt || '',
+        updated_at: content?.updatedAt || '',
+        status: customFields['Status'] as string | undefined,
+        priority: customFields['Priority'] as string | undefined,
+        custom_fields: customFields
       }
     })
 
