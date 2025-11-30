@@ -47,53 +47,45 @@ const mapGitHubColor = (color: string | undefined): string => {
   <div class="board-layout">
     <!-- Check if we have swimlanes (groups with subgroups) -->
     <template v-if="groups.length > 0 && groups[0].subgroups">
-      <!-- Swimlane layout with table structure -->
-      <div class="board-layout__swimlane-grid">
-        <!-- Column Headers Row -->
-        <div class="board-layout__header-row">
-          <!-- Empty cell for swimlane label column -->
-          <div class="board-layout__swimlane-label-header"></div>
-
-          <!-- Column headers -->
-          <div
-            v-for="column in groups[0].subgroups"
-            :key="column.name"
-            class="board-layout__column-header"
-            :style="{ borderLeftColor: mapGitHubColor(column.color) }"
-          >
-            <div class="board-layout__column-title-wrapper">
-              <span
-                class="board-layout__column-indicator"
-                :style="{ backgroundColor: mapGitHubColor(column.color) }"
-              />
-              <Header :level="4" size="sm" variant="primary" class="board-layout__column-title">
-                {{ column.name }}
-              </Header>
-            </div>
-            <span class="board-layout__column-count">
-              {{ column.count }}
-            </span>
-          </div>
+      <!-- Swimlane layout -->
+      <div v-for="swimlane in groups" :key="swimlane.name" class="board-layout__swimlane">
+        <!-- Swimlane Header -->
+        <div class="board-layout__swimlane-header">
+          <Header :level="3" size="md" variant="primary">
+            {{ swimlane.name }}
+          </Header>
+          <span class="board-layout__swimlane-count">
+            {{ swimlane.count }} {{ swimlane.count === 1 ? 'item' : 'items' }}
+          </span>
         </div>
 
-        <!-- Swimlane Rows -->
-        <div v-for="swimlane in groups" :key="swimlane.name" class="board-layout__swimlane-row">
-          <!-- Swimlane Label -->
-          <div class="board-layout__swimlane-label">
-            <Header :level="4" size="sm" variant="primary">
-              {{ swimlane.name }}
-            </Header>
-            <span class="board-layout__swimlane-count">
-              {{ swimlane.count }}
-            </span>
-          </div>
-
-          <!-- Columns for this swimlane -->
+        <!-- Columns within swimlane -->
+        <div class="board-layout__columns">
           <div
             v-for="column in swimlane.subgroups"
             :key="column.name"
-            class="board-layout__column-cell"
+            class="board-layout__column"
           >
+            <!-- Column Header -->
+            <div
+              class="board-layout__column-header"
+              :style="{ borderLeftColor: mapGitHubColor(column.color) }"
+            >
+              <div class="board-layout__column-title-wrapper">
+                <span
+                  class="board-layout__column-indicator"
+                  :style="{ backgroundColor: mapGitHubColor(column.color) }"
+                />
+                <Header :level="4" size="sm" variant="primary" class="board-layout__column-title">
+                  {{ column.name }}
+                </Header>
+              </div>
+              <span class="board-layout__column-count">
+                {{ column.count }}
+              </span>
+            </div>
+
+            <!-- Column Items -->
             <div class="board-layout__column-items">
               <a
                 v-for="item in column.items"
@@ -138,6 +130,11 @@ const mapGitHubColor = (color: string | undefined): string => {
                   />
                 </div>
               </a>
+
+              <!-- Empty state -->
+              <div v-if="column.items.length === 0" class="board-layout__empty">
+                <Text variant="tertiary" size="sm">No items</Text>
+              </div>
             </div>
           </div>
         </div>
@@ -238,78 +235,31 @@ const mapGitHubColor = (color: string | undefined): string => {
   -webkit-overflow-scrolling: touch;
 }
 
-/* Swimlane grid layout */
-.board-layout__swimlane-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-  background: var(--color-white);
+/* Swimlane styles */
+.board-layout__swimlane {
+  margin-bottom: var(--spacing-6);
   border: 1px solid var(--color-border-default);
   border-radius: var(--radius-lg);
-  overflow: hidden;
+  background: var(--color-white);
+  padding: var(--spacing-4);
 }
 
-.board-layout__header-row {
+.board-layout__swimlane-header {
   display: flex;
-  background: var(--color-gray-50);
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-4);
+  padding-bottom: var(--spacing-3);
   border-bottom: 2px solid var(--color-border-default);
-  position: sticky;
-  top: 0;
-  z-index: 2;
-}
-
-.board-layout__swimlane-label-header {
-  flex: 0 0 200px;
-  min-width: 200px;
-  max-width: 200px;
-  border-right: 1px solid var(--color-border-default);
-  background: var(--color-gray-50);
-}
-
-.board-layout__swimlane-row {
-  display: flex;
-  border-bottom: 1px solid var(--color-border-default);
-}
-
-.board-layout__swimlane-row:last-child {
-  border-bottom: none;
-}
-
-.board-layout__swimlane-label {
-  flex: 0 0 200px;
-  min-width: 200px;
-  max-width: 200px;
-  padding: var(--spacing-3);
-  border-right: 1px solid var(--color-border-default);
-  background: var(--color-gray-50);
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-2);
-  position: sticky;
-  left: 0;
-  z-index: 1;
 }
 
 .board-layout__swimlane-count {
-  font-size: var(--font-size-xs);
+  font-size: var(--font-size-sm);
   color: var(--color-text-tertiary);
-  background: var(--color-gray-200);
-  padding: 2px 8px;
+  background: var(--color-gray-100);
+  padding: 4px 12px;
   border-radius: var(--radius-full);
   font-weight: 600;
-  align-self: flex-start;
-}
-
-.board-layout__column-cell {
-  flex: 0 0 320px;
-  min-width: 320px;
-  max-width: 320px;
-  border-right: 1px solid var(--color-border-default);
-  background: var(--color-slate-50);
-}
-
-.board-layout__column-cell:last-child {
-  border-right: none;
 }
 
 .board-layout__columns {
@@ -334,24 +284,10 @@ const mapGitHubColor = (color: string | undefined): string => {
   align-items: center;
   justify-content: space-between;
   padding: var(--spacing-3) var(--spacing-4);
-  border-left: 3px solid var(--color-gray-300);
-  flex: 0 0 320px;
-  min-width: 320px;
-  max-width: 320px;
-  border-right: 1px solid var(--color-border-default);
-}
-
-.board-layout__column-header:last-child {
-  border-right: none;
-}
-
-/* For non-swimlane columns */
-.board-layout__columns .board-layout__column-header {
   border-bottom: 1px solid var(--color-border-default);
+  border-left: 3px solid var(--color-gray-300);
   background: var(--color-white);
   border-radius: var(--radius-lg) var(--radius-lg) 0 0;
-  flex: initial;
-  border-right: none;
 }
 
 .board-layout__column-title-wrapper {
@@ -386,11 +322,6 @@ const mapGitHubColor = (color: string | undefined): string => {
   flex-direction: column;
   gap: var(--spacing-3);
   min-height: 100px; /* Ensure columns have some height even when empty */
-}
-
-/* For swimlane grid cells, add more padding */
-.board-layout__column-cell .board-layout__column-items {
-  padding: var(--spacing-4);
 }
 
 .board-layout__card {
