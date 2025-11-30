@@ -60,8 +60,10 @@ const {
 }>(
   () => selectedProjectId.value ? `/api/project-views/${selectedProjectId.value}` : null,
   {
+    key: () => selectedProjectId.value ? `project-detail-${selectedProjectId.value}` : 'project-detail-null',
     server: false,
-    watch: [selectedProjectId]
+    immediate: true,
+    watch: false
   }
 )
 
@@ -74,13 +76,22 @@ const {
 } = useFetch<ViewItem[]>(
   () => selectedProjectId.value ? `/api/project-views/${selectedProjectId.value}/items` : null,
   {
+    key: () => selectedProjectId.value ? `project-items-${selectedProjectId.value}` : 'project-items-null',
     server: false,
-    watch: [selectedProjectId]
+    immediate: true,
+    watch: false
   }
 )
 
 // Active view (tab)
 const activeViewId = ref<string | null>(null)
+
+// Watch for project changes and refetch data
+watch(selectedProjectId, async (newId, oldId) => {
+  if (newId && newId !== oldId) {
+    await Promise.all([refreshProject(), refreshItems()])
+  }
+})
 
 // Update active view when project detail loads
 watch(projectDetail, (detail) => {
