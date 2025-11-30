@@ -277,7 +277,6 @@ const mapGitHubColor = (color: string | undefined): string => {
   border-radius: var(--radius-lg);
   display: flex;
   flex-direction: column;
-  max-height: calc(100vh - 300px);
 }
 
 .board-layout__column-header {
@@ -318,12 +317,11 @@ const mapGitHubColor = (color: string | undefined): string => {
 }
 
 .board-layout__column-items {
-  flex: 1;
-  overflow-y: auto;
   padding: var(--spacing-3);
   display: flex;
   flex-direction: column;
   gap: var(--spacing-3);
+  min-height: 100px; /* Ensure columns have some height even when empty */
 }
 
 .board-layout__card {
