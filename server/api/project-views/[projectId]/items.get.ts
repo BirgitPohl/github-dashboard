@@ -231,7 +231,9 @@ export default defineEventHandler(async (event) => {
 
       // Add parent issue from content if it exists
       if (contentType === 'Issue' && content.parent) {
+        // Store title for display and number for filtering
         customFields['Parent issue'] = content.parent.title
+        customFields['Parent issue number'] = content.parent.number
       }
 
       // Normalize type

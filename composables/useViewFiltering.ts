@@ -122,17 +122,18 @@ export const useViewFiltering = () => {
 
         case 'parent-issue':
           // Parent issue filter format: repo#number or just #number
-          // We need to match against the parent issue stored in custom_fields
-          const parentIssue = item.custom_fields['Parent issue']
-          if (parentIssue && typeof parentIssue === 'string') {
+          // We need to match against the parent issue number stored in custom_fields
+          const parentIssueNumber = item.custom_fields['Parent issue number']
+
+          if (parentIssueNumber) {
             // Try to match by issue number from the filter values
             // Filter values look like: "oracommit/issues#416"
             const hasParentMatch = filterValues.some(fv => {
               const numberMatch = fv.match(/#(\d+)/)
               if (numberMatch) {
-                // Check if parent issue title contains this number
-                const issueNumber = numberMatch[1]
-                return parentIssue.toLowerCase().includes(`#${issueNumber}`)
+                // Check if parent issue number matches
+                const issueNumber = parseInt(numberMatch[1])
+                return parentIssueNumber === issueNumber
               }
               return false
             })
