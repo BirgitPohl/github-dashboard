@@ -34,13 +34,14 @@ const getStateColor = (item: ViewItem): string => {
   >
     <div class="item-card__header">
       <Icon :icon="getItemIcon(item)" size="sm" decorative />
-      <Text variant="tertiary" size="xs">
-        {{ item.repository || 'Draft' }}
-      </Text>
     </div>
 
     <Text variant="primary" size="sm" weight="medium" class="item-card__title">
       {{ item.title || 'Untitled' }}
+    </Text>
+
+    <Text variant="tertiary" size="xs" class="item-card__repository">
+      {{ item.repository || 'Draft' }}
     </Text>
 
     <!-- Labels -->
@@ -97,6 +98,14 @@ const getStateColor = (item: ViewItem): string => {
 .item-card__title {
   margin: 0;
   line-height: 1.4;
+  word-wrap: break-word;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
+}
+
+.item-card__repository {
+  margin: 0;
 }
 
 .item-card__labels {
