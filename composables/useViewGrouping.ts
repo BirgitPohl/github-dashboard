@@ -58,12 +58,6 @@ export const useViewGrouping = () => {
       case 'assignees':
         return item.assignees.length > 0 ? item.assignees[0].login : 'Unassigned'
 
-      // Common GitHub project field names
-      case 'column':
-      case 'column by':
-        // Column is often mapped to Status
-        return item.custom_fields['Status'] || item.status || 'No Column'
-
       default:
         return 'No Value'
     }
