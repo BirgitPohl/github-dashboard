@@ -11,7 +11,7 @@ interface Props {
   /**
    * Size variant
    */
-  size?: 'sm' | 'md' | 'lg'
+  size?: 'xs' | 'sm' | 'md' | 'lg'
   /**
    * Custom CSS classes
    */
@@ -83,6 +83,13 @@ const textColor = computed(() => {
 }
 
 /* Size variants */
+.label-badge--xs {
+  padding: 2px 6px;
+  font-size: 10px;
+  border-radius: var(--radius-md);
+  font-weight: var(--font-weight-semibold);
+}
+
 .label-badge--sm {
   padding: var(--spacing-0-25) var(--spacing-1-5);
   font-size: var(--font-size-xs);
