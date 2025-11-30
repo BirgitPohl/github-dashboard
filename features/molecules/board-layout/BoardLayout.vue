@@ -45,7 +45,104 @@ const mapGitHubColor = (color: string | undefined): string => {
 
 <template>
   <div class="board-layout">
-    <div class="board-layout__columns">
+    <!-- Check if we have swimlanes (groups with subgroups) -->
+    <template v-if="groups.length > 0 && groups[0].subgroups">
+      <!-- Swimlane layout -->
+      <div v-for="swimlane in groups" :key="swimlane.name" class="board-layout__swimlane">
+        <!-- Swimlane Header -->
+        <div class="board-layout__swimlane-header">
+          <Header :level="3" size="md" variant="primary">
+            {{ swimlane.name }}
+          </Header>
+          <span class="board-layout__swimlane-count">
+            {{ swimlane.count }} {{ swimlane.count === 1 ? 'item' : 'items' }}
+          </span>
+        </div>
+
+        <!-- Columns within swimlane -->
+        <div class="board-layout__columns">
+          <div
+            v-for="column in swimlane.subgroups"
+            :key="column.name"
+            class="board-layout__column"
+          >
+            <!-- Column Header -->
+            <div
+              class="board-layout__column-header"
+              :style="{ borderLeftColor: mapGitHubColor(column.color) }"
+            >
+              <div class="board-layout__column-title-wrapper">
+                <span
+                  class="board-layout__column-indicator"
+                  :style="{ backgroundColor: mapGitHubColor(column.color) }"
+                />
+                <Header :level="4" size="sm" variant="primary" class="board-layout__column-title">
+                  {{ column.name }}
+                </Header>
+              </div>
+              <span class="board-layout__column-count">
+                {{ column.count }}
+              </span>
+            </div>
+
+            <!-- Column Items -->
+            <div class="board-layout__column-items">
+              <a
+                v-for="item in column.items"
+                :key="item.id"
+                :href="item.url"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="board-layout__card"
+                :style="{ borderLeftColor: getStateColor(item) }"
+              >
+                <div class="board-layout__card-header">
+                  <Icon :icon="getItemIcon(item)" size="sm" decorative />
+                  <Text variant="tertiary" size="xs">
+                    {{ item.repository || 'Draft' }}
+                  </Text>
+                </div>
+
+                <Text variant="primary" size="sm" weight="medium" class="board-layout__card-title">
+                  {{ item.title || 'Untitled' }}
+                </Text>
+
+                <!-- Labels -->
+                <div v-if="item.labels && item.labels.length > 0" class="board-layout__card-labels">
+                  <LabelBadge
+                    v-for="label in item.labels.slice(0, 3)"
+                    :key="label.name"
+                    :name="label.name"
+                    :color="label.color"
+                    size="xs"
+                  />
+                </div>
+
+                <!-- Assignees -->
+                <div v-if="item.assignees && item.assignees.length > 0" class="board-layout__card-assignees">
+                  <UserAvatar
+                    v-for="assignee in item.assignees.slice(0, 3)"
+                    :key="assignee.login"
+                    :src="assignee.avatarUrl"
+                    :alt="assignee.login"
+                    :tooltip="assignee.login"
+                    size="xs"
+                  />
+                </div>
+              </a>
+
+              <!-- Empty state -->
+              <div v-if="column.items.length === 0" class="board-layout__empty">
+                <Text variant="tertiary" size="sm">No items</Text>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </template>
+
+    <!-- Regular column layout (no swimlanes) -->
+    <div v-else class="board-layout__columns">
       <div v-for="group in groups" :key="group.name" class="board-layout__column">
         <!-- Column Header -->
         <div
@@ -136,6 +233,33 @@ const mapGitHubColor = (color: string | undefined): string => {
   overflow-x: auto;
   overflow-y: hidden;
   -webkit-overflow-scrolling: touch;
+}
+
+/* Swimlane styles */
+.board-layout__swimlane {
+  margin-bottom: var(--spacing-6);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-lg);
+  background: var(--color-white);
+  padding: var(--spacing-4);
+}
+
+.board-layout__swimlane-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-4);
+  padding-bottom: var(--spacing-3);
+  border-bottom: 2px solid var(--color-border-default);
+}
+
+.board-layout__swimlane-count {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-tertiary);
+  background: var(--color-gray-100);
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+  font-weight: 600;
 }
 
 .board-layout__columns {

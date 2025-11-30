@@ -13,7 +13,7 @@ interface Props {
 const props = defineProps<Props>()
 
 const { filterItems } = useViewFiltering()
-const { groupItems } = useViewGrouping()
+const { groupItems, groupItemsDual } = useViewGrouping()
 const { sortItemsMultiple } = useViewSorting()
 
 // Apply view configuration to items
@@ -39,14 +39,41 @@ const processedItems = computed(() => {
 
 // Group items (after filtering and sorting)
 const groupedItems = computed(() => {
-  // Board layouts use verticalGroupByFields, other layouts use groupByFields
-  const groupByFieldConfig = props.view.layout === 'BOARD_LAYOUT'
-    ? props.view.verticalGroupByFields.nodes[0]
-    : props.view.groupByFields.nodes[0]
+  // Board layouts can have dual grouping: swimlanes (horizontal) + columns (vertical)
+  if (props.view.layout === 'BOARD_LAYOUT') {
+    const swimlaneField = props.view.groupByFields.nodes[0]
+    const columnField = props.view.verticalGroupByFields.nodes[0]
 
+    // Find full field configurations
+    const swimlaneFieldConfig = swimlaneField?.name
+      ? props.view.fields.nodes.find(f => f.name === swimlaneField.name)
+      : undefined
+
+    const columnFieldConfig = columnField?.name
+      ? props.view.fields.nodes.find(f => f.name === columnField.name)
+      : undefined
+
+    // If both swimlanes and columns exist, use dual grouping
+    if (swimlaneField && columnField) {
+      return groupItemsDual(
+        processedItems.value,
+        swimlaneField.name,
+        swimlaneFieldConfig,
+        columnField.name,
+        columnFieldConfig
+      )
+    }
+
+    // If only columns exist, use single grouping
+    if (columnField) {
+      return groupItems(processedItems.value, columnField.name, columnFieldConfig)
+    }
+  }
+
+  // For table/roadmap layouts, use groupByFields
+  const groupByFieldConfig = props.view.groupByFields.nodes[0]
   const groupByFieldName = groupByFieldConfig?.name
 
-  // Find the full field configuration (with options) from view.fields
   const fullFieldConfig = groupByFieldName
     ? props.view.fields.nodes.find(f => f.name === groupByFieldName)
     : undefined

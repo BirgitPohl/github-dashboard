@@ -10,6 +10,7 @@ export interface GroupedItems {
   count: number
   items: ViewItem[]
   color?: string // Color from field options (e.g., Status options)
+  subgroups?: GroupedItems[] // For dual grouping (e.g., swimlanes with columns)
 }
 
 export const useViewGrouping = () => {
@@ -42,6 +43,7 @@ export const useViewGrouping = () => {
     }
 
     // Check built-in fields
+    // TODO this needs to be with unknown fields. We don"t know if these fields exists.
     switch (fieldNameLower) {
       case 'status':
         return item.status || 'No Status'
@@ -58,7 +60,7 @@ export const useViewGrouping = () => {
 
       case 'assignee':
       case 'assignees':
-        return item.assignees.length > 0 ? item.assignees[0].login : 'Unassigned'
+        return item.assignees?.length && item.assignees[0]?.login ? item.assignees[0].login : 'Unassigned'
 
       default:
         return 'No Value'
@@ -86,12 +88,8 @@ export const useViewGrouping = () => {
     const colorMap = new Map<string, string>()
     const orderMap = new Map<string, number>()
 
-    console.log('fieldConfig received:', fieldConfig)
-    console.log('fieldConfig.options:', fieldConfig?.options)
-
     if (fieldConfig?.options) {
       fieldConfig.options.forEach((option, index) => {
-        console.log(`Mapping option ${index}: "${option.name}"`)
         colorMap.set(option.name, option.color)
         orderMap.set(option.name, index)
       })
@@ -130,15 +128,32 @@ export const useViewGrouping = () => {
         // Otherwise sort by field option order
         return a.order - b.order
       })
-
-    console.log('Field options order:', fieldConfig?.options?.map((opt, idx) => `${idx}: ${opt.name}`))
-    console.log('Groups with order:', groupedArray.map(g => `${g.name} (order: ${g.order})`))
-
     return groupedArray
+  }
+
+  /**
+   * Group items by two fields (for swimlanes + columns)
+   */
+  function groupItemsDual(
+    items: ViewItem[],
+    primaryFieldName: string | null | undefined,
+    primaryFieldConfig: ProjectV2FieldConfiguration | null | undefined,
+    secondaryFieldName: string | null | undefined,
+    secondaryFieldConfig: ProjectV2FieldConfiguration | null | undefined
+  ): GroupedItems[] {
+    // First group by primary field (swimlanes)
+    const primaryGroups = groupItems(items, primaryFieldName, primaryFieldConfig)
+
+    // Then group each swimlane by secondary field (columns)
+    return primaryGroups.map(swimlane => ({
+      ...swimlane,
+      subgroups: groupItems(swimlane.items, secondaryFieldName, secondaryFieldConfig)
+    }))
   }
 
   return {
     getFieldValue,
-    groupItems
+    groupItems,
+    groupItemsDual
   }
 }
