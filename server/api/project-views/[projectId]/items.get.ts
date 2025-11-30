@@ -53,10 +53,6 @@ const PROJECT_ITEMS_QUERY = `
                     color
                   }
                 }
-                parent {
-                  number
-                  title
-                }
                 createdAt
                 updatedAt
               }
@@ -144,6 +140,18 @@ const PROJECT_ITEMS_QUERY = `
                     }
                   }
                 }
+                ... on ProjectV2ItemFieldIssueValue {
+                  issue {
+                    number
+                    title
+                  }
+                  field {
+                    ... on ProjectV2Field {
+                      id
+                      name
+                    }
+                  }
+                }
               }
             }
           }
@@ -198,10 +206,6 @@ export default defineEventHandler(async (event) => {
 
     // Transform items to match REST API format (expected by ProjectItemsTable)
     return items.map(item => {
-      // Extract content data first
-      const content = item.content
-      const contentType = content?.__typename
-
       // Build custom fields object from fieldValues
       const customFields: Record<string, unknown> = {}
 
@@ -226,13 +230,15 @@ export default defineEventHandler(async (event) => {
             startDate: fieldValue.startDate,
             duration: fieldValue.duration
           }
+        } else if ('issue' in fieldValue && fieldValue.issue !== undefined) {
+          // Parent issue field - store the issue title as the value
+          customFields[fieldName] = fieldValue.issue.title
         }
       }
 
-      // Add parent issue from content if it exists
-      if (contentType === 'Issue' && content.parent) {
-        customFields['Parent issue'] = content.parent.title
-      }
+      // Extract content data
+      const content = item.content
+      const contentType = content?.__typename
 
       // Normalize type
       let normalizedType: 'ISSUE' | 'PULL_REQUEST' | 'DRAFT_ISSUE' = 'DRAFT_ISSUE'
