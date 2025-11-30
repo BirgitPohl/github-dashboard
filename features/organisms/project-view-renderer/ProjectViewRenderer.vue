@@ -44,6 +44,10 @@ const groupedItems = computed(() => {
     const swimlaneField = props.view.groupByFields.nodes[0]
     const columnField = props.view.verticalGroupByFields.nodes[0]
 
+    console.log('Board layout grouping:')
+    console.log('  swimlaneField:', swimlaneField)
+    console.log('  columnField:', columnField)
+
     // Find full field configurations
     const swimlaneFieldConfig = swimlaneField?.name
       ? props.view.fields.nodes.find(f => f.name === swimlaneField.name)
@@ -53,16 +57,22 @@ const groupedItems = computed(() => {
       ? props.view.fields.nodes.find(f => f.name === columnField.name)
       : undefined
 
+    console.log('  swimlaneFieldConfig:', swimlaneFieldConfig)
+    console.log('  columnFieldConfig:', columnFieldConfig)
+
     // If both swimlanes and columns exist, use dual grouping
     // Primary = columns (Status), Secondary = swimlanes (Parent issue)
     if (swimlaneField && columnField) {
-      return groupItemsDual(
+      const result = groupItemsDual(
         processedItems.value,
         columnField.name,
         columnFieldConfig,
         swimlaneField.name,
         swimlaneFieldConfig
       )
+      console.log('  dual grouping result:', result)
+      console.log('  first group has subgroups?', result[0]?.subgroups)
+      return result
     }
 
     // If only columns exist, use single grouping
