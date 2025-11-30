@@ -140,6 +140,18 @@ const PROJECT_ITEMS_QUERY = `
                     }
                   }
                 }
+                ... on ProjectV2ItemFieldIssueValue {
+                  issue {
+                    number
+                    title
+                  }
+                  field {
+                    ... on ProjectV2Field {
+                      id
+                      name
+                    }
+                  }
+                }
               }
             }
           }
@@ -212,11 +224,15 @@ export default defineEventHandler(async (event) => {
         } else if ('name' in fieldValue && fieldValue.name !== undefined) {
           customFields[fieldName] = fieldValue.name
         } else if ('title' in fieldValue && fieldValue.title !== undefined) {
+          // Iteration field
           customFields[fieldName] = {
             title: fieldValue.title,
             startDate: fieldValue.startDate,
             duration: fieldValue.duration
           }
+        } else if ('issue' in fieldValue && fieldValue.issue !== undefined) {
+          // Parent issue field - store the issue title as the value
+          customFields[fieldName] = fieldValue.issue.title
         }
       }
 
