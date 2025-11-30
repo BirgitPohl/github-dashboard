@@ -85,8 +85,13 @@ export const useViewGrouping = () => {
     // Build color map and order index from field options (for SingleSelectField)
     const colorMap = new Map<string, string>()
     const orderMap = new Map<string, number>()
+
+    console.log('fieldConfig received:', fieldConfig)
+    console.log('fieldConfig.options:', fieldConfig?.options)
+
     if (fieldConfig?.options) {
       fieldConfig.options.forEach((option, index) => {
+        console.log(`Mapping option ${index}: "${option.name}"`)
         colorMap.set(option.name, option.color)
         orderMap.set(option.name, index)
       })
@@ -125,6 +130,9 @@ export const useViewGrouping = () => {
         // Otherwise sort by field option order
         return a.order - b.order
       })
+
+    console.log('Field options order:', fieldConfig?.options?.map((opt, idx) => `${idx}: ${opt.name}`))
+    console.log('Groups with order:', groupedArray.map(g => `${g.name} (order: ${g.order})`))
 
     return groupedArray
   }

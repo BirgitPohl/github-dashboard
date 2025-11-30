@@ -46,7 +46,12 @@ const groupedItems = computed(() => {
 
   const groupByFieldName = groupByFieldConfig?.name
 
-  return groupItems(processedItems.value, groupByFieldName, groupByFieldConfig)
+  // Find the full field configuration (with options) from view.fields
+  const fullFieldConfig = groupByFieldName
+    ? props.view.fields.nodes.find(f => f.name === groupByFieldName)
+    : undefined
+
+  return groupItems(processedItems.value, groupByFieldName, fullFieldConfig)
 })
 
 // Extract visible fields from view
