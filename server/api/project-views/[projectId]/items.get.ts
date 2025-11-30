@@ -140,18 +140,6 @@ const PROJECT_ITEMS_QUERY = `
                     }
                   }
                 }
-                ... on ProjectV2ItemFieldIssueValue {
-                  issue {
-                    number
-                    title
-                  }
-                  field {
-                    ... on ProjectV2Field {
-                      id
-                      name
-                    }
-                  }
-                }
               }
             }
           }
@@ -230,9 +218,6 @@ export default defineEventHandler(async (event) => {
             startDate: fieldValue.startDate,
             duration: fieldValue.duration
           }
-        } else if ('issue' in fieldValue && fieldValue.issue !== undefined) {
-          // Parent issue field - store the issue title as the value
-          customFields[fieldName] = fieldValue.issue.title
         }
       }
 
