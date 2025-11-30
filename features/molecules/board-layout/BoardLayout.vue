@@ -47,53 +47,55 @@ const mapGitHubColor = (color: string | undefined): string => {
   <div class="board-layout">
     <!-- Check if we have swimlanes (columns with subgroups) -->
     <template v-if="groups.length > 0 && groups[0].subgroups">
-      <!-- Columns with swimlanes -->
-      <div class="board-layout__columns">
+      <!-- Get unique swimlane names from first column -->
+      <div class="board-layout__swimlane-container">
+        <!-- Iterate through swimlanes (using first column's subgroups as reference) -->
         <div
-          v-for="column in groups"
-          :key="column.name"
-          class="board-layout__column"
+          v-for="(_, swimlaneIndex) in groups[0].subgroups"
+          :key="groups[0].subgroups[swimlaneIndex].name"
+          class="board-layout__swimlane-row"
         >
-          <!-- Column Header -->
-          <div
-            class="board-layout__column-header"
-            :style="{ borderLeftColor: mapGitHubColor(column.color) }"
-          >
-            <div class="board-layout__column-title-wrapper">
-              <span
-                class="board-layout__column-indicator"
-                :style="{ backgroundColor: mapGitHubColor(column.color) }"
-              />
-              <Header :level="4" size="sm" variant="primary" class="board-layout__column-title">
-                {{ column.name }}
-              </Header>
-            </div>
-            <span class="board-layout__column-count">
-              {{ column.count }}
+          <!-- Swimlane header (left side) -->
+          <div class="board-layout__swimlane-header-vertical">
+            <Header :level="4" size="sm" variant="primary">
+              {{ groups[0].subgroups[swimlaneIndex].name }}
+            </Header>
+            <span class="board-layout__swimlane-count">
+              {{ groups[0].subgroups[swimlaneIndex].count }}
             </span>
           </div>
 
-          <!-- Swimlanes within column -->
-          <div class="board-layout__column-items">
+          <!-- Columns for this swimlane -->
+          <div class="board-layout__columns-horizontal">
             <div
-              v-for="swimlane in column.subgroups"
-              :key="swimlane.name"
-              class="board-layout__swimlane"
+              v-for="column in groups"
+              :key="column.name"
+              class="board-layout__column-cell"
             >
-              <!-- Swimlane Header -->
-              <div class="board-layout__swimlane-header">
-                <Text variant="secondary" size="xs" weight="semibold">
-                  {{ swimlane.name }}
-                </Text>
-                <span class="board-layout__swimlane-count-small">
-                  {{ swimlane.count }}
+              <!-- Column header (only show in first swimlane) -->
+              <div
+                v-if="swimlaneIndex === 0"
+                class="board-layout__column-header"
+                :style="{ borderLeftColor: mapGitHubColor(column.color) }"
+              >
+                <div class="board-layout__column-title-wrapper">
+                  <span
+                    class="board-layout__column-indicator"
+                    :style="{ backgroundColor: mapGitHubColor(column.color) }"
+                  />
+                  <Header :level="5" size="xs" variant="primary" class="board-layout__column-title">
+                    {{ column.name }}
+                  </Header>
+                </div>
+                <span class="board-layout__column-count">
+                  {{ column.count }}
                 </span>
               </div>
 
-              <!-- Items in this swimlane -->
-              <div class="board-layout__swimlane-items">
+              <!-- Items for this column and swimlane -->
+              <div class="board-layout__column-items">
                 <a
-                  v-for="item in swimlane.items"
+                  v-for="item in column.subgroups[swimlaneIndex]?.items || []"
                   :key="item.id"
                   :href="item.url"
                   target="_blank"
@@ -236,44 +238,58 @@ const mapGitHubColor = (color: string | undefined): string => {
   -webkit-overflow-scrolling: touch;
 }
 
-/* Swimlane styles (horizontal within columns) */
-.board-layout__swimlane {
-  margin-bottom: var(--spacing-3);
-  border: 1px solid var(--color-border-default);
-  border-radius: var(--radius-md);
-  background: var(--color-gray-50);
-  padding: var(--spacing-2);
-}
-
-.board-layout__swimlane:last-child {
-  margin-bottom: 0;
-}
-
-.board-layout__swimlane-header {
+/* Swimlane container and rows */
+.board-layout__swimlane-container {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: var(--spacing-2);
-  padding: var(--spacing-2);
+  flex-direction: column;
+  gap: var(--spacing-4);
+}
+
+.board-layout__swimlane-row {
+  display: flex;
+  gap: var(--spacing-3);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-lg);
   background: var(--color-white);
-  border-radius: var(--radius-sm);
+  padding: var(--spacing-3);
 }
 
-.board-layout__swimlane-count-small {
-  font-size: var(--font-size-xs);
-  color: var(--color-text-tertiary);
-  background: var(--color-gray-200);
-  padding: 1px 6px;
-  border-radius: var(--radius-full);
-  font-weight: 600;
-  min-width: 20px;
-  text-align: center;
-}
-
-.board-layout__swimlane-items {
+.board-layout__swimlane-header-vertical {
+  flex: 0 0 200px;
+  min-width: 200px;
+  max-width: 200px;
   display: flex;
   flex-direction: column;
   gap: var(--spacing-2);
+  padding: var(--spacing-3);
+  background: var(--color-gray-50);
+  border-radius: var(--radius-md);
+  border-right: 2px solid var(--color-border-default);
+}
+
+.board-layout__swimlane-count {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-tertiary);
+  background: var(--color-gray-200);
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  font-weight: 600;
+  align-self: flex-start;
+}
+
+.board-layout__columns-horizontal {
+  display: flex;
+  gap: var(--spacing-3);
+  flex: 1;
+  overflow-x: auto;
+}
+
+.board-layout__column-cell {
+  flex: 0 0 280px;
+  min-width: 280px;
+  max-width: 280px;
+  display: flex;
+  flex-direction: column;
 }
 
 .board-layout__columns {
@@ -297,11 +313,20 @@ const mapGitHubColor = (color: string | undefined): string => {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: var(--spacing-3) var(--spacing-4);
-  border-bottom: 1px solid var(--color-border-default);
+  padding: var(--spacing-2);
   border-left: 3px solid var(--color-gray-300);
+  background: var(--color-gray-50);
+  border-radius: var(--radius-sm);
+  margin-bottom: var(--spacing-2);
+}
+
+/* For non-swimlane layout */
+.board-layout__columns > .board-layout__column .board-layout__column-header {
+  border-bottom: 1px solid var(--color-border-default);
   background: var(--color-white);
   border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  padding: var(--spacing-3) var(--spacing-4);
+  margin-bottom: 0;
 }
 
 .board-layout__column-title-wrapper {
