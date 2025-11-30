@@ -116,6 +116,9 @@ export interface ProjectV2View {
   groupByFields: {
     nodes: ProjectV2FieldConfiguration[]
   }
+  verticalGroupByFields: {
+    nodes: ProjectV2FieldConfiguration[]
+  }
   fields: {
     nodes: ProjectV2FieldConfiguration[]
   }

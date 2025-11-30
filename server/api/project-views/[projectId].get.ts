@@ -68,6 +68,25 @@ const PROJECT_DETAIL_QUERY = `
                 }
               }
             }
+            verticalGroupByFields(first: 10) {
+              nodes {
+                ... on ProjectV2Field {
+                  id
+                  name
+                  dataType
+                }
+                ... on ProjectV2SingleSelectField {
+                  id
+                  name
+                  dataType
+                }
+                ... on ProjectV2IterationField {
+                  id
+                  name
+                  dataType
+                }
+              }
+            }
             fields(first: 50) {
               nodes {
                 ... on ProjectV2Field {

@@ -39,7 +39,11 @@ const processedItems = computed(() => {
 
 // Group items (after filtering and sorting)
 const groupedItems = computed(() => {
-  const groupByField = props.view.groupByFields.nodes[0]?.name
+  // Board layouts use verticalGroupByFields, other layouts use groupByFields
+  const groupByField = props.view.layout === 'BOARD_LAYOUT'
+    ? props.view.verticalGroupByFields.nodes[0]?.name
+    : props.view.groupByFields.nodes[0]?.name
+
   return groupItems(processedItems.value, groupByField)
 })
 
