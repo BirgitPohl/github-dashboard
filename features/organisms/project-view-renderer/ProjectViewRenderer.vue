@@ -54,13 +54,14 @@ const groupedItems = computed(() => {
       : undefined
 
     // If both swimlanes and columns exist, use dual grouping
+    // Primary = columns (Status), Secondary = swimlanes (Parent issue)
     if (swimlaneField && columnField) {
       return groupItemsDual(
         processedItems.value,
-        swimlaneField.name,
-        swimlaneFieldConfig,
         columnField.name,
-        columnFieldConfig
+        columnFieldConfig,
+        swimlaneField.name,
+        swimlaneFieldConfig
       )
     }
 

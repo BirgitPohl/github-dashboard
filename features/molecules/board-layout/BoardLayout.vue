@@ -45,95 +45,96 @@ const mapGitHubColor = (color: string | undefined): string => {
 
 <template>
   <div class="board-layout">
-    <!-- Check if we have swimlanes (groups with subgroups) -->
+    <!-- Check if we have swimlanes (columns with subgroups) -->
     <template v-if="groups.length > 0 && groups[0].subgroups">
-      <!-- Swimlane layout -->
-      <div v-for="swimlane in groups" :key="swimlane.name" class="board-layout__swimlane">
-        <!-- Swimlane Header -->
-        <div class="board-layout__swimlane-header">
-          <Header :level="3" size="md" variant="primary">
-            {{ swimlane.name }}
-          </Header>
-          <span class="board-layout__swimlane-count">
-            {{ swimlane.count }} {{ swimlane.count === 1 ? 'item' : 'items' }}
-          </span>
-        </div>
-
-        <!-- Columns within swimlane -->
-        <div class="board-layout__columns">
+      <!-- Columns with swimlanes -->
+      <div class="board-layout__columns">
+        <div
+          v-for="column in groups"
+          :key="column.name"
+          class="board-layout__column"
+        >
+          <!-- Column Header -->
           <div
-            v-for="column in swimlane.subgroups"
-            :key="column.name"
-            class="board-layout__column"
+            class="board-layout__column-header"
+            :style="{ borderLeftColor: mapGitHubColor(column.color) }"
           >
-            <!-- Column Header -->
-            <div
-              class="board-layout__column-header"
-              :style="{ borderLeftColor: mapGitHubColor(column.color) }"
-            >
-              <div class="board-layout__column-title-wrapper">
-                <span
-                  class="board-layout__column-indicator"
-                  :style="{ backgroundColor: mapGitHubColor(column.color) }"
-                />
-                <Header :level="4" size="sm" variant="primary" class="board-layout__column-title">
-                  {{ column.name }}
-                </Header>
-              </div>
-              <span class="board-layout__column-count">
-                {{ column.count }}
-              </span>
+            <div class="board-layout__column-title-wrapper">
+              <span
+                class="board-layout__column-indicator"
+                :style="{ backgroundColor: mapGitHubColor(column.color) }"
+              />
+              <Header :level="4" size="sm" variant="primary" class="board-layout__column-title">
+                {{ column.name }}
+              </Header>
             </div>
+            <span class="board-layout__column-count">
+              {{ column.count }}
+            </span>
+          </div>
 
-            <!-- Column Items -->
-            <div class="board-layout__column-items">
-              <a
-                v-for="item in column.items"
-                :key="item.id"
-                :href="item.url"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="board-layout__card"
-                :style="{ borderLeftColor: getStateColor(item) }"
-              >
-                <div class="board-layout__card-header">
-                  <Icon :icon="getItemIcon(item)" size="sm" decorative />
-                  <Text variant="tertiary" size="xs">
-                    {{ item.repository || 'Draft' }}
-                  </Text>
-                </div>
-
-                <Text variant="primary" size="sm" weight="medium" class="board-layout__card-title">
-                  {{ item.title || 'Untitled' }}
+          <!-- Swimlanes within column -->
+          <div class="board-layout__column-items">
+            <div
+              v-for="swimlane in column.subgroups"
+              :key="swimlane.name"
+              class="board-layout__swimlane"
+            >
+              <!-- Swimlane Header -->
+              <div class="board-layout__swimlane-header">
+                <Text variant="secondary" size="xs" weight="semibold">
+                  {{ swimlane.name }}
                 </Text>
+                <span class="board-layout__swimlane-count-small">
+                  {{ swimlane.count }}
+                </span>
+              </div>
 
-                <!-- Labels -->
-                <div v-if="item.labels && item.labels.length > 0" class="board-layout__card-labels">
-                  <LabelBadge
-                    v-for="label in item.labels.slice(0, 3)"
-                    :key="label.name"
-                    :name="label.name"
-                    :color="label.color"
-                    size="xs"
-                  />
-                </div>
+              <!-- Items in this swimlane -->
+              <div class="board-layout__swimlane-items">
+                <a
+                  v-for="item in swimlane.items"
+                  :key="item.id"
+                  :href="item.url"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="board-layout__card"
+                  :style="{ borderLeftColor: getStateColor(item) }"
+                >
+                  <div class="board-layout__card-header">
+                    <Icon :icon="getItemIcon(item)" size="sm" decorative />
+                    <Text variant="tertiary" size="xs">
+                      {{ item.repository || 'Draft' }}
+                    </Text>
+                  </div>
 
-                <!-- Assignees -->
-                <div v-if="item.assignees && item.assignees.length > 0" class="board-layout__card-assignees">
-                  <UserAvatar
-                    v-for="assignee in item.assignees.slice(0, 3)"
-                    :key="assignee.login"
-                    :src="assignee.avatarUrl"
-                    :alt="assignee.login"
-                    :tooltip="assignee.login"
-                    size="xs"
-                  />
-                </div>
-              </a>
+                  <Text variant="primary" size="sm" weight="medium" class="board-layout__card-title">
+                    {{ item.title || 'Untitled' }}
+                  </Text>
 
-              <!-- Empty state -->
-              <div v-if="column.items.length === 0" class="board-layout__empty">
-                <Text variant="tertiary" size="sm">No items</Text>
+                  <!-- Labels -->
+                  <div v-if="item.labels && item.labels.length > 0" class="board-layout__card-labels">
+                    <LabelBadge
+                      v-for="label in item.labels.slice(0, 3)"
+                      :key="label.name"
+                      :name="label.name"
+                      :color="label.color"
+                      size="xs"
+                    />
+                  </div>
+
+                  <!-- Assignees -->
+                  <div v-if="item.assignees && item.assignees.length > 0" class="board-layout__card-assignees">
+                    <UserAvatar
+                      v-for="assignee in item.assignees.slice(0, 3)"
+                      :key="assignee.login"
+                      :src="assignee.avatarUrl"
+                      :alt="assignee.login"
+                      :tooltip="assignee.login"
+                      size="xs"
+                    />
+                  </div>
+                </a>
               </div>
             </div>
           </div>
@@ -235,31 +236,44 @@ const mapGitHubColor = (color: string | undefined): string => {
   -webkit-overflow-scrolling: touch;
 }
 
-/* Swimlane styles */
+/* Swimlane styles (horizontal within columns) */
 .board-layout__swimlane {
-  margin-bottom: var(--spacing-6);
+  margin-bottom: var(--spacing-3);
   border: 1px solid var(--color-border-default);
-  border-radius: var(--radius-lg);
-  background: var(--color-white);
-  padding: var(--spacing-4);
+  border-radius: var(--radius-md);
+  background: var(--color-gray-50);
+  padding: var(--spacing-2);
+}
+
+.board-layout__swimlane:last-child {
+  margin-bottom: 0;
 }
 
 .board-layout__swimlane-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: var(--spacing-4);
-  padding-bottom: var(--spacing-3);
-  border-bottom: 2px solid var(--color-border-default);
+  margin-bottom: var(--spacing-2);
+  padding: var(--spacing-2);
+  background: var(--color-white);
+  border-radius: var(--radius-sm);
 }
 
-.board-layout__swimlane-count {
-  font-size: var(--font-size-sm);
+.board-layout__swimlane-count-small {
+  font-size: var(--font-size-xs);
   color: var(--color-text-tertiary);
-  background: var(--color-gray-100);
-  padding: 4px 12px;
+  background: var(--color-gray-200);
+  padding: 1px 6px;
   border-radius: var(--radius-full);
   font-weight: 600;
+  min-width: 20px;
+  text-align: center;
+}
+
+.board-layout__swimlane-items {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
 }
 
 .board-layout__columns {
