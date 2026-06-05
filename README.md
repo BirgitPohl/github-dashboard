@@ -133,7 +133,7 @@ npm run preview
 
 ## 📝 License
 
-This project is for internal use at Oracommit.
+This project is for use for everyone.
 
 # yarn
 yarn build
