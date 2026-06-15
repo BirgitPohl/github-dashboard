@@ -213,6 +213,6 @@ const handleRemove = (e: Event) => {
 
 .tag__remove:hover {
   opacity: 1;
-  background: rgba(0, 0, 0, 0.1);
+  background: var(--color-bg-overlay-dark);
 }
 </style>

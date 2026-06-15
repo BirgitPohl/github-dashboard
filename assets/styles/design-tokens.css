@@ -83,6 +83,58 @@
   --color-border-focus: var(--color-primary-600);
 
   /* ========================================
+     SEMANTIC COLOR LAYER
+     ========================================
+     Components MUST reference these named roles instead of raw scale tokens
+     or hex literals. The scale tokens above are palette primitives; the
+     names below assign roles. Retheme the app by editing this section. */
+
+  /* Identity */
+  --color-primary:           var(--color-primary-600);
+  --color-primary-bright:    var(--color-primary-100);
+  --color-primary-dark:      var(--color-primary-800);
+  --color-on-primary:        #ffffff;
+
+  --color-secondary:         var(--color-gray-500);
+  --color-secondary-bright:  var(--color-gray-100);
+  --color-secondary-dark:    var(--color-gray-800);
+  --color-on-secondary:      #ffffff;
+
+  --color-tertiary:          #8b5cf6;
+  --color-tertiary-bright:   #ede9fe;
+  --color-tertiary-dark:     #6d28d9;
+  --color-on-tertiary:       #ffffff;
+
+  /* Status */
+  --color-success:           #10b981;
+  --color-success-bright:    #f0fdf4;
+  --color-success-dark:      #065f46;
+  --color-on-success:        #ffffff;
+
+  --color-warning:           #f59e0b;
+  --color-warning-bright:    #fffbeb;
+  --color-warning-dark:      #b45309;
+  --color-on-warning:        #ffffff;
+
+  --color-error:             #ef4444;
+  --color-error-bright:      #fef2f2;
+  --color-error-dark:        #b91c1c;
+  --color-on-error:          #ffffff;
+
+  --color-info:              #3b82f6;
+  --color-info-bright:       #eff6ff;
+  --color-info-dark:         #1d4ed8;
+  --color-on-info:           #ffffff;
+
+  /* Surface / text roles for inverse (dark glass) surfaces */
+  --color-surface-inverse:    rgba(15, 23, 42, 0.88);
+  --color-on-surface-inverse: #f8fafc;
+
+  /* Text-on-color helpers for dynamically computed contrast */
+  --color-text-on-light:     #000000;
+  --color-text-on-dark:      #ffffff;
+
+  /* ========================================
      TYPOGRAPHY
      ======================================== */
 

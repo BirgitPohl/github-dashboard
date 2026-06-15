@@ -46,12 +46,12 @@ watch(
   max-width: min(560px, calc(100vw - 2rem));
   padding: 6px 12px;
   border-radius: 999px;
-  background: rgba(15, 23, 42, 0.88);
-  color: #f8fafc;
+  background: var(--color-surface-inverse);
+  color: var(--color-on-surface-inverse);
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
   font-size: 12px;
   line-height: 1.4;
-  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.2);
+  box-shadow: var(--shadow-lg);
   backdrop-filter: blur(6px);
   pointer-events: none;
 }
@@ -60,7 +60,7 @@ watch(
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #34d399;
+  background: var(--color-success);
   flex-shrink: 0;
   animation: log-ticker-pulse 1.4s ease-in-out infinite;
 }
