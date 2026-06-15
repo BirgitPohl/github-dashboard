@@ -7,6 +7,16 @@ const menuOpen = ref(false)
 const route = useRoute()
 watch(() => route.fullPath, () => { menuOpen.value = false })
 
+const PAGE_TITLES: Record<string, string> = {
+  WorkflowsDashboard: 'Workflows',
+  PullRequestsOverview: 'Pull Requests',
+  RepositoriesOverview: 'Repositories',
+}
+const currentPageTitle = computed(() => {
+  const name = typeof route.name === 'string' ? route.name : ''
+  return PAGE_TITLES[name] ?? ''
+})
+
 // Keep --nav-actual-height in sync with the rendered nav so the layout's
 // content offset is correct whether the bar is single-row (desktop) or
 // stacked (mobile), and whether the stats strip is present or not.
@@ -38,18 +48,23 @@ onUnmounted(() => {
       <Header :level="1" size="2xl" variant="primary" class="nav-title">
         {{ githubOwner }}
       </Header>
-      <button
-        type="button"
-        class="nav-burger"
-        :aria-expanded="menuOpen"
-        aria-controls="nav-menu"
-        aria-label="Toggle navigation menu"
-        @click="menuOpen = !menuOpen"
-      >
-        <span class="nav-burger__bar" />
-        <span class="nav-burger__bar" />
-        <span class="nav-burger__bar" />
-      </button>
+      <div class="nav-mobile-cluster">
+        <Text v-if="currentPageTitle" variant="primary" size="base" weight="medium" class="nav-page-title">
+          {{ currentPageTitle }}
+        </Text>
+        <button
+          type="button"
+          class="nav-burger"
+          :aria-expanded="menuOpen"
+          aria-controls="nav-menu"
+          aria-label="Toggle navigation menu"
+          @click="menuOpen = !menuOpen"
+        >
+          <span class="nav-burger__bar" />
+          <span class="nav-burger__bar" />
+          <span class="nav-burger__bar" />
+        </button>
+      </div>
       <div id="nav-menu" class="nav-links" :class="{ 'nav-links--open': menuOpen }">
         <NuxtLink to="/" class="nav-link">
           <Text variant="secondary" size="base" weight="medium">Workflows</Text>
@@ -141,7 +156,7 @@ onUnmounted(() => {
 .nav-substrip {
   max-width: var(--container-max-width);
   margin: 0 auto;
-  padding: 6px var(--spacing-8);
+  padding: var(--spacing-3) var(--spacing-8);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -219,7 +234,17 @@ onUnmounted(() => {
 .nav-stat--warning .nav-stat__value { color: var(--color-warning-dark); }
 .nav-stat--info    .nav-stat__value { color: var(--color-info-dark); }
 
-/* Burger toggle — only shown on small screens */
+/* Mobile cluster (page title + burger) — only shown on small screens */
+.nav-mobile-cluster {
+  display: none;
+  align-items: center;
+  gap: var(--spacing-3);
+}
+
+.nav-page-title {
+  white-space: nowrap;
+}
+
 .nav-burger {
   display: none;
   flex-direction: column;
@@ -255,6 +280,10 @@ onUnmounted(() => {
     gap: var(--spacing-3);
   }
 
+  .nav-mobile-cluster {
+    display: flex;
+  }
+
   .nav-burger {
     display: flex;
   }
@@ -277,7 +306,8 @@ onUnmounted(() => {
   }
 
   .nav-substrip {
-    padding: 6px var(--spacing-4);
+    margin-top: var(--spacing-3);
+    padding: var(--spacing-3) var(--spacing-4);
   }
 
   .nav-stats {
