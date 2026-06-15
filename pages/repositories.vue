@@ -51,7 +51,7 @@ onBeforeUnmount(() => headerStats.clear())
     :skeleton-count="8"
   >
     <template #content>
-      <div class="repositories-grid">
+      <div class="repositories-list">
         <RepositoryCard
           v-for="repository in repositories"
           :key="repository.id"
@@ -63,16 +63,16 @@ onBeforeUnmount(() => headerStats.clear())
 </template>
 
 <style scoped>
-.repositories-grid {
+.repositories-list {
   display: flex;
-  flex-wrap: wrap;
-  gap: var(--spacing-5);
-  justify-content: center;
+  flex-direction: column;
+  background: var(--color-bg-primary);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
 }
 
-@media (max-width: 768px) {
-  .repositories-grid {
-    gap: var(--spacing-4);
-  }
+.repositories-list > :last-child {
+  border-bottom: 0;
 }
 </style>

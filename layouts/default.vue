@@ -17,6 +17,6 @@
 
 .main-content {
   flex: 1;
-  margin-top: var(--nav-height);
+  margin-top: var(--nav-actual-height, var(--nav-height));
 }
 </style>

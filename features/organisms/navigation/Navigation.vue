@@ -1,10 +1,34 @@
 <script setup lang="ts">
 const { public: { githubOwner } } = useRuntimeConfig()
 const headerStats = useHeaderStats()
+
+// Keep --nav-actual-height in sync with the rendered nav so the layout's
+// content offset is correct whether the bar is single-row (desktop) or
+// stacked (mobile), and whether the stats strip is present or not.
+const navRef = ref<HTMLElement | null>(null)
+let observer: ResizeObserver | null = null
+
+const setHeight = (px: number) => {
+  document.documentElement.style.setProperty('--nav-actual-height', `${Math.ceil(px)}px`)
+}
+
+onMounted(() => {
+  if (!navRef.value) return
+  setHeight(navRef.value.offsetHeight)
+  observer = new ResizeObserver(() => {
+    if (navRef.value) setHeight(navRef.value.offsetHeight)
+  })
+  observer.observe(navRef.value)
+})
+
+onUnmounted(() => {
+  observer?.disconnect()
+  document.documentElement.style.removeProperty('--nav-actual-height')
+})
 </script>
 
 <template>
-  <nav class="navigation">
+  <nav ref="navRef" class="navigation">
     <div class="nav-content">
       <Header :level="1" size="2xl" variant="primary" class="nav-title">
         {{ githubOwner }}
@@ -13,11 +37,11 @@ const headerStats = useHeaderStats()
         <NuxtLink to="/" class="nav-link">
           <Text variant="secondary" size="base" weight="medium">Workflows</Text>
         </NuxtLink>
-        <NuxtLink to="/repositories" class="nav-link">
-          <Text variant="secondary" size="base" weight="medium">Repositories</Text>
-        </NuxtLink>
         <NuxtLink to="/pull-requests" class="nav-link">
           <Text variant="secondary" size="base" weight="medium">Pull Requests</Text>
+        </NuxtLink>
+        <NuxtLink to="/repositories" class="nav-link">
+          <Text variant="secondary" size="base" weight="medium">Repositories</Text>
         </NuxtLink>
       </div>
     </div>
