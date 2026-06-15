@@ -221,13 +221,13 @@ onUnmounted(() => {
   gap: 6px;
   font-size: 12px;
   line-height: 1;
-  color: var(--color-gray-600);
+  color: var(--color-text-secondary);
 }
 
 .nav-stat__value {
   font-size: 14px;
   font-weight: 600;
-  color: var(--color-gray-900);
+  color: var(--color-text-primary);
 }
 
 .nav-stat--success .nav-stat__value { color: var(--color-success-dark); }

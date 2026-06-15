@@ -164,8 +164,8 @@ const handleBlur = (event: FocusEvent) => {
 
 .select:focus {
   outline: none;
-  border-color: var(--color-primary-500);
-  box-shadow: 0 0 0 3px var(--color-primary-100);
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-bright);
 }
 
 /* Size variants */
@@ -186,25 +186,25 @@ const handleBlur = (event: FocusEvent) => {
 
 /* State variants */
 .select--error {
-  border-color: var(--color-danger-500);
+  border-color: var(--color-error);
 }
 
 .select--error:focus {
-  border-color: var(--color-danger-500);
-  box-shadow: 0 0 0 3px var(--color-danger-100);
+  border-color: var(--color-error);
+  box-shadow: 0 0 0 3px var(--color-error-bright);
 }
 
 .select--success {
-  border-color: var(--color-success-500);
+  border-color: var(--color-success);
 }
 
 .select--success:focus {
-  border-color: var(--color-success-500);
-  box-shadow: 0 0 0 3px var(--color-success-100);
+  border-color: var(--color-success);
+  box-shadow: 0 0 0 3px var(--color-success-bright);
 }
 
 .select--disabled {
-  background: var(--color-gray-100);
+  background: var(--color-neutral-bright);
   color: var(--color-text-muted);
   cursor: not-allowed;
   opacity: 0.6;

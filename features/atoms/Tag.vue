@@ -123,68 +123,73 @@ const handleRemove = (e: Event) => {
 
 /* Variant styles */
 .tag--default {
-  background: var(--color-gray-100);
-  color: var(--color-gray-700);
-  border-color: var(--color-gray-200);
+  background: var(--color-neutral-bright);
+  color: var(--color-text-tertiary);
+  border-color: var(--color-border-default);
 }
 
 .tag--default.tag--clickable:hover {
-  background: var(--color-gray-200);
+  background: var(--color-border-default);
   transform: translateY(-1px);
 }
 
 .tag--primary {
-  background: var(--color-primary-100);
-  color: var(--color-primary-800);
-  border-color: var(--color-primary-200);
+  background: var(--color-primary-bright);
+  color: var(--color-primary-dark);
+  border-color: var(--color-primary);
 }
 
 .tag--primary.tag--clickable:hover {
-  background: var(--color-primary-200);
+  background: var(--color-primary);
+  color: var(--color-on-primary);
   transform: translateY(-1px);
 }
 
 .tag--success {
-  background: var(--color-success-50);
-  color: var(--color-success-700);
-  border-color: var(--color-success-200);
+  background: var(--color-success-bright);
+  color: var(--color-success-dark);
+  border-color: var(--color-success);
 }
 
 .tag--success.tag--clickable:hover {
-  background: var(--color-success-100);
+  background: var(--color-success);
+  color: var(--color-on-success);
   transform: translateY(-1px);
 }
 
 .tag--warning {
-  background: var(--color-warning-50);
-  color: var(--color-warning-700);
-  border-color: var(--color-warning-200);
+  background: var(--color-warning-bright);
+  color: var(--color-warning-dark);
+  border-color: var(--color-warning);
 }
 
 .tag--warning.tag--clickable:hover {
-  background: var(--color-warning-100);
+  background: var(--color-warning);
+  color: var(--color-on-warning);
   transform: translateY(-1px);
 }
 
 .tag--danger {
-  background: var(--color-danger-50);
-  color: var(--color-danger-700);
-  border-color: var(--color-danger-200);
+  background: var(--color-error-bright);
+  color: var(--color-error-dark);
+  border-color: var(--color-error);
 }
 
 .tag--danger.tag--clickable:hover {
-  background: var(--color-danger-100);
+  background: var(--color-error);
+  color: var(--color-on-error);
   transform: translateY(-1px);
 }
 
 .tag--info {
-  background: var(--color-info-50);
-  color: var(--color-info-700);
-  border-color: var(--color-info-200);
+  background: var(--color-info-bright);
+  color: var(--color-info-dark);
+  border-color: var(--color-info);
 }
 
 .tag--info.tag--clickable:hover {
-  background: var(--color-info-100);
+  background: var(--color-info);
+  color: var(--color-on-info);
   transform: translateY(-1px);
 }
 

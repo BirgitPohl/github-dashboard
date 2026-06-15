@@ -23,7 +23,7 @@ Optional — override up to 10 brand colors with a JSON env var. Unset keys keep
 BRAND_COLORS={"primary":"#0066cc","primaryBright":"#cce0ff","success":"#00aa44"}
 ```
 
-Allowed keys: `primary`, `primaryBright`, `primaryDark`, `secondary`, `secondaryBright`, `secondaryDark`, `tertiary`, `tertiaryBright`, `tertiaryDark`, `success`, `successBright`, `successDark`, `warning`, `warningBright`, `warningDark`, `error`, `errorBright`, `errorDark`, `info`, `infoBright`, `infoDark`. Values must be hex (`#abc` or `#aabbcc`).
+Allowed keys: `primary`, `primaryBright`, `primaryDark`, `secondary`, `secondaryBright`, `secondaryDark`, `tertiary`, `tertiaryBright`, `tertiaryDark`, `neutral`, `neutralBright`, `neutralDark`, `success`, `successBright`, `successDark`, `warning`, `warningBright`, `warningDark`, `error`, `errorBright`, `errorDark`, `info`, `infoBright`, `infoDark`. Values must be hex (`#abc` or `#aabbcc`).
 
 ## Run
 

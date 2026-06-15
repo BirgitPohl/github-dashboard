@@ -136,32 +136,32 @@ const errorClasses = computed(() => {
 
 /* Error variant */
 .error-box--error {
-  border-color: var(--color-red-50);
-  background-color: var(--color-error-50);
+  border-color: var(--color-error);
+  background-color: var(--color-error-bright);
 }
 
 .error-box--error .error-title {
-  color: var(--color-error-600);
+  color: var(--color-error-dark);
 }
 
 /* Warning variant */
 .error-box--warning {
-  border-color: var(--color-orange-100);
-  background-color: var(--color-orange-50);
+  border-color: var(--color-warning);
+  background-color: var(--color-warning-bright);
 }
 
 .error-box--warning .error-title {
-  color: var(--color-orange-500);
+  color: var(--color-warning-dark);
 }
 
 /* Info variant */
 .error-box--info {
-  border-color: var(--color-blue-50);
-  background-color: var(--color-primary-50);
+  border-color: var(--color-info);
+  background-color: var(--color-info-bright);
 }
 
 .error-box--info .error-title {
-  color: var(--color-primary-600);
+  color: var(--color-info-dark);
 }
 
 .error-content {
@@ -232,7 +232,7 @@ const errorClasses = computed(() => {
 }
 
 .error-details pre {
-  background-color: var(--color-gray-50);
+  background-color: var(--color-bg-secondary);
   border: 1px solid var(--color-border-default);
   border-radius: var(--radius-md);
   padding: var(--spacing-3);

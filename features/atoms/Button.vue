@@ -100,7 +100,7 @@ const isDisabled = computed(() => props.disabled || props.loading)
 }
 
 .button:focus-visible {
-  outline: 2px solid var(--color-primary-500);
+  outline: 2px solid var(--color-primary);
   outline-offset: 2px;
 }
 
@@ -122,12 +122,12 @@ const isDisabled = computed(() => props.disabled || props.loading)
 
 /* Variant styles */
 .button--primary {
-  background: var(--color-primary-600);
-  color: var(--color-text-inverse);
+  background: var(--color-primary);
+  color: var(--color-on-primary);
 }
 
 .button--primary:hover:not(:disabled) {
-  background: var(--color-primary-700);
+  background: var(--color-primary-dark);
   transform: translateY(-1px);
   box-shadow: var(--shadow-md);
 }
@@ -137,24 +137,24 @@ const isDisabled = computed(() => props.disabled || props.loading)
 }
 
 .button--secondary {
-  background: var(--color-gray-600);
-  color: var(--color-text-inverse);
+  background: var(--color-secondary);
+  color: var(--color-on-secondary);
 }
 
 .button--secondary:hover:not(:disabled) {
-  background: var(--color-gray-700);
+  background: var(--color-secondary-dark);
   transform: translateY(-1px);
   box-shadow: var(--shadow-md);
 }
 
 .button--outline {
   background: transparent;
-  color: var(--color-primary-600);
-  border: var(--border-width-thin) solid var(--color-primary-600);
+  color: var(--color-primary);
+  border: var(--border-width-thin) solid var(--color-primary);
 }
 
 .button--outline:hover:not(:disabled) {
-  background: var(--color-primary-50);
+  background: var(--color-primary-bright);
   transform: translateY(-1px);
 }
 
@@ -164,17 +164,17 @@ const isDisabled = computed(() => props.disabled || props.loading)
 }
 
 .button--ghost:hover:not(:disabled) {
-  background: var(--color-gray-100);
+  background: var(--color-neutral-bright);
   color: var(--color-text-primary);
 }
 
 .button--danger {
-  background: var(--color-danger-600);
-  color: var(--color-text-inverse);
+  background: var(--color-error);
+  color: var(--color-on-error);
 }
 
 .button--danger:hover:not(:disabled) {
-  background: var(--color-danger-700);
+  background: var(--color-error-dark);
   transform: translateY(-1px);
   box-shadow: var(--shadow-md);
 }

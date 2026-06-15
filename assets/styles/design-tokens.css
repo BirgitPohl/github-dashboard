@@ -89,41 +89,47 @@
      or hex literals. The scale tokens above are palette primitives; the
      names below assign roles. Retheme the app by editing this section. */
 
-  /* Identity */
-  --color-primary:           var(--color-primary-600);
-  --color-primary-bright:    var(--color-primary-100);
-  --color-primary-dark:      var(--color-primary-800);
+  /* Identity — harmonized 10-color palette (teal/cream/amber/red) */
+  --color-primary:           #0a9396;    /* Dark Cyan */
+  --color-primary-bright:    #94d2bd;    /* Pearl Aqua */
+  --color-primary-dark:      #005f73;    /* Dark Teal */
   --color-on-primary:        #ffffff;
 
-  --color-secondary:         var(--color-gray-500);
-  --color-secondary-bright:  var(--color-gray-100);
-  --color-secondary-dark:    var(--color-gray-800);
+  --color-secondary:         #001219;    /* Ink Black */
+  --color-secondary-bright:  #e9d8a6;    /* Wheat */
+  --color-secondary-dark:    #001219;    /* Ink Black */
   --color-on-secondary:      #ffffff;
 
-  --color-tertiary:          #8b5cf6;
-  --color-tertiary-bright:   #ede9fe;
-  --color-tertiary-dark:     #6d28d9;
+  --color-tertiary:          #ca6702;    /* Burnt Caramel — merged / done */
+  --color-tertiary-bright:   #e9d8a6;    /* Wheat */
+  --color-tertiary-dark:     #bb3e03;    /* Rusty Spice */
   --color-on-tertiary:       #ffffff;
 
+  /* Neutral — grey scale (palette has no true grey; kept separate) */
+  --color-neutral:           var(--color-gray-500);
+  --color-neutral-bright:    var(--color-gray-100);
+  --color-neutral-dark:      var(--color-gray-800);
+  --color-on-neutral:        #ffffff;
+
   /* Status */
-  --color-success:           #10b981;
-  --color-success-bright:    #f0fdf4;
-  --color-success-dark:      #065f46;
-  --color-on-success:        #ffffff;
+  --color-success:           #94d2bd;    /* Pearl Aqua */
+  --color-success-bright:    #e9d8a6;    /* Wheat */
+  --color-success-dark:      #005f73;    /* Dark Teal */
+  --color-on-success:        #001219;    /* Pearl Aqua needs dark text */
 
-  --color-warning:           #f59e0b;
-  --color-warning-bright:    #fffbeb;
-  --color-warning-dark:      #b45309;
-  --color-on-warning:        #ffffff;
+  --color-warning:           #ee9b00;    /* Golden Orange */
+  --color-warning-bright:    #e9d8a6;    /* Wheat */
+  --color-warning-dark:      #ca6702;    /* Burnt Caramel */
+  --color-on-warning:        #001219;    /* Golden Orange — dark text */
 
-  --color-error:             #ef4444;
-  --color-error-bright:      #fef2f2;
-  --color-error-dark:        #b91c1c;
+  --color-error:             #ae2012;    /* Oxidized Iron */
+  --color-error-bright:      #e9d8a6;    /* Wheat */
+  --color-error-dark:        #9b2226;    /* Brown Red */
   --color-on-error:          #ffffff;
 
-  --color-info:              #3b82f6;
-  --color-info-bright:       #eff6ff;
-  --color-info-dark:         #1d4ed8;
+  --color-info:              #005f73;    /* Dark Teal */
+  --color-info-bright:       #94d2bd;    /* Pearl Aqua */
+  --color-info-dark:         #001219;    /* Ink Black */
   --color-on-info:           #ffffff;
 
   /* Surface / text roles for inverse (dark glass) surfaces */

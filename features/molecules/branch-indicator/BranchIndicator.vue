@@ -56,21 +56,21 @@ const containerClasses = computed(() => {
 }
 
 .branch-indicator__branch {
-  background: var(--color-gray-100);
+  background: var(--color-neutral-bright);
   padding: var(--spacing-0-5) var(--spacing-1-5);
   border-radius: var(--radius-sm);
   font-family: var(--font-family-mono);
   font-size: var(--font-size-xs);
-  color: var(--color-gray-700);
+  color: var(--color-text-tertiary);
   transition: background-color var(--transition-base);
 }
 
 .branch-indicator__branch:hover {
-  background: var(--color-gray-200);
+  background: var(--color-border-default);
 }
 
 .branch-indicator__arrow {
-  color: var(--color-gray-400);
+  color: var(--color-text-muted);
   font-size: var(--font-size-sm);
 }
 

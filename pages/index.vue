@@ -38,7 +38,7 @@ const workflows = computed(() => {
     :skeleton-count="6"
   >
     <template #content>
-      <div class="workflows-container">
+      <div v-if="workflows.length > 0" class="workflows-list">
         <WorkflowStatusCard
           v-for="workflow in workflows"
           :key="workflow.id"
@@ -47,7 +47,7 @@ const workflows = computed(() => {
       </div>
 
       <EmptyState
-        v-if="workflows.length === 0"
+        v-else
         title="No workflows found"
         message="This repository doesn't have any workflows."
       />
@@ -56,10 +56,15 @@ const workflows = computed(() => {
 </template>
 
 <style scoped>
-.workflows-container {
+.workflows-list {
   display: flex;
-  flex-wrap: wrap;
-  gap: var(--spacing-6);
-  justify-content: flex-start;
+  flex-direction: column;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.workflows-list > :last-child {
+  border-bottom: 0;
 }
 </style>

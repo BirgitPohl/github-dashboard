@@ -69,7 +69,7 @@ watchEffect(() => {
   headerStats.set([
     { label: 'Total PRs', value: stats.value.total },
     { label: 'Open', value: stats.value.open, variant: 'success' },
-    { label: 'Draft', value: stats.value.draft, variant: 'warning' },
+    { label: 'Draft', value: stats.value.draft },
     { label: 'Repos', value: stats.value.repositories, variant: 'info' },
   ])
 })
@@ -154,13 +154,11 @@ onBeforeUnmount(() => headerActions.clear())
 
     <template #content>
       <div v-if="filteredPullRequests.length > 0" class="pull-requests-list">
-        <div class="pr-list">
-          <PullRequestCard
-            v-for="pr in filteredPullRequests"
-            :key="pr.id"
-            :pull-request="pr"
-          />
-        </div>
+        <PullRequestCard
+          v-for="pr in filteredPullRequests"
+          :key="pr.id"
+          :pull-request="pr"
+        />
       </div>
 
       <!-- Empty State -->
@@ -196,7 +194,7 @@ onBeforeUnmount(() => headerActions.clear())
 .filter-label {
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-medium);
-  color: var(--color-gray-700);
+  color: var(--color-text-tertiary);
   margin-bottom: var(--spacing-2);
 }
 
@@ -205,17 +203,15 @@ onBeforeUnmount(() => headerActions.clear())
 }
 
 .pull-requests-list {
-  background: var(--color-white);
+  display: flex;
+  flex-direction: column;
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-sm);
   overflow: hidden;
 }
 
-.pr-list {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-4);
-  padding: var(--spacing-4);
+.pull-requests-list > :last-child {
+  border-bottom: 0;
 }
 
 @media (max-width: 768px) {

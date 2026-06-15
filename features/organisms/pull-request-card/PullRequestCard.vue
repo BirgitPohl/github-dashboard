@@ -48,298 +48,169 @@ interface PullRequest {
 }
 
 interface Props {
-  /**
-   * The pull request data
-   */
   pullRequest: PullRequest
-  /**
-   * Whether to show the repository name
-   */
   showRepository?: boolean
-  /**
-   * Custom CSS classes
-   */
-  class?: string
 }
 
 const props = withDefaults(defineProps<Props>(), {
   showRepository: true,
-  class: ''
 })
 
 const {
   formatTimeAgo,
-  getStateClass,
   getStateIcon,
-  getStateBorderColor,
+  getStateRowColors,
   getCheckIcon,
-  getCheckLabel,
   getReviewIcon,
-  getReviewLabel
 } = usePullRequestCard()
 
-// Compute CSS classes
-const cardClasses = computed(() => {
-  const classes = [getStateClass(props.pullRequest)]
-
-  if (props.class) {
-    classes.push(props.class)
-  }
-
-  return classes.join(' ')
-})
+const rowColors = computed(() => getStateRowColors(props.pullRequest))
 </script>
 
 <template>
-  <BaseCard
-    width="full"
-    :border-color="getStateBorderColor(pullRequest)"
+  <a
     :href="pullRequest.html_url"
-    :class="cardClasses"
+    target="_blank"
+    rel="noopener"
+    class="pr-row"
+    :style="{ '--row-bg': rowColors.bg, '--row-fg': rowColors.fg }"
   >
-    <template #header>
-      <div class="pr-card__header">
-        <div class="pr-card__title-row">
-          <Icon :icon="getStateIcon(pullRequest)" size="base" decorative />
-          <Text variant="secondary" size="base" weight="semibold">#{{ pullRequest.number }}</Text>
-          <Header :level="3" size="base" variant="primary" class="pr-card__title">
-            {{ pullRequest.title }}
-          </Header>
-        </div>
-        <div class="pr-card__header-right">
-          <div v-if="showRepository" class="pr-card__repository">
-            <Text variant="tertiary" size="sm">{{ pullRequest.repository.name }}</Text>
-          </div>
-        </div>
-      </div>
-    </template>
+    <span class="pr-row__icon" aria-hidden="true">{{ getStateIcon(pullRequest) }}</span>
 
-    <template #body>
-      <div class="pr-card__status-row">
-        <!-- CI/Pipeline Status -->
-        <div v-if="pullRequest.check_status" class="pr-card__check-status" :class="`check-status--${pullRequest.check_status}`">
-          <Icon :icon="getCheckIcon(pullRequest.check_status)" size="sm" decorative />
-          <Text variant="secondary" size="sm">{{ getCheckLabel(pullRequest.check_status) }}</Text>
-        </div>
+    <span class="pr-row__main">
+      <span class="pr-row__title-line">
+        <span class="pr-row__number">#{{ pullRequest.number }}</span>
+        <span class="pr-row__title">{{ pullRequest.title }}</span>
+      </span>
+      <span class="pr-row__sub">
+        <span v-if="showRepository">{{ pullRequest.repository.name }}</span>
+        <span v-if="showRepository" class="pr-row__sep">·</span>
+        <span>@{{ pullRequest.user.login }}</span>
+        <span class="pr-row__sep">·</span>
+        <span class="pr-row__branch">{{ pullRequest.head.ref }} → {{ pullRequest.base.ref }}</span>
+      </span>
+    </span>
 
-        <!-- Review Status -->
-        <div v-if="pullRequest.review_status" class="pr-card__review-status" :class="`review-status--${pullRequest.review_status}`">
-          <Icon :icon="getReviewIcon(pullRequest.review_status)" size="sm" decorative />
-          <Text variant="secondary" size="sm">{{ getReviewLabel(pullRequest.review_status) }}</Text>
-        </div>
+    <span class="pr-row__signals">
+      <span v-if="pullRequest.check_status" :title="`Checks: ${pullRequest.check_status}`">
+        {{ getCheckIcon(pullRequest.check_status) }}
+      </span>
+      <span v-if="pullRequest.review_status" :title="`Review: ${pullRequest.review_status}`">
+        {{ getReviewIcon(pullRequest.review_status) }}
+      </span>
+      <span v-if="pullRequest.comments && pullRequest.comments.total > 0" title="Comments">
+        💬 {{ pullRequest.comments.unresolved }}/{{ pullRequest.comments.total }}
+      </span>
+    </span>
 
-        <!-- Comment Count -->
-        <div v-if="pullRequest.comments && pullRequest.comments.total > 0" class="pr-card__comments">
-          <Icon icon="💬" size="sm" decorative />
-          <Text variant="secondary" size="sm">
-            {{ pullRequest.comments.unresolved }}/{{ pullRequest.comments.total }}
-          </Text>
-        </div>
-      </div>
-
-      <div class="pr-card__meta">
-        <div class="pr-card__author">
-          <UserAvatar
-            :src="pullRequest.user.avatar_url"
-            :alt="pullRequest.user.login"
-            :tooltip="pullRequest.user.login"
-            size="sm"
-          />
-          <Text variant="secondary" size="sm">{{ pullRequest.user.login }}</Text>
-        </div>
-
-        <BranchIndicator
-          :source-branch="pullRequest.head.ref"
-          :target-branch="pullRequest.base.ref"
-        />
-
-        <Text variant="secondary" size="sm">{{ formatTimeAgo(pullRequest.updated_at) }}</Text>
-      </div>
-
-      <div v-if="pullRequest.labels.length > 0" class="pr-card__labels">
-        <LabelBadge
-          v-for="label in pullRequest.labels"
-          :key="label.name"
-          :name="label.name"
-          :color="label.color"
-        />
-      </div>
-
-      <div v-if="pullRequest.assignees.length > 0" class="pr-card__assignees">
-        <Text variant="secondary" size="sm">Assigned to:</Text>
-        <div class="assignees-list">
-          <UserAvatar
-            v-for="assignee in pullRequest.assignees"
-            :key="assignee.login"
-            :src="assignee.avatar_url"
-            :alt="assignee.login"
-            :tooltip="assignee.login"
-            size="md"
-          />
-        </div>
-      </div>
-    </template>
-  </BaseCard>
+    <span class="pr-row__time">{{ formatTimeAgo(pullRequest.updated_at) }}</span>
+  </a>
 </template>
 
 <style scoped>
-/* Layout structure only - typography and colors handled by atoms */
-.pr-card__header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: var(--spacing-2);
+.pr-row {
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  align-items: center;
+  gap: var(--spacing-3);
+  padding: var(--spacing-2) var(--spacing-4);
+  background: var(--row-bg, var(--color-neutral));
+  color: var(--row-fg, var(--color-text-inverse));
+  text-decoration: none;
+  font-size: var(--font-size-sm);
+  line-height: 1.3;
+  border-bottom: 1px solid color-mix(in srgb, currentColor 15%, transparent);
+  transition: filter var(--transition-fast);
 }
 
-.pr-card__title-row {
+.pr-row:hover {
+  filter: brightness(1.08);
+}
+
+.pr-row__icon {
+  font-size: var(--font-size-base);
+  line-height: 1;
+}
+
+.pr-row__main {
   display: flex;
-  align-items: center;
-  gap: var(--spacing-2);
-  flex: 1;
+  flex-direction: column;
+  gap: 2px;
   min-width: 0;
 }
 
-.pr-card__title {
-  margin: 0;
+.pr-row__title-line {
+  display: flex;
+  align-items: baseline;
+  gap: var(--spacing-2);
+  min-width: 0;
+}
+
+.pr-row__number {
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-xs);
+  opacity: 0.85;
+  flex-shrink: 0;
+}
+
+.pr-row__title {
+  font-weight: var(--font-weight-semibold);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.pr-card__header-right {
-  flex-shrink: 0;
-}
-
-.pr-card__repository {
-  background: var(--color-border-default);
-  padding: var(--spacing-1) var(--spacing-2);
-  border-radius: var(--radius-md);
-}
-
-.pr-card__status-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--spacing-4);
-  align-items: center;
-  margin-bottom: var(--spacing-3);
-}
-
-.pr-card__check-status,
-.pr-card__review-status,
-.pr-card__comments {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-1);
-}
-
-/* Check status colors */
-.check-status--success {
-  color: var(--color-success-500);
-}
-
-.check-status--failure {
-  color: var(--color-error-500);
-}
-
-.check-status--pending {
-  color: var(--color-warning-500);
-}
-
-.check-status--neutral {
-  color: var(--color-gray-500);
-}
-
-/* Review status colors */
-.review-status--approved {
-  color: var(--color-success-500);
-}
-
-.review-status--changes_requested {
-  color: var(--color-error-500);
-}
-
-.review-status--commented {
-  color: var(--color-info-500);
-}
-
-.review-status--pending {
-  color: var(--color-gray-500);
-}
-
-.pr-card__comments {
-  color: var(--color-gray-500);
-}
-
-.pr-card__meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--spacing-4);
-  align-items: center;
-  margin-bottom: var(--spacing-3);
-}
-
-.pr-card__author {
-  display: flex;
+.pr-row__sub {
+  display: inline-flex;
   align-items: center;
   gap: var(--spacing-2);
+  font-size: var(--font-size-xs);
+  opacity: 0.9;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.pr-card__labels {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--spacing-2);
-  margin-bottom: var(--spacing-3);
+.pr-row__sep {
+  opacity: 0.6;
 }
 
-.pr-card__assignees {
-  display: flex;
+.pr-row__branch {
+  font-family: var(--font-family-mono);
+}
+
+.pr-row__signals {
+  display: inline-flex;
   align-items: center;
   gap: var(--spacing-2);
+  font-size: var(--font-size-xs);
+  white-space: nowrap;
 }
 
-.assignees-list {
-  display: flex;
-  gap: var(--spacing-1);
+.pr-row__time {
+  font-size: var(--font-size-xs);
+  opacity: 0.85;
+  white-space: nowrap;
+  min-width: 4ch;
+  text-align: right;
 }
 
-/* State-specific styling */
-.state-open {
-  border-left: var(--spacing-1) solid var(--color-success-500);
-}
-
-.state-draft {
-  border-left: var(--spacing-1) solid var(--color-warning-500);
-}
-
-.state-merged {
-  border-left: var(--spacing-1) solid var(--color-purple-500);
-}
-
-.state-closed {
-  border-left: var(--spacing-1) solid var(--color-error-500);
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  .pr-card__header {
-    flex-direction: column;
-    align-items: flex-start;
+@media (max-width: 640px) {
+  .pr-row {
+    grid-template-columns: auto 1fr auto;
+    grid-template-rows: auto auto;
+    row-gap: 2px;
   }
 
-  .pr-card__title-row {
-    flex-wrap: wrap;
+  .pr-row__signals {
+    grid-column: 1 / 4;
+    grid-row: 2;
+    font-size: var(--font-size-2xs);
   }
 
-  .pr-card__status-row {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: var(--spacing-2);
-  }
-
-  .pr-card__meta {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: var(--spacing-2);
+  .pr-row__time {
+    grid-column: 3;
+    grid-row: 1;
   }
 }
 </style>

@@ -6,7 +6,7 @@ interface CategoryConfig {
   label: string
 }
 
-const buildTriple = (role: 'success' | 'info' | 'tertiary' | 'warning' | 'error' | 'secondary', icon: string, label: string): CategoryConfig => ({
+const buildTriple = (role: 'success' | 'info' | 'tertiary' | 'warning' | 'error' | 'neutral', icon: string, label: string): CategoryConfig => ({
   color: `var(--color-${role})`,
   bgColor: `var(--color-${role}-bright)`,
   borderColor: `var(--color-${role})`,
@@ -22,7 +22,7 @@ const CATEGORY_CONFIGS: Record<string, CategoryConfig> = {
   'tool/utility':      buildTriple('error',    '🔧', 'Tool'),
 }
 
-const DEFAULT_CATEGORY = buildTriple('secondary', '📁', 'General')
+const DEFAULT_CATEGORY = buildTriple('neutral', '📁', 'General')
 
 /**
  * Composable for repository card logic

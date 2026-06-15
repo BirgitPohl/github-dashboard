@@ -1,5 +1,6 @@
 interface StatusConfig {
   color: string
+  onColor: string
   textColor: string
   bgColor: string
   borderColor: string
@@ -15,6 +16,7 @@ interface Workflow {
 const STATUS_CONFIGS = {
   failure: {
     color: 'var(--color-error)',
+    onColor: 'var(--color-on-error)',
     textColor: 'text-red-700',
     bgColor: 'var(--color-error-bright)',
     borderColor: 'var(--color-error)',
@@ -23,6 +25,7 @@ const STATUS_CONFIGS = {
   },
   success: {
     color: 'var(--color-success)',
+    onColor: 'var(--color-on-success)',
     textColor: 'text-green-700',
     bgColor: 'var(--color-success-bright)',
     borderColor: 'var(--color-success)',
@@ -31,6 +34,7 @@ const STATUS_CONFIGS = {
   },
   cancelled: {
     color: 'var(--color-warning)',
+    onColor: 'var(--color-on-warning)',
     textColor: 'text-amber-700',
     bgColor: 'var(--color-warning-bright)',
     borderColor: 'var(--color-warning)',
@@ -39,6 +43,7 @@ const STATUS_CONFIGS = {
   },
   running: {
     color: 'var(--color-info)',
+    onColor: 'var(--color-on-info)',
     textColor: 'text-blue-700',
     bgColor: 'var(--color-info-bright)',
     borderColor: 'var(--color-info)',
@@ -46,23 +51,26 @@ const STATUS_CONFIGS = {
     label: 'Running',
   },
   skipped: {
-    color: 'var(--color-secondary)',
+    color: 'var(--color-neutral)',
+    onColor: 'var(--color-on-neutral)',
     textColor: 'text-gray-700',
-    bgColor: 'var(--color-secondary-bright)',
-    borderColor: 'var(--color-secondary)',
+    bgColor: 'var(--color-neutral-bright)',
+    borderColor: 'var(--color-neutral)',
     icon: '−',
     label: 'Skipped',
   },
   disabled: {
-    color: 'var(--color-secondary)',
+    color: 'var(--color-neutral)',
+    onColor: 'var(--color-on-neutral)',
     textColor: 'text-gray-700',
-    bgColor: 'var(--color-secondary-bright)',
-    borderColor: 'var(--color-secondary)',
+    bgColor: 'var(--color-neutral-bright)',
+    borderColor: 'var(--color-neutral)',
     icon: '○',
     label: 'Disabled',
   },
   passed: {
     color: 'var(--color-success)',
+    onColor: 'var(--color-on-success)',
     textColor: 'text-green-700',
     bgColor: 'var(--color-success-bright)',
     borderColor: 'var(--color-success)',
@@ -70,10 +78,11 @@ const STATUS_CONFIGS = {
     label: 'Passed',
   },
   unknown: {
-    color: 'var(--color-secondary)',
+    color: 'var(--color-neutral)',
+    onColor: 'var(--color-on-neutral)',
     textColor: 'text-gray-700',
-    bgColor: 'var(--color-secondary-bright)',
-    borderColor: 'var(--color-secondary)',
+    bgColor: 'var(--color-neutral-bright)',
+    borderColor: 'var(--color-neutral)',
     icon: '●',
     label: 'Unknown',
   },

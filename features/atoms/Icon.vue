@@ -121,19 +121,19 @@ const iconClasses = computed(() => {
 }
 
 .icon--success {
-  color: var(--color-success-700);
+  color: var(--color-success-dark);
 }
 
 .icon--warning {
-  color: var(--color-warning-700);
+  color: var(--color-warning-dark);
 }
 
 .icon--danger {
-  color: var(--color-danger-700);
+  color: var(--color-error-dark);
 }
 
 .icon--info {
-  color: var(--color-info-700);
+  color: var(--color-info-dark);
 }
 
 .icon--inherit {

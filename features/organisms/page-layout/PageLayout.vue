@@ -46,7 +46,7 @@ const showSkeleton = computed(() => !hasData.value && props.isRefreshing)
 
 <style scoped>
 .page-layout {
-  padding: var(--spacing-8);
+  padding: var(--spacing-3) var(--spacing-8) var(--spacing-8);
   min-height: 100vh;
   background: var(--color-bg-secondary);
 }
@@ -70,7 +70,7 @@ const showSkeleton = computed(() => !hasData.value && props.isRefreshing)
 
 @media (max-width: 768px) {
   .page-layout {
-    padding: var(--spacing-4);
+    padding: var(--spacing-2) var(--spacing-4) var(--spacing-4);
   }
 }
 </style>

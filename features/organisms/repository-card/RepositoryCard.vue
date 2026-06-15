@@ -68,7 +68,7 @@ const timeAgo = computed(() => formatTimeAgoSimple(props.repository.updated_at))
   align-items: center;
   gap: var(--spacing-3);
   padding: var(--spacing-2) var(--spacing-4);
-  border-left: 3px solid var(--repo-accent, var(--color-secondary));
+  border-left: 3px solid var(--repo-accent, var(--color-neutral));
   border-bottom: 1px solid var(--color-border-default);
   background: var(--color-bg-primary);
   text-decoration: none;
@@ -110,7 +110,7 @@ const timeAgo = computed(() => formatTimeAgoSimple(props.repository.updated_at))
 }
 
 .repo-row__category {
-  color: var(--repo-accent, var(--color-secondary));
+  color: var(--repo-accent, var(--color-neutral));
   font-weight: var(--font-weight-medium);
 }
 
