@@ -12,19 +12,30 @@ useHead({
   title: `Project Views - ${githubOwner} Dashboard`
 })
 
-// Fetch projects list
-const {
-  data: projects,
-  error: projectsError,
-  pending: projectsPending
-} = useFetch<Array<{
+type ProjectsListItem = {
   id: string
   number: number
   title: string
   viewsCount: number
   views: Array<{ id: string; name: string; number: number; layout: string }>
-}>>('/api/project-views', {
-  server: false
+}
+
+type ProjectDetailResponse = {
+  id: string
+  title: string
+  shortDescription: string | null
+  url: string
+  views: ProjectV2View[]
+}
+
+const PROJECT_STALE_TIME = 5 * 60 * 1000
+
+// Projects list
+const {
+  data: projects,
+  error: projectsError,
+} = useResource<ProjectsListItem[]>('project-views:list', '/api/project-views', {
+  staleTime: PROJECT_STALE_TIME,
 })
 
 // Selected project
@@ -47,58 +58,36 @@ const projectOptions = computed(() => {
   }))
 })
 
-// Fetch selected project details (with full view configurations)
+// Selected project detail — keyed per project so switching shows the previous result instantly
 const {
   data: projectDetail,
   error: projectDetailError,
-  pending: projectDetailPending,
-  refresh: refreshProject
-} = useFetch<{
-  id: string
-  title: string
-  shortDescription: string | null
-  url: string
-  views: ProjectV2View[]
-}>(
+  isRefreshing: projectDetailRefreshing,
+  refresh: refreshProject,
+} = useResource<ProjectDetailResponse>(
+  () => selectedProjectId.value ? `project-views:detail:${selectedProjectId.value}` : null,
   () => selectedProjectId.value ? `/api/project-views/${selectedProjectId.value}` : null,
-  {
-    key: () => selectedProjectId.value ? `project-detail-${selectedProjectId.value}` : 'project-detail-null',
-    server: false,
-    immediate: true,
-    watch: false
-  }
+  { staleTime: PROJECT_STALE_TIME },
 )
 
-// Fetch items for selected project
+// Items for selected project
 const {
   data: items,
   error: itemsError,
-  pending: itemsPending,
-  refresh: refreshItems
-} = useFetch<ViewItem[]>(
+  isRefreshing: itemsRefreshing,
+  refresh: refreshItems,
+} = useResource<ViewItem[]>(
+  () => selectedProjectId.value ? `project-views:items:${selectedProjectId.value}` : null,
   () => selectedProjectId.value ? `/api/project-views/${selectedProjectId.value}/items` : null,
-  {
-    key: () => selectedProjectId.value ? `project-items-${selectedProjectId.value}` : 'project-items-null',
-    server: false,
-    immediate: true,
-    watch: false
-  }
+  { staleTime: PROJECT_STALE_TIME },
 )
 
 // Active view (tab)
 const activeViewId = ref<string | null>(null)
 
-// Watch for project changes and refetch data
-watch(selectedProjectId, async (newId, oldId) => {
-  if (newId && newId !== oldId) {
-    await Promise.all([refreshProject(), refreshItems()])
-  }
-})
-
 // Update active view when project detail loads
 watch(projectDetail, (detail) => {
   if (detail && detail.views.length > 0) {
-    // Select first view by default
     activeViewId.value = detail.views[0].id
   }
 })
@@ -121,8 +110,13 @@ const currentView = computed(() => {
   return projectDetail.value.views.find(v => v.id === activeViewId.value) || null
 })
 
-// Combined loading state
-const isLoading = computed(() => projectDetailPending.value || itemsPending.value)
+// First-load skeleton only — never blanks during a refresh
+const showInitialLoader = computed(
+  () => !!selectedProjectId.value
+    && (!projectDetail.value || !items.value)
+    && (projectDetailRefreshing.value || itemsRefreshing.value),
+)
+const isAnyRefreshing = computed(() => projectDetailRefreshing.value || itemsRefreshing.value)
 
 // Combined error state
 const error = computed(() => projectsError.value || projectDetailError.value || itemsError.value)
@@ -131,9 +125,6 @@ const error = computed(() => projectsError.value || projectDetailError.value || 
 <template>
   <div class="project-views-page">
     <PageLayout
-      :show-skeleton="false"
-      :show-refresh-indicator="false"
-      :is-refreshing="false"
       :error="projectsError"
       :data="projects"
       :on-retry="() => {}"
@@ -159,7 +150,6 @@ const error = computed(() => projectsError.value || projectDetailError.value || 
               id="project-select"
               v-model="selectedProjectId"
               class="selector-input"
-              :disabled="projectsPending"
             >
               <option :value="null">-- Choose a project --</option>
               <option v-for="option in projectOptions" :key="option.value" :value="option.value">
@@ -175,20 +165,26 @@ const error = computed(() => projectsError.value || projectDetailError.value || 
           </div>
         </div>
 
-        <!-- Loading State -->
-        <div v-if="isLoading" class="loading-container">
+        <!-- Inline refresh indicator — content stays mounted -->
+        <RefreshIndicator
+          v-if="projectDetail && items && isAnyRefreshing"
+          :is-refreshing="isAnyRefreshing"
+        />
+
+        <!-- Skeleton only on first ever load -->
+        <div v-if="showInitialLoader" class="loading-container">
           <LoadingSpinner message="Loading project views..." />
         </div>
 
-        <!-- Error State -->
+        <!-- Error only when we have no data to show -->
         <ErrorBox
-          v-else-if="error"
+          v-else-if="error && (!projectDetail || !items)"
           :error="error"
           title="Failed to load project views"
           @retry="() => { refreshProject(); refreshItems(); }"
         />
 
-        <!-- Project Views -->
+        <!-- Project Views — keep mounted across refreshes -->
         <div v-else-if="selectedProjectId && projectDetail && items" class="project-views">
           <!-- Tabs -->
           <Tabs v-if="tabs.length > 0" v-model="activeViewId" :tabs="tabs" />

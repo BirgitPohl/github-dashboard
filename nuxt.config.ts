@@ -9,7 +9,9 @@ export default defineNuxtConfig({
     '@nuxt/eslint',
     '@nuxt/test-utils',
     '@nuxt/ui',
-    '@nuxt/scripts'
+    '@nuxt/scripts',
+    '@pinia/nuxt',
+    'pinia-plugin-persistedstate/nuxt'
   ],
 
   // Enable auto-imports for components and composables

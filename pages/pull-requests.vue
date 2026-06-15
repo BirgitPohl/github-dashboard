@@ -13,27 +13,16 @@ const selectedState = ref('open')
 const searchQuery = ref('')
 const selectedRepository = ref('')
 
-// Fetch data with caching
 const {
   data: pullRequestsData,
   error,
   refresh,
   isRefreshing,
   lastUpdated,
-  showSkeleton,
-  showRefreshIndicator
-} = useCachedFetch<PullRequestsResponse>(
-  '/api/pull-requests',
-  {
-    key: 'pull-requests',
-    staleTime: 5 * 60 * 1000, // 5 minutes
-  },
-  {
-    query: {
-      state: selectedState
-    },
-    watch: [selectedState]
-  }
+} = useResource<PullRequestsResponse>(
+  () => `pull-requests:${selectedState.value}`,
+  () => `/api/pull-requests?state=${selectedState.value}`,
+  { staleTime: 5 * 60 * 1000 },
 )
 
 // Computed properties for filtering and stats
@@ -79,8 +68,6 @@ const stats = computed(() => pullRequestsData.value?.stats || {
 
 <template>
   <PageLayout
-    :show-skeleton="showSkeleton"
-    :show-refresh-indicator="showRefreshIndicator"
     :is-refreshing="isRefreshing"
     :last-updated="lastUpdated"
     :error="error"

@@ -22,9 +22,16 @@ useHead({
   title: `Project Board Details - ${githubOwner} Dashboard`
 })
 
-const { data: project, pending, error, refresh } = useFetch<ProjectDetails>(`/api/projects/${projectId}`, {
-  server: false
-})
+const {
+  data: project,
+  error,
+  isRefreshing,
+  refresh,
+} = useResource<ProjectDetails>(
+  `project:${projectId}`,
+  `/api/projects/${projectId}`,
+  { staleTime: 5 * 60 * 1000 },
+)
 
 // Selected grouping
 const selectedGroupBy = ref<string>('')
@@ -98,13 +105,13 @@ const showSubIssuesColumn = computed(() =>
 
 <template>
   <div class="project-detail-page">
-    <!-- Loading State -->
-    <div v-if="pending" class="loading-state">
+    <!-- Skeleton only on first load with no cached data -->
+    <div v-if="!project && isRefreshing" class="loading-state">
       <LoadingSpinner message="Loading project board..." />
     </div>
 
-    <!-- Error State -->
-    <div v-else-if="error" class="error-state">
+    <!-- Error state only when we have no data to show -->
+    <div v-else-if="error && !project" class="error-state">
       <ErrorBox
         :error="error"
         title="Failed to load project board"
@@ -117,8 +124,12 @@ const showSubIssuesColumn = computed(() =>
       </ErrorBox>
     </div>
 
-    <!-- Content -->
+    <!-- Content stays mounted across refreshes -->
     <div v-else-if="project" class="project-content">
+      <RefreshIndicator
+        v-if="isRefreshing"
+        :is-refreshing="isRefreshing"
+      />
 
       <!-- Header -->
       <div class="project-header">

@@ -15,21 +15,13 @@ const {
   refresh,
   isRefreshing,
   lastUpdated,
-  showSkeleton,
-  showRefreshIndicator
-} = useCachedFetch<Project[]>(
-  '/api/projects',
-  {
-    key: 'projects',
-    staleTime: 5 * 60 * 1000, // 5 minutes
-  }
-)
+} = useResource<Project[]>('projects', '/api/projects', {
+  staleTime: 5 * 60 * 1000,
+})
 </script>
 
 <template>
   <PageLayout
-    :show-skeleton="showSkeleton"
-    :show-refresh-indicator="showRefreshIndicator"
     :is-refreshing="isRefreshing"
     :last-updated="lastUpdated"
     :error="error"

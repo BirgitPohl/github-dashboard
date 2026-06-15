@@ -18,15 +18,9 @@ const {
   refresh,
   isRefreshing,
   lastUpdated,
-  showSkeleton,
-  showRefreshIndicator
-} = useCachedFetch<WorkflowsResponse>(
-  '/api/workflows',
-  {
-    key: 'workflows',
-    staleTime: 5 * 60 * 1000, // 5 minutes
-  }
-)
+} = useResource<WorkflowsResponse>('workflows', '/api/workflows', {
+  staleTime: 5 * 60 * 1000,
+})
 
 const workflows = computed(() => {
   // Sort workflows by newest first (updated_at)
@@ -38,8 +32,6 @@ const workflows = computed(() => {
 
 <template>
   <PageLayout
-    :show-skeleton="showSkeleton"
-    :show-refresh-indicator="showRefreshIndicator"
     :is-refreshing="isRefreshing"
     :last-updated="lastUpdated"
     :error="error"

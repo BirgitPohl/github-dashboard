@@ -1,7 +1,5 @@
 <script setup lang="ts">
 interface Props {
-  showSkeleton?: boolean
-  showRefreshIndicator?: boolean
   isRefreshing?: boolean
   lastUpdated?: number
   error?: any
@@ -12,12 +10,19 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  showSkeleton: false,
-  showRefreshIndicator: false,
   isRefreshing: false,
   skeletonCount: 6,
   showStats: false
 })
+
+const hasData = computed(() => {
+  const d = props.data
+  if (d == null) return false
+  if (Array.isArray(d)) return true
+  return true
+})
+const showSkeleton = computed(() => !hasData.value && props.isRefreshing)
+const showRefreshIndicator = computed(() => hasData.value && props.isRefreshing)
 </script>
 
 <template>

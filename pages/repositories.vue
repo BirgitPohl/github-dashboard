@@ -15,15 +15,9 @@ const {
   refresh,
   isRefreshing,
   lastUpdated,
-  showSkeleton,
-  showRefreshIndicator
-} = useCachedFetch<Repository[]>(
-  '/api/repositories',
-  {
-    key: 'repositories',
-    staleTime: 5 * 60 * 1000, // 5 minutes
-  }
-)
+} = useResource<Repository[]>('repositories', '/api/repositories', {
+  staleTime: 5 * 60 * 1000,
+})
 
 const { computeSum, computeCount } = useStatsAggregation()
 
@@ -41,8 +35,6 @@ const totalStats = computed(() => {
 
 <template>
   <PageLayout
-    :show-skeleton="showSkeleton"
-    :show-refresh-indicator="showRefreshIndicator"
     :is-refreshing="isRefreshing"
     :last-updated="lastUpdated"
     :error="error"
