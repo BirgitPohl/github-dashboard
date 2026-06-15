@@ -42,8 +42,10 @@ const timeAgo = computed(() => formatTimeAgoSimple(props.repository.updated_at))
   >
     <Icon :icon="categoryConfig.icon" class="repo-row__icon" :aria-label="categoryConfig.label" />
 
-    <span class="repo-row__name">{{ repository.name }}</span>
-    <Icon v-if="repository.is_private" icon="lucide:lock" size="xs" class="repo-row__lock" aria-label="Private" />
+    <span class="repo-row__name-cell">
+      <span class="repo-row__name">{{ repository.name }}</span>
+      <Icon v-if="repository.is_private" icon="lucide:lock" size="xs" class="repo-row__lock" aria-label="Private" />
+    </span>
 
     <span class="repo-row__meta">
       <span class="repo-row__category">{{ categoryConfig.label }}</span>
@@ -64,9 +66,10 @@ const timeAgo = computed(() => formatTimeAgoSimple(props.repository.updated_at))
 <style scoped>
 .repo-row {
   display: grid;
-  grid-template-columns: auto 1fr auto auto auto auto;
+  grid-template-columns: subgrid;
+  grid-column: 1 / -1;
   align-items: center;
-  gap: var(--spacing-3);
+  column-gap: var(--spacing-3);
   padding: var(--spacing-2) var(--spacing-4);
   border-left: 3px solid var(--repo-accent, var(--color-neutral));
   border-bottom: 1px solid var(--color-border-default);
@@ -76,6 +79,13 @@ const timeAgo = computed(() => formatTimeAgoSimple(props.repository.updated_at))
   font-size: var(--font-size-sm);
   line-height: 1.3;
   transition: background var(--transition-fast);
+}
+
+.repo-row__name-cell {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  min-width: 0;
 }
 
 .repo-row:hover {

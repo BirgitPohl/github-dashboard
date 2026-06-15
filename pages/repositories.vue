@@ -63,9 +63,12 @@ onBeforeUnmount(() => headerStats.clear())
 </template>
 
 <style scoped>
+/* Parent grid declares the column tracks; every repository row inherits
+ * them via subgrid so icon, name, category, stats and updated-time
+ * columns line up across the whole list. */
 .repositories-list {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: auto 1fr auto auto auto;
   background: var(--color-bg-primary);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-sm);

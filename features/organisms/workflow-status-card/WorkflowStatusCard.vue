@@ -58,9 +58,10 @@ const timeAgo = computed(() => formatTimeAgoSimple(props.workflow.updated_at))
 <style scoped>
 .wf-row {
   display: grid;
-  grid-template-columns: auto 1fr auto auto auto;
+  grid-template-columns: subgrid;
+  grid-column: 1 / -1;
   align-items: center;
-  gap: var(--spacing-3);
+  column-gap: var(--spacing-3);
   padding: var(--spacing-2) var(--spacing-4);
   background: var(--row-bg, var(--color-neutral));
   color: var(--row-fg, var(--color-text-inverse));

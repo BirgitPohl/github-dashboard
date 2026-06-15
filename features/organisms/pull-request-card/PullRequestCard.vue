@@ -102,13 +102,19 @@ const showReviewIcon = computed(() => {
       </span>
     </span>
 
-    <span class="pr-row__signals">
+    <span class="pr-row__check">
       <Icon v-if="pullRequest.check_status" :icon="getCheckIcon(pullRequest.check_status)" size="sm" :aria-label="`Checks: ${pullRequest.check_status}`" />
+    </span>
+
+    <span class="pr-row__review">
       <Icon v-if="showReviewIcon" :icon="getReviewIcon(pullRequest.review_status!)" size="sm" :aria-label="`Review: ${pullRequest.review_status}`" />
-      <span v-if="pullRequest.comments && pullRequest.comments.total > 0" class="pr-row__comments" title="Comments">
+    </span>
+
+    <span class="pr-row__comments" title="Comments">
+      <template v-if="pullRequest.comments && pullRequest.comments.total > 0">
         {{ pullRequest.comments.unresolved }}/{{ pullRequest.comments.total }}
         <Icon icon="lucide:message-circle" size="sm" decorative />
-      </span>
+      </template>
     </span>
 
     <span class="pr-row__time">{{ formatTimeAgo(pullRequest.updated_at) }}</span>
@@ -118,9 +124,10 @@ const showReviewIcon = computed(() => {
 <style scoped>
 .pr-row {
   display: grid;
-  grid-template-columns: auto 1fr auto auto;
+  grid-template-columns: subgrid;
+  grid-column: 1 / -1;
   align-items: center;
-  gap: var(--spacing-3);
+  column-gap: var(--spacing-3);
   padding: var(--spacing-2) var(--spacing-4);
   background: var(--row-bg, var(--color-neutral));
   color: var(--row-fg, var(--color-text-inverse));
@@ -187,18 +194,21 @@ const showReviewIcon = computed(() => {
   font-family: var(--font-family-mono);
 }
 
-.pr-row__signals {
+.pr-row__check,
+.pr-row__review {
   display: inline-flex;
   align-items: center;
-  gap: var(--spacing-2);
+  justify-content: center;
   font-size: var(--font-size-xs);
-  white-space: nowrap;
 }
 
 .pr-row__comments {
   display: inline-flex;
   align-items: center;
   gap: 4px;
+  justify-self: end;
+  font-size: var(--font-size-xs);
+  white-space: nowrap;
 }
 
 .pr-row__time {
@@ -216,7 +226,9 @@ const showReviewIcon = computed(() => {
     row-gap: 2px;
   }
 
-  .pr-row__signals {
+  .pr-row__check,
+  .pr-row__review,
+  .pr-row__comments {
     grid-column: 1 / 4;
     grid-row: 2;
     font-size: var(--font-size-2xs);

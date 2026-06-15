@@ -202,9 +202,13 @@ onBeforeUnmount(() => headerActions.clear())
   height: fit-content;
 }
 
+/* Parent grid declares the column tracks; every PR row inherits them
+ * via subgrid so icons, titles, signal clusters and timestamps line up
+ * across all rows even when content lengths vary. */
 .pull-requests-list {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  /* state icon · main · check · review · comments · updated time */
+  grid-template-columns: auto 1fr auto auto auto auto;
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-sm);
   overflow: hidden;

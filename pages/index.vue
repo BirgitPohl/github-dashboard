@@ -64,9 +64,12 @@ const workflows = computed(() => {
 </template>
 
 <style scoped>
+/* Parent grid declares the column tracks; every row inherits them via subgrid
+ * so the icon, name, status, run-number, and time columns line up across every
+ * workflow regardless of content length. */
 .workflows-list {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: auto 1fr auto auto auto;
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-sm);
   overflow: hidden;
