@@ -129,7 +129,7 @@ export const usePullRequestCard = () => {
     switch (status) {
       case 'approved': return 'lucide:thumbs-up'
       case 'changes_requested': return 'lucide:alert-triangle'
-      case 'commented': return 'lucide:message-circle'
+      case 'commented': return 'lucide:message-square-quote'
       case 'pending': return 'lucide:eye'
     }
   }

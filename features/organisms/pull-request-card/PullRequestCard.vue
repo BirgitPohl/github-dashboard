@@ -95,8 +95,8 @@ const rowColors = computed(() => getStateRowColors(props.pullRequest))
       <Icon v-if="pullRequest.check_status" :icon="getCheckIcon(pullRequest.check_status)" size="sm" :aria-label="`Checks: ${pullRequest.check_status}`" />
       <Icon v-if="pullRequest.review_status" :icon="getReviewIcon(pullRequest.review_status)" size="sm" :aria-label="`Review: ${pullRequest.review_status}`" />
       <span v-if="pullRequest.comments && pullRequest.comments.total > 0" class="pr-row__comments" title="Comments">
-        <Icon icon="lucide:message-circle" size="sm" decorative />
         {{ pullRequest.comments.unresolved }}/{{ pullRequest.comments.total }}
+        <Icon icon="lucide:message-circle" size="sm" decorative />
       </span>
     </span>
 
@@ -182,6 +182,12 @@ const rowColors = computed(() => getStateRowColors(props.pullRequest))
   gap: var(--spacing-2);
   font-size: var(--font-size-xs);
   white-space: nowrap;
+}
+
+.pr-row__comments {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .pr-row__time {
