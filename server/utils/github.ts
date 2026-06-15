@@ -59,7 +59,7 @@ export async function fetchRepositories(): Promise<GitHubRepository[]> {
   const owner = getGitHubOwner()
   const headers = getGitHubHeaders()
 
-  console.log(`Fetching repositories for owner: ${owner}`)
+  serverLog(`Fetching repositories for owner: ${owner}`)
 
   // Try organization endpoint first
   let reposResponse = await fetch(
@@ -69,7 +69,7 @@ export async function fetchRepositories(): Promise<GitHubRepository[]> {
 
   // Fallback to user endpoint if organization fails
   if (!reposResponse.ok) {
-    console.log(`Organization endpoint failed (${reposResponse.status}), trying user endpoint...`)
+    serverLog(`Organization endpoint failed (${reposResponse.status}), trying user endpoint...`)
     reposResponse = await fetch(
       `https://api.github.com/users/${owner}/repos?type=all&per_page=100&sort=updated`,
       { headers }
@@ -85,7 +85,7 @@ export async function fetchRepositories(): Promise<GitHubRepository[]> {
   }
 
   const repositories = await reposResponse.json()
-  console.log(`Found ${repositories.length} repositories`)
+  serverLog(`Found ${repositories.length} repositories`)
 
   return repositories.filter((repo: GitHubRepository) => !repo.archived)
 }

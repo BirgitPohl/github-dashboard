@@ -4,6 +4,7 @@
     <main class="main-content">
       <slot />
     </main>
+    <LogTicker />
   </div>
 </template>
 
