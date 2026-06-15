@@ -46,7 +46,7 @@ const showSkeleton = computed(() => !hasData.value && props.isRefreshing)
 
 <style scoped>
 .page-layout {
-  padding: var(--spacing-3) var(--spacing-8) var(--spacing-8);
+  padding: 0 var(--spacing-2) var(--spacing-2);
   min-height: 100vh;
   background: var(--color-bg-secondary);
 }
@@ -56,7 +56,7 @@ const showSkeleton = computed(() => !hasData.value && props.isRefreshing)
   margin: 0 auto;
   display: flex;
   justify-content: center;
-  padding: var(--spacing-20) 0;
+  padding: var(--spacing-10) 0;
 }
 
 .content {
@@ -65,12 +65,12 @@ const showSkeleton = computed(() => !hasData.value && props.isRefreshing)
 }
 
 .filters-section {
-  margin-bottom: var(--spacing-8);
+  margin-bottom: var(--spacing-3);
 }
 
 @media (max-width: 768px) {
   .page-layout {
-    padding: var(--spacing-2) var(--spacing-4) var(--spacing-4);
+    padding: 0 var(--spacing-1) var(--spacing-1);
   }
 }
 </style>

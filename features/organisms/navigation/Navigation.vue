@@ -114,7 +114,7 @@ onUnmounted(() => {
 .navigation {
   background: var(--color-bg-primary);
   border-bottom: 1px solid var(--color-border-default);
-  padding: var(--spacing-4) 0;
+  padding: var(--spacing-2) 0;
   position: fixed;
   top: 0;
   left: 0;
@@ -148,8 +148,8 @@ onUnmounted(() => {
   transition: all var(--transition-base);
 }
 
-.nav-link:hover :deep(span),
-.nav-link.router-link-active :deep(span) {
+.nav-link:hover :deep(.text),
+.nav-link.router-link-active :deep(.text) {
   color: var(--color-primary);
 }
 
@@ -219,14 +219,14 @@ onUnmounted(() => {
   display: inline-flex;
   align-items: baseline;
   gap: 6px;
-  font-size: 12px;
+  font-size: var(--font-size-xs);
   line-height: 1;
   color: var(--color-text-secondary);
 }
 
 .nav-stat__value {
-  font-size: 14px;
-  font-weight: 600;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
 }
 
@@ -273,7 +273,7 @@ onUnmounted(() => {
   border-radius: 2px;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1100px) {
   .nav-content {
     padding: 0 var(--spacing-4);
     flex-wrap: wrap;

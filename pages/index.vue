@@ -21,9 +21,17 @@ const {
   staleTime: 5 * 60 * 1000,
 })
 
+const isRunning = (status: string | undefined) => {
+  const s = status?.toLowerCase() ?? ''
+  return s.includes('in_progress') || s.includes('queued')
+}
+
 const workflows = computed(() => {
-  // Sort workflows by newest first (updated_at)
-  return (data.value?.workflows || []).sort((a, b) => {
+  // Running workflows first; then by most recent update.
+  return [...(data.value?.workflows || [])].sort((a, b) => {
+    const aRunning = isRunning(a.status) ? 0 : 1
+    const bRunning = isRunning(b.status) ? 0 : 1
+    if (aRunning !== bRunning) return aRunning - bRunning
     return new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
   })
 })

@@ -85,7 +85,7 @@ const textColor = computed(() => {
 /* Size variants */
 .label-badge--xs {
   padding: 2px 6px;
-  font-size: 10px;
+  font-size: var(--font-size-2xs);
   border-radius: var(--radius-md);
   font-weight: var(--font-weight-semibold);
 }

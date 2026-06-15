@@ -49,7 +49,7 @@ watch(
   background: var(--color-surface-inverse);
   color: var(--color-on-surface-inverse);
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 12px;
+  font-size: var(--font-size-xs);
   line-height: 1.4;
   box-shadow: var(--shadow-lg);
   backdrop-filter: blur(6px);

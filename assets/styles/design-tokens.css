@@ -5,6 +5,14 @@
  * All components should reference these CSS variables instead of hardcoded values
  */
 
+/* Root font-size sets the rem unit for every token below — bump this to
+ * scale text AND spacing for distance-viewed dashboards. Browser default
+ * is 16px; 20px (1.25×) makes a wall-mounted Game-Boy-panel readable
+ * from across the room without changing any individual component. */
+html {
+  font-size: 26px;
+}
+
 :root {
   /* ========================================
      COLORS
