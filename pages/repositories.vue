@@ -6,7 +6,7 @@ definePageMeta({
 const { public: { githubOwner } } = useRuntimeConfig()
 
 useHead({
-  title: `Repositories - ${githubOwner} Dashboard`
+  title: `Repositories - ${githubOwner}`
 })
 
 const {

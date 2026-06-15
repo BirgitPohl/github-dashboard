@@ -6,7 +6,7 @@ definePageMeta({
 const { public: { githubOwner } } = useRuntimeConfig()
 
 useHead({
-  title: `Pull Requests - ${githubOwner} Dashboard`
+  title: `Pull Requests - ${githubOwner}`
 })
 
 const selectedState = ref('open')

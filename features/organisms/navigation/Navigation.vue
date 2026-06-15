@@ -6,7 +6,7 @@ const { public: { githubOwner } } = useRuntimeConfig()
   <nav class="navigation">
     <div class="nav-content">
       <Header :level="1" size="2xl" variant="primary" class="nav-title">
-        {{ githubOwner }} Dashboard
+        {{ githubOwner }}
       </Header>
       <div class="nav-links">
         <NuxtLink to="/" class="nav-link">

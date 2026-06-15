@@ -9,7 +9,7 @@ definePageMeta({
 const { public: { githubOwner } } = useRuntimeConfig()
 
 useHead({
-  title: `Project Views - ${githubOwner} Dashboard`
+  title: `Project Views - ${githubOwner}`
 })
 
 type ProjectsListItem = {

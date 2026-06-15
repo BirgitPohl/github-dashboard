@@ -6,7 +6,7 @@ definePageMeta({
 const { public: { githubOwner } } = useRuntimeConfig()
 
 useHead({
-  title: `Workflows - ${githubOwner} Dashboard`,
+  title: `Workflows - ${githubOwner}`,
   meta: [
     { name: 'description', content: 'Beautiful dashboard for monitoring GitHub workflow states' }
   ]

@@ -19,7 +19,7 @@ const projectId = route.params.id as string
 const { public: { githubOwner } } = useRuntimeConfig()
 
 useHead({
-  title: `Project Board Details - ${githubOwner} Dashboard`
+  title: `Project Board Details - ${githubOwner}`
 })
 
 const {
