@@ -5,13 +5,11 @@ interface Props {
   data?: any
   onRetry?: () => void
   skeletonCount?: number
-  showStats?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
   isRefreshing: false,
   skeletonCount: 6,
-  showStats: false
 })
 
 const hasData = computed(() => props.data != null)
@@ -21,10 +19,7 @@ const showSkeleton = computed(() => !hasData.value && props.isRefreshing)
 <template>
   <div class="page-layout">
     <!-- Skeleton Loading (shown on initial load with no cached data) -->
-    <template v-if="showSkeleton">
-      <SkeletonStats v-if="showStats" :count="3" />
-      <SkeletonGrid :count="skeletonCount" />
-    </template>
+    <SkeletonGrid v-if="showSkeleton" :count="skeletonCount" />
 
     <!-- Error State -->
     <div v-else-if="error && !data" class="error-state">
@@ -36,11 +31,6 @@ const showSkeleton = computed(() => !hasData.value && props.isRefreshing)
 
     <!-- Content (shown when we have data, even if refreshing in background) -->
     <div v-else-if="data" class="content">
-      <!-- Stats Section (optional) -->
-      <div v-if="$slots.stats" class="stats-section">
-        <slot name="stats" />
-      </div>
-
       <!-- Filters Section (optional) -->
       <div v-if="$slots.filters" class="filters-section">
         <slot name="filters" />
@@ -74,29 +64,13 @@ const showSkeleton = computed(() => !hasData.value && props.isRefreshing)
   margin: 0 auto;
 }
 
-.stats-section {
-  display: flex;
-  gap: var(--spacing-5);
-  margin-bottom: var(--spacing-8);
-  flex-wrap: wrap;
-  justify-content: center;
-}
-
 .filters-section {
   margin-bottom: var(--spacing-8);
-}
-
-.main-content {
-  /* Child components define their own layout */
 }
 
 @media (max-width: 768px) {
   .page-layout {
     padding: var(--spacing-4);
-  }
-
-  .stats-section {
-    gap: var(--spacing-4);
   }
 }
 </style>

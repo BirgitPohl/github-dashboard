@@ -63,6 +63,17 @@ const stats = computed(() => pullRequestsData.value?.stats || {
   draft: 0,
   repositories: 0
 })
+
+const headerStats = useHeaderStats()
+watchEffect(() => {
+  headerStats.set([
+    { label: 'Total PRs', value: stats.value.total },
+    { label: 'Open', value: stats.value.open, variant: 'success' },
+    { label: 'Draft', value: stats.value.draft, variant: 'warning' },
+    { label: 'Repos', value: stats.value.repositories, variant: 'info' },
+  ])
+})
+onBeforeUnmount(() => headerStats.clear())
 </script>
 
 <template>
@@ -72,37 +83,7 @@ const stats = computed(() => pullRequestsData.value?.stats || {
     :data="pullRequestsData"
     :on-retry="refresh"
     :skeleton-count="6"
-    :show-stats="true"
   >
-    <template #stats>
-      <StatsCard
-        icon="📊"
-        :value="stats.total"
-        label="Total PRs"
-      />
-
-      <StatsCard
-        icon="🔓"
-        :value="stats.open"
-        label="Open"
-        variant="success"
-      />
-
-      <StatsCard
-        icon="📝"
-        :value="stats.draft"
-        label="Draft"
-        variant="warning"
-      />
-
-      <StatsCard
-        icon="📦"
-        :value="stats.repositories"
-        label="Repositories"
-        variant="info"
-      />
-    </template>
-
     <template #filters>
       <div class="filters">
         <div class="filter-group">

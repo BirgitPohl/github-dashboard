@@ -30,6 +30,16 @@ const totalStats = computed(() => {
     totalForks: computeSum(repositories.value, 'forks')
   }
 })
+
+const headerStats = useHeaderStats()
+watchEffect(() => {
+  headerStats.set([
+    { label: 'Repos', value: totalStats.value.totalRepos },
+    { label: 'Stars', value: totalStats.value.totalStars, variant: 'warning' },
+    { label: 'Forks', value: totalStats.value.totalForks, variant: 'info' },
+  ])
+})
+onBeforeUnmount(() => headerStats.clear())
 </script>
 
 <template>
@@ -39,30 +49,7 @@ const totalStats = computed(() => {
     :data="repositories"
     :on-retry="refresh"
     :skeleton-count="8"
-    :show-stats="true"
   >
-    <template #stats>
-      <StatsCard
-        icon="📊"
-        :value="totalStats.totalRepos"
-        label="Total Repositories"
-      />
-
-      <StatsCard
-        icon="⭐"
-        :value="totalStats.totalStars"
-        label="Total Stars"
-        variant="warning"
-      />
-
-      <StatsCard
-        icon="🍴"
-        :value="totalStats.totalForks"
-        label="Total Forks"
-        variant="info"
-      />
-    </template>
-
     <template #content>
       <div class="repositories-grid">
         <RepositoryCard

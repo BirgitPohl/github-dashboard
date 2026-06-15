@@ -1,5 +1,6 @@
 <script setup lang="ts">
 const { public: { githubOwner } } = useRuntimeConfig()
+const headerStats = useHeaderStats()
 </script>
 
 <template>
@@ -19,6 +20,17 @@ const { public: { githubOwner } } = useRuntimeConfig()
           <Text variant="secondary" size="base" weight="medium">Pull Requests</Text>
         </NuxtLink>
       </div>
+    </div>
+    <div v-if="headerStats.items.length" class="nav-stats">
+      <span
+        v-for="stat in headerStats.items"
+        :key="stat.label"
+        class="nav-stat"
+        :class="stat.variant ? `nav-stat--${stat.variant}` : ''"
+      >
+        <span class="nav-stat__value">{{ stat.value }}</span>
+        <span class="nav-stat__label">{{ stat.label }}</span>
+      </span>
     </div>
   </nav>
 </template>
@@ -74,6 +86,36 @@ const { public: { githubOwner } } = useRuntimeConfig()
   color: var(--color-primary-700);
 }
 
+.nav-stats {
+  max-width: var(--container-max-width);
+  margin: 0 auto;
+  padding: 6px var(--spacing-8);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-5);
+  border-top: 1px solid var(--color-border-default);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.nav-stat {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  font-size: 12px;
+  line-height: 1;
+  color: var(--color-gray-600);
+}
+
+.nav-stat__value {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-gray-900);
+}
+
+.nav-stat--success .nav-stat__value { color: var(--color-success-dark); }
+.nav-stat--warning .nav-stat__value { color: var(--color-warning-dark); }
+.nav-stat--info    .nav-stat__value { color: var(--color-info-dark); }
+
 @media (max-width: 768px) {
   .nav-content {
     padding: 0 var(--spacing-4);
@@ -83,6 +125,11 @@ const { public: { githubOwner } } = useRuntimeConfig()
 
   .nav-links {
     gap: var(--spacing-4);
+  }
+
+  .nav-stats {
+    padding: 6px var(--spacing-4);
+    gap: var(--spacing-3);
   }
 }
 </style>
