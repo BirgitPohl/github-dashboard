@@ -65,6 +65,17 @@ const {
 } = usePullRequestCard()
 
 const rowColors = computed(() => getStateRowColors(props.pullRequest))
+
+const unresolvedComments = computed(() => props.pullRequest.comments?.unresolved ?? 0)
+
+// Hide the "commented" review badge when every comment is resolved —
+// other review verdicts (approved / changes_requested / pending) always show.
+const showReviewIcon = computed(() => {
+  const status = props.pullRequest.review_status
+  if (!status) return false
+  if (status === 'commented') return unresolvedComments.value > 0
+  return true
+})
 </script>
 
 <template>
@@ -93,7 +104,7 @@ const rowColors = computed(() => getStateRowColors(props.pullRequest))
 
     <span class="pr-row__signals">
       <Icon v-if="pullRequest.check_status" :icon="getCheckIcon(pullRequest.check_status)" size="sm" :aria-label="`Checks: ${pullRequest.check_status}`" />
-      <Icon v-if="pullRequest.review_status" :icon="getReviewIcon(pullRequest.review_status)" size="sm" :aria-label="`Review: ${pullRequest.review_status}`" />
+      <Icon v-if="showReviewIcon" :icon="getReviewIcon(pullRequest.review_status!)" size="sm" :aria-label="`Review: ${pullRequest.review_status}`" />
       <span v-if="pullRequest.comments && pullRequest.comments.total > 0" class="pr-row__comments" title="Comments">
         {{ pullRequest.comments.unresolved }}/{{ pullRequest.comments.total }}
         <Icon icon="lucide:message-circle" size="sm" decorative />
