@@ -18,7 +18,6 @@ const {
   error,
   refresh,
   isRefreshing,
-  lastUpdated,
 } = useResource<PullRequestsResponse>(
   () => `pull-requests:${selectedState.value}`,
   () => `/api/pull-requests?state=${selectedState.value}`,
@@ -69,7 +68,6 @@ const stats = computed(() => pullRequestsData.value?.stats || {
 <template>
   <PageLayout
     :is-refreshing="isRefreshing"
-    :last-updated="lastUpdated"
     :error="error"
     :data="pullRequestsData"
     :on-retry="refresh"

@@ -14,7 +14,6 @@ const {
   error,
   refresh,
   isRefreshing,
-  lastUpdated,
 } = useResource<Repository[]>('repositories', '/api/repositories', {
   staleTime: 5 * 60 * 1000,
 })
@@ -36,7 +35,6 @@ const totalStats = computed(() => {
 <template>
   <PageLayout
     :is-refreshing="isRefreshing"
-    :last-updated="lastUpdated"
     :error="error"
     :data="repositories"
     :on-retry="refresh"

@@ -1,7 +1,6 @@
 <script setup lang="ts">
 interface Props {
   isRefreshing?: boolean
-  lastUpdated?: number
   error?: any
   data?: any
   onRetry?: () => void
@@ -15,25 +14,12 @@ const props = withDefaults(defineProps<Props>(), {
   showStats: false
 })
 
-const hasData = computed(() => {
-  const d = props.data
-  if (d == null) return false
-  if (Array.isArray(d)) return true
-  return true
-})
+const hasData = computed(() => props.data != null)
 const showSkeleton = computed(() => !hasData.value && props.isRefreshing)
-const showRefreshIndicator = computed(() => hasData.value && props.isRefreshing)
 </script>
 
 <template>
   <div class="page-layout">
-    <!-- Refresh Indicator (shown when refreshing with cached data) -->
-    <RefreshIndicator
-      v-if="showRefreshIndicator"
-      :is-refreshing="isRefreshing"
-      :last-updated="lastUpdated"
-    />
-
     <!-- Skeleton Loading (shown on initial load with no cached data) -->
     <template v-if="showSkeleton">
       <SkeletonStats v-if="showStats" :count="3" />

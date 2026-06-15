@@ -15,7 +15,7 @@ const DEFAULT_STALE_TIME = 5 * 60 * 1000
  *   stays visible until a new response replaces it, so the UI never blanks.
  * - State survives page reloads via localStorage (pinia-plugin-persistedstate).
  * - Show a skeleton only when `!data && isRefreshing` (first ever load for
- *   that key); otherwise show the data + an inline RefreshIndicator.
+ *   that key); otherwise keep showing the previous data while it refreshes.
  *
  * `key` and `url` may be reactive (ref / getter). When the key changes the
  * binding rebinds to a different cache entry and triggers a fetch if needed.

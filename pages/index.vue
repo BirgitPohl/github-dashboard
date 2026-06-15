@@ -17,7 +17,6 @@ const {
   error,
   refresh,
   isRefreshing,
-  lastUpdated,
 } = useResource<WorkflowsResponse>('workflows', '/api/workflows', {
   staleTime: 5 * 60 * 1000,
 })
@@ -33,7 +32,6 @@ const workflows = computed(() => {
 <template>
   <PageLayout
     :is-refreshing="isRefreshing"
-    :last-updated="lastUpdated"
     :error="error"
     :data="data"
     :on-retry="refresh"
