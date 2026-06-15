@@ -74,6 +74,26 @@ watchEffect(() => {
   ])
 })
 onBeforeUnmount(() => headerStats.clear())
+
+const filtersOpen = ref(false)
+const hasActiveFilters = computed(() =>
+  selectedState.value !== 'open' || searchQuery.value.trim() !== '' || selectedRepository.value !== '',
+)
+
+const headerActions = useHeaderActions()
+watchEffect(() => {
+  headerActions.set([
+    {
+      id: 'pr-filters',
+      icon: '🔍',
+      label: filtersOpen.value ? 'Hide filters' : 'Show filters',
+      active: filtersOpen.value,
+      dot: hasActiveFilters.value,
+      onClick: () => { filtersOpen.value = !filtersOpen.value },
+    },
+  ])
+})
+onBeforeUnmount(() => headerActions.clear())
 </script>
 
 <template>
@@ -85,7 +105,7 @@ onBeforeUnmount(() => headerStats.clear())
     :skeleton-count="6"
   >
     <template #filters>
-      <div class="filters">
+      <div v-if="filtersOpen" id="pr-filters-panel" class="filters">
         <div class="filter-group">
           <label for="state-select" class="filter-label">State</label>
           <Select

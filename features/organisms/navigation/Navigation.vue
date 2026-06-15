@@ -1,6 +1,7 @@
 <script setup lang="ts">
 const { public: { githubOwner } } = useRuntimeConfig()
 const headerStats = useHeaderStats()
+const headerActions = useHeaderActions()
 
 // Keep --nav-actual-height in sync with the rendered nav so the layout's
 // content offset is correct whether the bar is single-row (desktop) or
@@ -45,16 +46,34 @@ onUnmounted(() => {
         </NuxtLink>
       </div>
     </div>
-    <div v-if="headerStats.items.length" class="nav-stats">
-      <span
-        v-for="stat in headerStats.items"
-        :key="stat.label"
-        class="nav-stat"
-        :class="stat.variant ? `nav-stat--${stat.variant}` : ''"
-      >
-        <span class="nav-stat__value">{{ stat.value }}</span>
-        <span class="nav-stat__label">{{ stat.label }}</span>
-      </span>
+    <div v-if="headerStats.items.length || headerActions.actions.length" class="nav-substrip">
+      <div class="nav-stats">
+        <span
+          v-for="stat in headerStats.items"
+          :key="stat.label"
+          class="nav-stat"
+          :class="stat.variant ? `nav-stat--${stat.variant}` : ''"
+        >
+          <span class="nav-stat__value">{{ stat.value }}</span>
+          <span class="nav-stat__label">{{ stat.label }}</span>
+        </span>
+      </div>
+      <div v-if="headerActions.actions.length" class="nav-actions">
+        <button
+          v-for="action in headerActions.actions"
+          :key="action.id"
+          type="button"
+          class="nav-action"
+          :class="{ 'nav-action--active': action.active }"
+          :title="action.label"
+          :aria-label="action.label"
+          :aria-pressed="!!action.active"
+          @click="action.onClick"
+        >
+          <span>{{ action.icon }}</span>
+          <span v-if="action.dot" class="nav-action__dot" aria-hidden="true" />
+        </button>
+      </div>
     </div>
   </nav>
 </template>
@@ -110,15 +129,66 @@ onUnmounted(() => {
   color: var(--color-primary-700);
 }
 
-.nav-stats {
+.nav-substrip {
   max-width: var(--container-max-width);
   margin: 0 auto;
   padding: 6px var(--spacing-8);
   display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-4);
+  border-top: 1px solid var(--color-border-default);
+}
+
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  flex-shrink: 0;
+}
+
+.nav-action {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-full);
+  background: var(--color-bg-primary);
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.nav-action:hover {
+  border-color: var(--color-border-hover);
+  background: var(--color-bg-tertiary);
+}
+
+.nav-action--active {
+  border-color: var(--color-primary);
+  background: var(--color-primary-bright);
+}
+
+.nav-action__dot {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--color-primary);
+}
+
+.nav-stats {
+  display: flex;
   flex-wrap: wrap;
   gap: var(--spacing-5);
-  border-top: 1px solid var(--color-border-default);
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  min-width: 0;
+  flex: 1;
 }
 
 .nav-stat {
@@ -151,8 +221,11 @@ onUnmounted(() => {
     gap: var(--spacing-4);
   }
 
-  .nav-stats {
+  .nav-substrip {
     padding: 6px var(--spacing-4);
+  }
+
+  .nav-stats {
     gap: var(--spacing-3);
   }
 }
