@@ -101,7 +101,7 @@ onUnmounted(() => {
           :aria-pressed="!!action.active"
           @click="headerActions.invoke(action.id)"
         >
-          <span>{{ action.icon }}</span>
+          <Icon :icon="action.icon" decorative />
           <span v-if="action.dot" class="nav-action__dot" aria-hidden="true" />
         </button>
       </div>

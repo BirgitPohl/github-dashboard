@@ -40,10 +40,10 @@ const timeAgo = computed(() => formatTimeAgoSimple(props.repository.updated_at))
     class="repo-row"
     :style="{ '--repo-accent': categoryConfig.color }"
   >
-    <span class="repo-row__icon" :aria-label="categoryConfig.label">{{ categoryConfig.icon }}</span>
+    <Icon :icon="categoryConfig.icon" class="repo-row__icon" :aria-label="categoryConfig.label" />
 
     <span class="repo-row__name">{{ repository.name }}</span>
-    <span v-if="repository.is_private" class="repo-row__lock" title="Private">🔒</span>
+    <Icon v-if="repository.is_private" icon="lucide:lock" size="xs" class="repo-row__lock" aria-label="Private" />
 
     <span class="repo-row__meta">
       <span class="repo-row__category">{{ categoryConfig.label }}</span>
@@ -52,9 +52,9 @@ const timeAgo = computed(() => formatTimeAgoSimple(props.repository.updated_at))
     </span>
 
     <span class="repo-row__stats">
-      <span class="repo-row__stat" title="Stars">⭐ {{ repository.stars }}</span>
-      <span class="repo-row__stat" title="Forks">🍴 {{ repository.forks }}</span>
-      <span class="repo-row__stat" title="Open issues">❗ {{ repository.issues }}</span>
+      <span class="repo-row__stat" title="Stars"><Icon icon="lucide:star" size="xs" decorative /> {{ repository.stars }}</span>
+      <span class="repo-row__stat" title="Forks"><Icon icon="lucide:git-fork" size="xs" decorative /> {{ repository.forks }}</span>
+      <span class="repo-row__stat" title="Open issues"><Icon icon="lucide:circle-dot" size="xs" decorative /> {{ repository.issues }}</span>
     </span>
 
     <span class="repo-row__updated">{{ timeAgo }}</span>

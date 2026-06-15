@@ -50,14 +50,13 @@ const iconClasses = computed(() => {
 </script>
 
 <template>
-  <span
+  <NuxtIcon
+    :name="icon"
     :class="iconClasses"
     :aria-label="ariaLabel || undefined"
     :aria-hidden="decorative ? 'true' : undefined"
     role="img"
-  >
-    {{ icon }}
-  </span>
+  />
 </template>
 
 <style scoped>

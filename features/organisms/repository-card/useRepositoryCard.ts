@@ -15,14 +15,14 @@ const buildTriple = (role: 'success' | 'info' | 'tertiary' | 'warning' | 'error'
 })
 
 const CATEGORY_CONFIGS: Record<string, CategoryConfig> = {
-  'web application':   buildTriple('success',  '🌐', 'Web App'),
-  'api/service':       buildTriple('info',     '⚡', 'API/Service'),
-  'library/component': buildTriple('tertiary', '📦', 'Library'),
-  'documentation':     buildTriple('warning',  '📚', 'Docs'),
-  'tool/utility':      buildTriple('error',    '🔧', 'Tool'),
+  'web application':   buildTriple('success',  'lucide:globe',     'Web App'),
+  'api/service':       buildTriple('info',     'lucide:zap',       'API/Service'),
+  'library/component': buildTriple('tertiary', 'lucide:package',   'Library'),
+  'documentation':     buildTriple('warning',  'lucide:book-open', 'Docs'),
+  'tool/utility':      buildTriple('error',    'lucide:wrench',    'Tool'),
 }
 
-const DEFAULT_CATEGORY = buildTriple('neutral', '📁', 'General')
+const DEFAULT_CATEGORY = buildTriple('neutral', 'lucide:folder', 'General')
 
 /**
  * Composable for repository card logic

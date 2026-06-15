@@ -59,10 +59,10 @@ export const usePullRequestCard = () => {
    * Get icon emoji based on PR state
    */
   const getStateIcon = (pr: PullRequest): string => {
-    if (pr.merged_at) return '✅'
-    if (pr.state === 'open' && pr.draft) return '📝'
-    if (pr.state === 'open') return '🔓'
-    return '❌'
+    if (pr.merged_at) return 'lucide:git-merge'
+    if (pr.state === 'open' && pr.draft) return 'lucide:file-edit'
+    if (pr.state === 'open') return 'lucide:git-pull-request'
+    return 'lucide:git-pull-request-closed'
   }
 
   /**
@@ -103,10 +103,10 @@ export const usePullRequestCard = () => {
    */
   const getCheckIcon = (status: 'success' | 'failure' | 'pending' | 'neutral'): string => {
     switch (status) {
-      case 'success': return '✅'
-      case 'failure': return '❌'
-      case 'pending': return '⏳'
-      case 'neutral': return '⚪'
+      case 'success': return 'lucide:check-circle-2'
+      case 'failure': return 'lucide:x-circle'
+      case 'pending': return 'lucide:loader-circle'
+      case 'neutral': return 'lucide:circle-minus'
     }
   }
 
@@ -127,10 +127,10 @@ export const usePullRequestCard = () => {
    */
   const getReviewIcon = (status: 'approved' | 'changes_requested' | 'pending' | 'commented'): string => {
     switch (status) {
-      case 'approved': return '👍'
-      case 'changes_requested': return '⚠️'
-      case 'commented': return '💬'
-      case 'pending': return '👀'
+      case 'approved': return 'lucide:thumbs-up'
+      case 'changes_requested': return 'lucide:alert-triangle'
+      case 'commented': return 'lucide:message-circle'
+      case 'pending': return 'lucide:eye'
     }
   }
 

@@ -85,7 +85,7 @@ watchEffect(() => {
   headerActions.set([
     {
       id: 'pr-filters',
-      icon: '🔍',
+      icon: 'lucide:search',
       label: filtersOpen.value ? 'Hide filters' : 'Show filters',
       active: filtersOpen.value,
       dot: hasActiveFilters.value,

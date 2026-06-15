@@ -10,9 +10,15 @@ export default defineNuxtConfig({
     '@nuxt/test-utils',
     '@nuxt/ui',
     '@nuxt/scripts',
+    '@nuxt/icon',
     '@pinia/nuxt',
     'pinia-plugin-persistedstate/nuxt'
   ],
+
+  icon: {
+    // Avoid collision with our existing Icon atom
+    componentName: 'NuxtIcon',
+  },
 
   // Enable auto-imports for components and composables
   components: [

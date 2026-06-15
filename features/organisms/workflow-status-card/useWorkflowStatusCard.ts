@@ -20,7 +20,7 @@ const STATUS_CONFIGS = {
     textColor: 'text-red-700',
     bgColor: 'var(--color-error-bright)',
     borderColor: 'var(--color-error)',
-    icon: '✗',
+    icon: 'lucide:x',
     label: 'Failed',
   },
   success: {
@@ -29,7 +29,7 @@ const STATUS_CONFIGS = {
     textColor: 'text-green-700',
     bgColor: 'var(--color-success-bright)',
     borderColor: 'var(--color-success)',
-    icon: '✓',
+    icon: 'lucide:check',
     label: 'Success',
   },
   cancelled: {
@@ -38,7 +38,7 @@ const STATUS_CONFIGS = {
     textColor: 'text-amber-700',
     bgColor: 'var(--color-warning-bright)',
     borderColor: 'var(--color-warning)',
-    icon: '○',
+    icon: 'lucide:ban',
     label: 'Cancelled',
   },
   running: {
@@ -47,7 +47,7 @@ const STATUS_CONFIGS = {
     textColor: 'text-blue-700',
     bgColor: 'var(--color-info-bright)',
     borderColor: 'var(--color-info)',
-    icon: '◐',
+    icon: 'lucide:loader-circle',
     label: 'Running',
   },
   skipped: {
@@ -56,7 +56,7 @@ const STATUS_CONFIGS = {
     textColor: 'text-gray-700',
     bgColor: 'var(--color-neutral-bright)',
     borderColor: 'var(--color-neutral)',
-    icon: '−',
+    icon: 'lucide:skip-forward',
     label: 'Skipped',
   },
   disabled: {
@@ -65,7 +65,7 @@ const STATUS_CONFIGS = {
     textColor: 'text-gray-700',
     bgColor: 'var(--color-neutral-bright)',
     borderColor: 'var(--color-neutral)',
-    icon: '○',
+    icon: 'lucide:circle-off',
     label: 'Disabled',
   },
   passed: {
@@ -74,7 +74,7 @@ const STATUS_CONFIGS = {
     textColor: 'text-green-700',
     bgColor: 'var(--color-success-bright)',
     borderColor: 'var(--color-success)',
-    icon: '✓',
+    icon: 'lucide:check',
     label: 'Passed',
   },
   unknown: {
@@ -83,7 +83,7 @@ const STATUS_CONFIGS = {
     textColor: 'text-gray-700',
     bgColor: 'var(--color-neutral-bright)',
     borderColor: 'var(--color-neutral)',
-    icon: '●',
+    icon: 'lucide:circle-help',
     label: 'Unknown',
   },
 } as const satisfies Record<string, StatusConfig>

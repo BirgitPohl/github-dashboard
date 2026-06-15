@@ -37,7 +37,7 @@ const timeAgo = computed(() => formatTimeAgoSimple(props.workflow.updated_at))
     class="wf-row"
     :style="{ '--row-bg': statusConfig.color, '--row-fg': statusConfig.onColor }"
   >
-    <span class="wf-row__icon" aria-hidden="true">{{ statusConfig.icon }}</span>
+    <Icon :icon="statusConfig.icon" class="wf-row__icon" decorative />
 
     <span class="wf-row__main">
       <span class="wf-row__name">{{ workflow.name }}</span>
@@ -45,7 +45,7 @@ const timeAgo = computed(() => formatTimeAgoSimple(props.workflow.updated_at))
         <span>{{ workflow.repository }}</span>
         <span class="wf-row__sep">·</span>
         <span>{{ workflow.branch }}</span>
-        <span v-if="workflow.is_private" class="wf-row__lock" title="Private">🔒</span>
+        <Icon v-if="workflow.is_private" icon="lucide:lock" size="xs" class="wf-row__lock" aria-label="Private" />
       </span>
     </span>
 

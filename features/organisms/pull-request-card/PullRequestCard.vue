@@ -75,7 +75,7 @@ const rowColors = computed(() => getStateRowColors(props.pullRequest))
     class="pr-row"
     :style="{ '--row-bg': rowColors.bg, '--row-fg': rowColors.fg }"
   >
-    <span class="pr-row__icon" aria-hidden="true">{{ getStateIcon(pullRequest) }}</span>
+    <Icon :icon="getStateIcon(pullRequest)" class="pr-row__icon" decorative />
 
     <span class="pr-row__main">
       <span class="pr-row__title-line">
@@ -92,14 +92,11 @@ const rowColors = computed(() => getStateRowColors(props.pullRequest))
     </span>
 
     <span class="pr-row__signals">
-      <span v-if="pullRequest.check_status" :title="`Checks: ${pullRequest.check_status}`">
-        {{ getCheckIcon(pullRequest.check_status) }}
-      </span>
-      <span v-if="pullRequest.review_status" :title="`Review: ${pullRequest.review_status}`">
-        {{ getReviewIcon(pullRequest.review_status) }}
-      </span>
-      <span v-if="pullRequest.comments && pullRequest.comments.total > 0" title="Comments">
-        💬 {{ pullRequest.comments.unresolved }}/{{ pullRequest.comments.total }}
+      <Icon v-if="pullRequest.check_status" :icon="getCheckIcon(pullRequest.check_status)" size="sm" :aria-label="`Checks: ${pullRequest.check_status}`" />
+      <Icon v-if="pullRequest.review_status" :icon="getReviewIcon(pullRequest.review_status)" size="sm" :aria-label="`Review: ${pullRequest.review_status}`" />
+      <span v-if="pullRequest.comments && pullRequest.comments.total > 0" class="pr-row__comments" title="Comments">
+        <Icon icon="lucide:message-circle" size="sm" decorative />
+        {{ pullRequest.comments.unresolved }}/{{ pullRequest.comments.total }}
       </span>
     </span>
 
