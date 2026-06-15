@@ -3,6 +3,10 @@ const { public: { githubOwner } } = useRuntimeConfig()
 const headerStats = useHeaderStats()
 const headerActions = useHeaderActions()
 
+const menuOpen = ref(false)
+const route = useRoute()
+watch(() => route.fullPath, () => { menuOpen.value = false })
+
 // Keep --nav-actual-height in sync with the rendered nav so the layout's
 // content offset is correct whether the bar is single-row (desktop) or
 // stacked (mobile), and whether the stats strip is present or not.
@@ -34,7 +38,19 @@ onUnmounted(() => {
       <Header :level="1" size="2xl" variant="primary" class="nav-title">
         {{ githubOwner }}
       </Header>
-      <div class="nav-links">
+      <button
+        type="button"
+        class="nav-burger"
+        :aria-expanded="menuOpen"
+        aria-controls="nav-menu"
+        aria-label="Toggle navigation menu"
+        @click="menuOpen = !menuOpen"
+      >
+        <span class="nav-burger__bar" />
+        <span class="nav-burger__bar" />
+        <span class="nav-burger__bar" />
+      </button>
+      <div id="nav-menu" class="nav-links" :class="{ 'nav-links--open': menuOpen }">
         <NuxtLink to="/" class="nav-link">
           <Text variant="secondary" size="base" weight="medium">Workflows</Text>
         </NuxtLink>
@@ -46,7 +62,7 @@ onUnmounted(() => {
         </NuxtLink>
       </div>
     </div>
-    <div v-if="headerStats.items.length || headerActions.actions.length" class="nav-substrip">
+    <div v-if="headerStats.items.length || headerActions.items.length" class="nav-substrip">
       <div class="nav-stats">
         <span
           v-for="stat in headerStats.items"
@@ -58,9 +74,9 @@ onUnmounted(() => {
           <span class="nav-stat__label">{{ stat.label }}</span>
         </span>
       </div>
-      <div v-if="headerActions.actions.length" class="nav-actions">
+      <div v-if="headerActions.items.length" class="nav-actions">
         <button
-          v-for="action in headerActions.actions"
+          v-for="action in headerActions.items"
           :key="action.id"
           type="button"
           class="nav-action"
@@ -68,7 +84,7 @@ onUnmounted(() => {
           :title="action.label"
           :aria-label="action.label"
           :aria-pressed="!!action.active"
-          @click="action.onClick"
+          @click="headerActions.invoke(action.id)"
         >
           <span>{{ action.icon }}</span>
           <span v-if="action.dot" class="nav-action__dot" aria-hidden="true" />
@@ -117,16 +133,9 @@ onUnmounted(() => {
   transition: all var(--transition-base);
 }
 
-.nav-link:hover {
-  background: var(--color-gray-100);
-}
-
-.nav-link.router-link-active {
-  background: var(--color-primary-100);
-}
-
+.nav-link:hover :deep(span),
 .nav-link.router-link-active :deep(span) {
-  color: var(--color-primary-700);
+  color: var(--color-primary);
 }
 
 .nav-substrip {
@@ -210,15 +219,61 @@ onUnmounted(() => {
 .nav-stat--warning .nav-stat__value { color: var(--color-warning-dark); }
 .nav-stat--info    .nav-stat__value { color: var(--color-info-dark); }
 
+/* Burger toggle — only shown on small screens */
+.nav-burger {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-primary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.nav-burger:hover {
+  background: var(--color-bg-tertiary);
+}
+
+.nav-burger__bar {
+  display: block;
+  width: 18px;
+  height: 2px;
+  background: var(--color-text-primary);
+  margin: 0 auto;
+  border-radius: 2px;
+}
+
 @media (max-width: 768px) {
   .nav-content {
     padding: 0 var(--spacing-4);
-    flex-direction: column;
+    flex-wrap: wrap;
     gap: var(--spacing-3);
   }
 
+  .nav-burger {
+    display: flex;
+  }
+
   .nav-links {
-    gap: var(--spacing-4);
+    display: none;
+    flex-basis: 100%;
+    flex-direction: column;
+    gap: var(--spacing-1);
+    padding-top: var(--spacing-3);
+    border-top: 1px solid var(--color-border-default);
+  }
+
+  .nav-links--open {
+    display: flex;
+  }
+
+  .nav-link {
+    width: 100%;
   }
 
   .nav-substrip {
