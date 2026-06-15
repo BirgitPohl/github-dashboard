@@ -16,8 +16,10 @@ const { createFilterOptions, filterItems, createDefaultFilters } = useProjectFil
 const route = useRoute()
 const projectId = route.params.id as string
 
+const { public: { githubOwner } } = useRuntimeConfig()
+
 useHead({
-  title: 'Project Board Details - GitHub Dashboard'
+  title: `Project Board Details - ${githubOwner} Dashboard`
 })
 
 const { data: project, pending, error, refresh } = useFetch<ProjectDetails>(`/api/projects/${projectId}`, {

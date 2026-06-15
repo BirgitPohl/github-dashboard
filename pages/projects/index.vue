@@ -3,8 +3,10 @@ definePageMeta({
   name: 'ProjectsOverview'
 })
 
+const { public: { githubOwner } } = useRuntimeConfig()
+
 useHead({
-  title: 'Project Boards - GitHub Dashboard'
+  title: `Project Boards - ${githubOwner} Dashboard`
 })
 
 const {
@@ -53,7 +55,7 @@ const {
         title="No Project Boards Found"
         message="This organization doesn't have any GitHub Project Boards yet."
         action-label="Create First Project Board →"
-        action-url="https://github.com/orgs/Oracommit/projects"
+        :action-url="`https://github.com/orgs/${githubOwner}/projects`"
         :action-external="true"
       />
     </template>

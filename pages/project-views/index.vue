@@ -6,8 +6,10 @@ definePageMeta({
   name: 'ProjectViewsPage'
 })
 
+const { public: { githubOwner } } = useRuntimeConfig()
+
 useHead({
-  title: 'Project Views - GitHub Dashboard'
+  title: `Project Views - ${githubOwner} Dashboard`
 })
 
 // Fetch projects list

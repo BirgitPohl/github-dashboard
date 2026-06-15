@@ -38,12 +38,12 @@ export default defineNuxtConfig({
   runtimeConfig: {
     // Server-side only (not exposed to client)
     githubToken: process.env.GITHUB_TOKEN,
-    githubOwner: process.env.GITHUB_OWNER || 'Oracommit',
+    githubOwner: process.env.GITHUB_OWNER || 'GitHub',
     githubRepo: process.env.GITHUB_REPO || 'issues',
     
     // Public config (exposed to client)
     public: {
-      // Add any public config here if needed
+      githubOwner: process.env.GITHUB_OWNER || 'GitHub',
     }
   }
 })

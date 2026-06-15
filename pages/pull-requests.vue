@@ -3,8 +3,10 @@ definePageMeta({
   name: 'PullRequestsOverview'
 })
 
+const { public: { githubOwner } } = useRuntimeConfig()
+
 useHead({
-  title: 'Pull Requests - GitHub Dashboard'
+  title: `Pull Requests - ${githubOwner} Dashboard`
 })
 
 const selectedState = ref('open')

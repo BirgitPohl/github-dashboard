@@ -48,7 +48,7 @@ export function getGitHubHeaders(): GitHubAPIHeaders {
  */
 export function getGitHubOwner(): string {
   const config = useRuntimeConfig()
-  return config.githubOwner || 'Oracommit'
+  return config.githubOwner || 'GitHub'
 }
 
 /**

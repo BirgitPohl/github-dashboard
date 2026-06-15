@@ -1,8 +1,12 @@
+<script setup lang="ts">
+const { public: { githubOwner } } = useRuntimeConfig()
+</script>
+
 <template>
   <nav class="navigation">
     <div class="nav-content">
       <Header :level="1" size="2xl" variant="primary" class="nav-title">
-        GitHub Dashboard
+        {{ githubOwner }} Dashboard
       </Header>
       <div class="nav-links">
         <NuxtLink to="/" class="nav-link">

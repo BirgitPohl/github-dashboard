@@ -3,8 +3,10 @@ definePageMeta({
   name: 'RepositoriesOverview'
 })
 
+const { public: { githubOwner } } = useRuntimeConfig()
+
 useHead({
-  title: 'Repositories - GitHub Dashboard'
+  title: `Repositories - ${githubOwner} Dashboard`
 })
 
 const {
