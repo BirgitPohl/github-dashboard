@@ -18,12 +18,6 @@ const { public: { githubOwner } } = useRuntimeConfig()
         <NuxtLink to="/pull-requests" class="nav-link">
           <Text variant="secondary" size="base" weight="medium">Pull Requests</Text>
         </NuxtLink>
-        <NuxtLink to="/projects" class="nav-link">
-          <Text variant="secondary" size="base" weight="medium">Project Boards</Text>
-        </NuxtLink>
-        <NuxtLink to="/project-views" class="nav-link">
-          <Text variant="secondary" size="base" weight="medium">Project Views</Text>
-        </NuxtLink>
       </div>
     </div>
   </nav>
