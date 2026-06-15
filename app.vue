@@ -1,6 +1,11 @@
 <script setup>
 // Import design tokens globally
 import '~/assets/styles/design-tokens.css'
+
+const brandThemeCss = useBrandThemeCss()
+if (brandThemeCss) {
+  useHead({ style: [{ children: brandThemeCss }] })
+}
 </script>
 
 <template>

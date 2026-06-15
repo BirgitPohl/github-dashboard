@@ -46,6 +46,7 @@ export default defineNuxtConfig({
     // Public config (exposed to client)
     public: {
       githubOwner: process.env.GITHUB_OWNER || 'GitHub',
+      brandColors: process.env.BRAND_COLORS || '',
     }
   }
 })
