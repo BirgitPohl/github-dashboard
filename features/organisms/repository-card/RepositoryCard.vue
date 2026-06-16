@@ -47,16 +47,23 @@ const timeAgo = computed(() => formatTimeAgoSimple(props.repository.updated_at))
       <Icon v-if="repository.is_private" icon="lucide:lock" size="xs" class="repo-row__lock" aria-label="Private" />
     </span>
 
-    <span class="repo-row__meta">
-      <span class="repo-row__category">{{ categoryConfig.label }}</span>
-      <span v-if="repository.language" class="repo-row__sep">·</span>
-      <span v-if="repository.language" class="repo-row__lang">{{ repository.language }}</span>
+    <span class="repo-row__category">{{ categoryConfig.label }}</span>
+
+    <span class="repo-row__lang">{{ repository.language || '' }}</span>
+
+    <span class="repo-row__stat" title="Stars">
+      <Icon icon="lucide:star" size="xs" decorative />
+      {{ repository.stars }}
     </span>
 
-    <span class="repo-row__stats">
-      <span class="repo-row__stat" title="Stars"><Icon icon="lucide:star" size="xs" decorative /> {{ repository.stars }}</span>
-      <span class="repo-row__stat" title="Forks"><Icon icon="lucide:git-fork" size="xs" decorative /> {{ repository.forks }}</span>
-      <span class="repo-row__stat" title="Open issues"><Icon icon="lucide:circle-dot" size="xs" decorative /> {{ repository.issues }}</span>
+    <span class="repo-row__stat" title="Forks">
+      <Icon icon="lucide:git-fork" size="xs" decorative />
+      {{ repository.forks }}
+    </span>
+
+    <span class="repo-row__stat" title="Open issues">
+      <Icon icon="lucide:circle-dot" size="xs" decorative />
+      {{ repository.issues }}
     </span>
 
     <span class="repo-row__updated">{{ timeAgo }}</span>
@@ -110,31 +117,32 @@ const timeAgo = computed(() => formatTimeAgoSimple(props.repository.updated_at))
   opacity: 0.7;
 }
 
-.repo-row__meta {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--spacing-1);
-  color: var(--color-text-secondary);
+.repo-row__category {
+  color: var(--repo-accent, var(--color-neutral));
+  font-weight: var(--font-weight-medium);
   font-size: var(--font-size-xs);
   white-space: nowrap;
 }
 
-.repo-row__category {
-  color: var(--repo-accent, var(--color-neutral));
-  font-weight: var(--font-weight-medium);
+.repo-row__lang {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-2xs);
+  opacity: 0.85;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
 }
 
-.repo-row__sep {
-  opacity: 0.5;
-}
-
-.repo-row__stats {
+.repo-row__stat {
   display: inline-flex;
-  gap: var(--spacing-3);
+  align-items: center;
+  gap: 4px;
   font-family: var(--font-family-mono);
   font-size: var(--font-size-xs);
   color: var(--color-text-tertiary);
   white-space: nowrap;
+  justify-self: end;
 }
 
 .repo-row__updated {
@@ -148,18 +156,25 @@ const timeAgo = computed(() => formatTimeAgoSimple(props.repository.updated_at))
 @media (max-width: 640px) {
   .repo-row {
     grid-template-columns: auto 1fr auto;
-    grid-template-rows: auto auto;
+    grid-template-rows: auto auto auto;
     row-gap: 2px;
   }
 
-  .repo-row__meta {
+  .repo-row__category,
+  .repo-row__lang {
     grid-column: 2 / 4;
     grid-row: 2;
+    justify-self: start;
   }
 
-  .repo-row__stats {
-    grid-column: 1 / 4;
+  .repo-row__lang {
+    grid-row: 2;
+    justify-self: end;
+  }
+
+  .repo-row__stat {
     grid-row: 3;
+    justify-self: start;
   }
 
   .repo-row__updated {

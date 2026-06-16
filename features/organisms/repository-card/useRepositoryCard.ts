@@ -6,16 +6,22 @@ interface CategoryConfig {
   label: string
 }
 
-const buildTriple = (role: 'success' | 'info' | 'tertiary' | 'warning' | 'error' | 'neutral', icon: string, label: string): CategoryConfig => ({
-  color: `var(--color-${role})`,
-  bgColor: `var(--color-${role}-bright)`,
-  borderColor: `var(--color-${role})`,
-  icon,
-  label,
-})
+type Role = 'success' | 'info' | 'tertiary' | 'warning' | 'error' | 'neutral'
+type Tone = 'base' | 'dark'
+
+const buildTriple = (role: Role, icon: string, label: string, tone: Tone = 'base'): CategoryConfig => {
+  const accent = tone === 'dark' ? `var(--color-${role}-dark)` : `var(--color-${role})`
+  return {
+    color: accent,
+    bgColor: `var(--color-${role}-bright)`,
+    borderColor: accent,
+    icon,
+    label,
+  }
+}
 
 const CATEGORY_CONFIGS: Record<string, CategoryConfig> = {
-  'web application':   buildTriple('success',  'lucide:globe',     'Web App'),
+  'web application':   buildTriple('success',  'lucide:globe',     'Web App', 'dark'),
   'api/service':       buildTriple('info',     'lucide:zap',       'API/Service'),
   'library/component': buildTriple('tertiary', 'lucide:package',   'Library'),
   'documentation':     buildTriple('warning',  'lucide:book-open', 'Docs'),
