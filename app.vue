@@ -3,13 +3,16 @@
 import '~/assets/styles/design-tokens.css'
 
 const brandThemeCss = useBrandThemeCss()
-if (brandThemeCss) {
-  useHead({ style: [{ children: brandThemeCss }] })
-}
 </script>
 
 <template>
   <div class="app">
+    <!-- Inline brand-color override. Rendered into <head> via Teleport so it
+         sits next to the document head and its :root:root selector beats the
+         design-tokens.css defaults regardless of CSS load order. -->
+    <Teleport v-if="brandThemeCss" to="head">
+      <component :is="'style'" v-html="brandThemeCss" />
+    </Teleport>
     <NuxtLayout>
       <NuxtPage />
     </NuxtLayout>

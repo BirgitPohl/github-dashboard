@@ -61,5 +61,7 @@ export function useBrandThemeCss(): string {
     declarations.push(`${cssVar}: ${value};`)
   }
   if (declarations.length === 0) return ''
-  return `:root { ${declarations.join(' ')} }`
+  // Doubled :root selector bumps specificity so this wins regardless of
+  // whether design-tokens.css loads before or after the injected <style>.
+  return `:root:root { ${declarations.join(' ')} }`
 }
