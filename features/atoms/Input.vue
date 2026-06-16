@@ -221,8 +221,8 @@ const handleBlur = (event: FocusEvent) => {
 }
 
 .input-wrapper:focus-within {
-  border-color: var(--color-primary-500);
-  box-shadow: 0 0 0 3px var(--color-primary-100);
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-bright);
 }
 
 .input-wrapper--sm {
@@ -238,25 +238,25 @@ const handleBlur = (event: FocusEvent) => {
 }
 
 .input-wrapper--error {
-  border-color: var(--color-danger-500);
+  border-color: var(--color-error);
 }
 
 .input-wrapper--error:focus-within {
-  border-color: var(--color-danger-500);
-  box-shadow: 0 0 0 3px var(--color-danger-100);
+  border-color: var(--color-error);
+  box-shadow: 0 0 0 3px var(--color-error-bright);
 }
 
 .input-wrapper--success {
-  border-color: var(--color-success-500);
+  border-color: var(--color-success);
 }
 
 .input-wrapper--success:focus-within {
-  border-color: var(--color-success-500);
-  box-shadow: 0 0 0 3px var(--color-success-100);
+  border-color: var(--color-success);
+  box-shadow: 0 0 0 3px var(--color-success-bright);
 }
 
 .input-wrapper--disabled {
-  background: var(--color-gray-100);
+  background: var(--color-neutral-bright);
   opacity: 0.6;
 }
 
@@ -314,8 +314,8 @@ const handleBlur = (event: FocusEvent) => {
 
 .input:focus {
   outline: none;
-  border-color: var(--color-primary-500);
-  box-shadow: 0 0 0 3px var(--color-primary-100);
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-bright);
 }
 
 .input::placeholder {
@@ -340,25 +340,25 @@ const handleBlur = (event: FocusEvent) => {
 
 /* State variants */
 .input--error {
-  border-color: var(--color-danger-500);
+  border-color: var(--color-error);
 }
 
 .input--error:focus {
-  border-color: var(--color-danger-500);
-  box-shadow: 0 0 0 3px var(--color-danger-100);
+  border-color: var(--color-error);
+  box-shadow: 0 0 0 3px var(--color-error-bright);
 }
 
 .input--success {
-  border-color: var(--color-success-500);
+  border-color: var(--color-success);
 }
 
 .input--success:focus {
-  border-color: var(--color-success-500);
-  box-shadow: 0 0 0 3px var(--color-success-100);
+  border-color: var(--color-success);
+  box-shadow: 0 0 0 3px var(--color-success-bright);
 }
 
 .input--disabled {
-  background: var(--color-gray-100);
+  background: var(--color-neutral-bright);
   color: var(--color-text-muted);
   cursor: not-allowed;
   opacity: 0.6;

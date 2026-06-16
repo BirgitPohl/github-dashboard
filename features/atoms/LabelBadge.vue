@@ -51,7 +51,7 @@ const textColor = computed(() => {
   const brightness = (r * 299 + g * 587 + b * 114) / 1000
 
   // Return black for light backgrounds, white for dark
-  return brightness > 128 ? '#000000' : '#FFFFFF'
+  return brightness > 128 ? 'var(--color-text-on-light)' : 'var(--color-text-on-dark)'
 })
 </script>
 
@@ -85,7 +85,7 @@ const textColor = computed(() => {
 /* Size variants */
 .label-badge--xs {
   padding: 2px 6px;
-  font-size: 10px;
+  font-size: var(--font-size-2xs);
   border-radius: var(--radius-md);
   font-weight: var(--font-weight-semibold);
 }

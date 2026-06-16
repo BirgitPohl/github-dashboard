@@ -3,8 +3,10 @@ definePageMeta({
   name: 'RepositoriesOverview'
 })
 
+const { public: { githubOwner } } = useRuntimeConfig()
+
 useHead({
-  title: 'Repositories - GitHub Dashboard'
+  title: `Repositories - ${githubOwner}`
 })
 
 const {
@@ -12,16 +14,9 @@ const {
   error,
   refresh,
   isRefreshing,
-  lastUpdated,
-  showSkeleton,
-  showRefreshIndicator
-} = useCachedFetch<Repository[]>(
-  '/api/repositories',
-  {
-    key: 'repositories',
-    staleTime: 5 * 60 * 1000, // 5 minutes
-  }
-)
+} = useResource<Repository[]>('repositories', '/api/repositories', {
+  staleTime: 5 * 60 * 1000,
+})
 
 const { computeSum, computeCount } = useStatsAggregation()
 
@@ -35,44 +30,28 @@ const totalStats = computed(() => {
     totalForks: computeSum(repositories.value, 'forks')
   }
 })
+
+const headerStats = useHeaderStats()
+watchEffect(() => {
+  headerStats.set([
+    { label: 'Repos', value: totalStats.value.totalRepos },
+    { label: 'Stars', value: totalStats.value.totalStars, variant: 'warning' },
+    { label: 'Forks', value: totalStats.value.totalForks, variant: 'info' },
+  ])
+})
+onBeforeUnmount(() => headerStats.clear())
 </script>
 
 <template>
   <PageLayout
-    :show-skeleton="showSkeleton"
-    :show-refresh-indicator="showRefreshIndicator"
     :is-refreshing="isRefreshing"
-    :last-updated="lastUpdated"
     :error="error"
     :data="repositories"
     :on-retry="refresh"
     :skeleton-count="8"
-    :show-stats="true"
   >
-    <template #stats>
-      <StatsCard
-        icon="📊"
-        :value="totalStats.totalRepos"
-        label="Total Repositories"
-      />
-
-      <StatsCard
-        icon="⭐"
-        :value="totalStats.totalStars"
-        label="Total Stars"
-        variant="warning"
-      />
-
-      <StatsCard
-        icon="🍴"
-        :value="totalStats.totalForks"
-        label="Total Forks"
-        variant="info"
-      />
-    </template>
-
     <template #content>
-      <div class="repositories-grid">
+      <div class="repositories-list">
         <RepositoryCard
           v-for="repository in repositories"
           :key="repository.id"
@@ -84,16 +63,21 @@ const totalStats = computed(() => {
 </template>
 
 <style scoped>
-.repositories-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--spacing-5);
-  justify-content: center;
+/* Parent grid declares the column tracks; every repository row inherits
+ * them via subgrid so icon, name, category, language, individual stat
+ * columns (stars · forks · issues) and the updated-time column line up
+ * across the whole list. */
+.repositories-list {
+  display: grid;
+  /* icon · name · category · lang · stars · forks · issues · updated */
+  grid-template-columns: auto 1fr auto minmax(0, 8ch) auto auto auto auto;
+  background: var(--color-bg-primary);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
 }
 
-@media (max-width: 768px) {
-  .repositories-grid {
-    gap: var(--spacing-4);
-  }
+.repositories-list > :last-child {
+  border-bottom: 0;
 }
 </style>

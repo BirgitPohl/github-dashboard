@@ -23,7 +23,7 @@ interface Project {
 export default defineEventHandler(async (_event) => {
   try {
     const repositories = await fetchRepositories()
-    console.log(`Processing ${repositories.length} repositories`)
+    serverLog(`Processing ${repositories.length} repositories`)
 
     // Transform repositories into project views
     const projects: Project[] = repositories
@@ -49,7 +49,7 @@ export default defineEventHandler(async (_event) => {
       }))
       .sort((a: Project, b: Project) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()) // Sort by most recent
 
-    console.log(`Processed ${projects.length} projects`)
+    serverLog(`Processed ${projects.length} projects`)
     return projects
 
   } catch (error: unknown) {

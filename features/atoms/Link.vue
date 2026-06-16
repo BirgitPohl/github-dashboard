@@ -98,7 +98,7 @@ const linkRel = computed(() => props.external ? 'noopener noreferrer' : undefine
 
 <style scoped>
 .link {
-  color: var(--color-blue-600);
+  color: var(--color-primary);
   text-decoration: none;
   cursor: pointer;
   transition: all var(--transition-base);
@@ -108,7 +108,7 @@ const linkRel = computed(() => props.external ? 'noopener noreferrer' : undefine
 }
 
 .link:focus-visible {
-  outline: 2px solid var(--color-primary-500);
+  outline: 2px solid var(--color-primary);
   outline-offset: 2px;
   border-radius: var(--radius-sm);
 }
@@ -138,11 +138,11 @@ const linkRel = computed(() => props.external ? 'noopener noreferrer' : undefine
 
 /* Variant styles */
 .link--primary {
-  color: var(--color-blue-600);
+  color: var(--color-primary);
 }
 
 .link--primary:hover:not(.link--disabled) {
-  color: var(--color-blue-700);
+  color: var(--color-primary-dark);
 }
 
 .link--secondary {
@@ -170,11 +170,11 @@ const linkRel = computed(() => props.external ? 'noopener noreferrer' : undefine
 }
 
 .link--danger {
-  color: var(--color-danger-600);
+  color: var(--color-error);
 }
 
 .link--danger:hover:not(.link--disabled) {
-  color: var(--color-danger-700);
+  color: var(--color-error-dark);
 }
 
 /* Underline styles */

@@ -234,15 +234,15 @@ onUnmounted(() => {
 }
 
 .multi-select-option:hover {
-  background-color: var(--color-gray-50);
+  background-color: var(--color-bg-secondary);
 }
 
 .multi-select-option--selected {
-  background-color: var(--color-primary-50);
+  background-color: var(--color-primary-bright);
 }
 
 .multi-select-option--selected:hover {
-  background-color: var(--color-primary-100);
+  background-color: var(--color-primary-bright);
 }
 
 .multi-select-checkbox {
@@ -266,8 +266,8 @@ onUnmounted(() => {
 }
 
 .multi-select-option--selected .multi-select-option__checkmark {
-  background: var(--color-primary-500);
-  border-color: var(--color-primary-500);
+  background: var(--color-primary);
+  border-color: var(--color-primary);
 }
 
 .multi-select-option__label {

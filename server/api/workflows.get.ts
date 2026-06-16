@@ -42,10 +42,10 @@ export default defineEventHandler(async (_event) => {
     const headers = getGitHubHeaders()
     const repositories = await fetchRepositories()
 
-    console.log(`Processing ${repositories.length} repositories for workflows`)
+    serverLog(`Processing ${repositories.length} repositories for workflows`)
 
     if (repositories.length === 0) {
-      console.log('No repositories found')
+      serverLog('No repositories found')
       return { workflows: [] }
     }
 
@@ -59,7 +59,7 @@ export default defineEventHandler(async (_event) => {
       await Promise.all(
         batch.map(async (repository: GitHubRepository) => {
           try {
-            console.log(`Fetching workflows for repository: ${repository.name}`)
+            serverLog(`Fetching workflows for repository: ${repository.name}`)
 
             // Get workflows for this repository
             const workflowsResponse = await fetch(
@@ -68,7 +68,7 @@ export default defineEventHandler(async (_event) => {
             )
 
             if (!workflowsResponse.ok) {
-              console.log(`No workflows found for ${repository.name}: ${workflowsResponse.status}`)
+              serverLog(`No workflows found for ${repository.name}: ${workflowsResponse.status}`)
               return
             }
 
@@ -79,7 +79,7 @@ export default defineEventHandler(async (_event) => {
               return
             }
 
-            console.log(`Found ${workflows.length} workflows in ${repository.name}`)
+            serverLog(`Found ${workflows.length} workflows in ${repository.name}`)
 
             // For each workflow, get recent runs
             await Promise.all(
@@ -142,7 +142,7 @@ export default defineEventHandler(async (_event) => {
       return new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
     })
 
-    console.log(`Total workflow runs found: ${allWorkflowRuns.length}`)
+    serverLog(`Total workflow runs found: ${allWorkflowRuns.length}`)
 
     return { workflows: allWorkflowRuns }
 

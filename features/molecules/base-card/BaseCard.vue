@@ -117,7 +117,7 @@ const cardStyles = computed(() => ({
 .base-card__bottom {
   margin-top: var(--spacing-4);
   padding-top: var(--spacing-4);
-  border-top: 1px solid var(--color-gray-100);
+  border-top: 1px solid var(--color-border-default);
 }
 
 /* Responsive adjustments */

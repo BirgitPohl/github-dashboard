@@ -25,168 +25,161 @@ const props = defineProps<{
   repository: Repository
 }>()
 
-const { getCategoryConfig, formatSize } = useRepositoryCard()
+const { getCategoryConfig } = useRepositoryCard()
 const { formatTimeAgoSimple } = useDateTime()
 
 const categoryConfig = computed(() => getCategoryConfig(props.repository.category))
 const timeAgo = computed(() => formatTimeAgoSimple(props.repository.updated_at))
-const sizeFormatted = computed(() => formatSize(props.repository.size))
 </script>
 
 <template>
-  <BaseCard
-    width="300px"
-    :border-color="categoryConfig.borderColor"
-    :bg-color="categoryConfig.bgColor"
+  <a
+    :href="repository.html_url"
+    target="_blank"
+    rel="noopener"
+    class="repo-row"
+    :style="{ '--repo-accent': categoryConfig.color }"
   >
-    <template #header>
-      <div class="project-title">
-        <Icon :icon="categoryConfig.icon" size="lg" decorative />
-        <Header :level="3" size="base" class="project-name">
-          {{ repository.name }}
-        </Header>
-        <Tag v-if="repository.is_private" label="Private" variant="warning" size="sm" />
-      </div>
-      <Text variant="secondary" size="xs" :line-clamp="2" class="project-description">
-        {{ repository.description }}
-      </Text>
-    </template>
+    <Icon :icon="categoryConfig.icon" class="repo-row__icon" :aria-label="categoryConfig.label" />
 
-    <template #body>
-      <!-- Stats -->
-      <div class="project-stats">
-        <div class="stat-item">
-          <Icon icon="⭐" size="sm" decorative />
-          <Text variant="tertiary" size="xs" weight="medium">{{ repository.stars }}</Text>
-        </div>
-        <div class="stat-item">
-          <Icon icon="🍴" size="sm" decorative />
-          <Text variant="tertiary" size="xs" weight="medium">{{ repository.forks }}</Text>
-        </div>
-        <div class="stat-item">
-          <Icon icon="❗" size="sm" decorative />
-          <Text variant="tertiary" size="xs" weight="medium">{{ repository.issues }}</Text>
-        </div>
-      </div>
+    <span class="repo-row__name-cell">
+      <span class="repo-row__name">{{ repository.name }}</span>
+      <Icon v-if="repository.is_private" icon="lucide:lock" size="xs" class="repo-row__lock" aria-label="Private" />
+    </span>
 
-      <!-- Tech Stack -->
-      <div v-if="repository.tech_stack.length > 0" class="tech-stack">
-        <Text variant="secondary" size="xs" class="tech-label">Tech:</Text>
-        <div class="tech-tags">
-          <Tag
-            v-for="tech in repository.tech_stack.slice(0, 3)"
-            :key="tech"
-            :label="tech"
-            variant="default"
-            size="sm"
-          />
-          <Tag
-            v-if="repository.tech_stack.length > 3"
-            :label="`+${repository.tech_stack.length - 3}`"
-            variant="default"
-            size="sm"
-          />
-        </div>
-      </div>
+    <span class="repo-row__category">{{ categoryConfig.label }}</span>
 
-      <!-- Details -->
-      <div class="project-details">
-        <div class="detail-row">
-          <Text variant="secondary" size="xs">Category:</Text>
-          <Text
-            variant="tertiary"
-            size="xs"
-            weight="semibold"
-            :style="{ color: categoryConfig.color }"
-          >
-            {{ categoryConfig.label }}
-          </Text>
-        </div>
+    <span class="repo-row__lang">{{ repository.language || '' }}</span>
 
-        <div class="detail-row">
-          <Text variant="secondary" size="xs">Updated:</Text>
-          <Text variant="tertiary" size="xs" weight="medium">{{ timeAgo }}</Text>
-        </div>
+    <span class="repo-row__stat" title="Stars">
+      <Icon icon="lucide:star" size="xs" decorative />
+      {{ repository.stars }}
+    </span>
 
-        <div class="detail-row">
-          <Text variant="secondary" size="xs">Size:</Text>
-          <Text variant="tertiary" size="xs" weight="medium">{{ sizeFormatted }}</Text>
-        </div>
-      </div>
-    </template>
+    <span class="repo-row__stat" title="Forks">
+      <Icon icon="lucide:git-fork" size="xs" decorative />
+      {{ repository.forks }}
+    </span>
 
-    <template #bottom>
-      <Link
-        :href="repository.html_url"
-        variant="primary"
-        size="sm"
-        external
-      >
-        View Repository →
-      </Link>
-    </template>
-  </BaseCard>
+    <span class="repo-row__stat" title="Open issues">
+      <Icon icon="lucide:circle-dot" size="xs" decorative />
+      {{ repository.issues }}
+    </span>
+
+    <span class="repo-row__updated">{{ timeAgo }}</span>
+  </a>
 </template>
 
 <style scoped>
-/* Layout structure only - typography and colors handled by atoms */
-.project-title {
-  display: flex;
+.repo-row {
+  display: grid;
+  grid-template-columns: subgrid;
+  grid-column: 1 / -1;
   align-items: center;
-  gap: var(--spacing-2);
-  margin-bottom: var(--spacing-2);
-  flex-wrap: wrap;
+  column-gap: var(--spacing-3);
+  padding: var(--spacing-2) var(--spacing-4);
+  border-left: 3px solid var(--repo-accent, var(--color-neutral));
+  border-bottom: 1px solid var(--color-border-default);
+  background: var(--color-bg-primary);
+  text-decoration: none;
+  color: inherit;
+  font-size: var(--font-size-sm);
+  line-height: 1.3;
+  transition: background var(--transition-fast);
 }
 
-.project-name {
-  word-break: break-word;
-  flex: 1;
+.repo-row__name-cell {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-2);
   min-width: 0;
 }
 
-.project-description {
-  margin: 0;
+.repo-row:hover {
+  background: var(--color-bg-tertiary);
 }
 
-.project-stats {
-  display: flex;
-  gap: var(--spacing-4);
-  margin-bottom: var(--spacing-4);
-  padding-bottom: var(--spacing-3);
-  border-bottom: 1px solid var(--color-gray-100);
+.repo-row__icon {
+  font-size: var(--font-size-base);
+  line-height: 1;
 }
 
-.stat-item {
-  display: flex;
+.repo-row__name {
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.repo-row__lock {
+  font-size: var(--font-size-xs);
+  opacity: 0.7;
+}
+
+.repo-row__category {
+  color: var(--repo-accent, var(--color-neutral));
+  font-weight: var(--font-weight-medium);
+  font-size: var(--font-size-xs);
+  white-space: nowrap;
+}
+
+.repo-row__lang {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-2xs);
+  opacity: 0.85;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+.repo-row__stat {
+  display: inline-flex;
   align-items: center;
-  gap: var(--spacing-1);
+  gap: 4px;
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-tertiary);
+  white-space: nowrap;
+  justify-self: end;
 }
 
-.tech-stack {
-  margin-bottom: var(--spacing-4);
-  padding-bottom: var(--spacing-3);
-  border-bottom: 1px solid var(--color-gray-100);
+.repo-row__updated {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  white-space: nowrap;
+  min-width: 4ch;
+  text-align: right;
 }
 
-.tech-label {
-  display: block;
-  margin-bottom: var(--spacing-2);
-}
+@media (max-width: 640px) {
+  .repo-row {
+    grid-template-columns: auto 1fr auto;
+    grid-template-rows: auto auto auto;
+    row-gap: 2px;
+  }
 
-.tech-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--spacing-1);
-}
+  .repo-row__category,
+  .repo-row__lang {
+    grid-column: 2 / 4;
+    grid-row: 2;
+    justify-self: start;
+  }
 
-.project-details {
-  margin-bottom: var(--spacing-4);
-}
+  .repo-row__lang {
+    grid-row: 2;
+    justify-self: end;
+  }
 
-.detail-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: var(--spacing-2);
+  .repo-row__stat {
+    grid-row: 3;
+    justify-self: start;
+  }
+
+  .repo-row__updated {
+    grid-column: 3;
+    grid-row: 1;
+  }
 }
 </style>

@@ -3,35 +3,25 @@ definePageMeta({
   name: 'PullRequestsOverview'
 })
 
+const { public: { githubOwner } } = useRuntimeConfig()
+
 useHead({
-  title: 'Pull Requests - GitHub Dashboard'
+  title: `Pull Requests - ${githubOwner}`
 })
 
 const selectedState = ref('open')
 const searchQuery = ref('')
 const selectedRepository = ref('')
 
-// Fetch data with caching
 const {
   data: pullRequestsData,
   error,
   refresh,
   isRefreshing,
-  lastUpdated,
-  showSkeleton,
-  showRefreshIndicator
-} = useCachedFetch<PullRequestsResponse>(
-  '/api/pull-requests',
-  {
-    key: 'pull-requests',
-    staleTime: 5 * 60 * 1000, // 5 minutes
-  },
-  {
-    query: {
-      state: selectedState
-    },
-    watch: [selectedState]
-  }
+} = useResource<PullRequestsResponse>(
+  () => `pull-requests:${selectedState.value}`,
+  () => `/api/pull-requests?state=${selectedState.value}`,
+  { staleTime: 5 * 60 * 1000 },
 )
 
 // Computed properties for filtering and stats
@@ -73,51 +63,49 @@ const stats = computed(() => pullRequestsData.value?.stats || {
   draft: 0,
   repositories: 0
 })
+
+const headerStats = useHeaderStats()
+watchEffect(() => {
+  headerStats.set([
+    { label: 'Total PRs', value: stats.value.total },
+    { label: 'Open', value: stats.value.open, variant: 'success' },
+    { label: 'Draft', value: stats.value.draft },
+    { label: 'Repos', value: stats.value.repositories, variant: 'info' },
+  ])
+})
+onBeforeUnmount(() => headerStats.clear())
+
+const filtersOpen = ref(false)
+const hasActiveFilters = computed(() =>
+  selectedState.value !== 'open' || searchQuery.value.trim() !== '' || selectedRepository.value !== '',
+)
+
+const headerActions = useHeaderActions()
+watchEffect(() => {
+  headerActions.set([
+    {
+      id: 'pr-filters',
+      icon: 'lucide:search',
+      label: filtersOpen.value ? 'Hide filters' : 'Show filters',
+      active: filtersOpen.value,
+      dot: hasActiveFilters.value,
+      onClick: () => { filtersOpen.value = !filtersOpen.value },
+    },
+  ])
+})
+onBeforeUnmount(() => headerActions.clear())
 </script>
 
 <template>
   <PageLayout
-    :show-skeleton="showSkeleton"
-    :show-refresh-indicator="showRefreshIndicator"
     :is-refreshing="isRefreshing"
-    :last-updated="lastUpdated"
     :error="error"
     :data="pullRequestsData"
     :on-retry="refresh"
     :skeleton-count="6"
-    :show-stats="true"
   >
-    <template #stats>
-      <StatsCard
-        icon="📊"
-        :value="stats.total"
-        label="Total PRs"
-      />
-
-      <StatsCard
-        icon="🔓"
-        :value="stats.open"
-        label="Open"
-        variant="success"
-      />
-
-      <StatsCard
-        icon="📝"
-        :value="stats.draft"
-        label="Draft"
-        variant="warning"
-      />
-
-      <StatsCard
-        icon="📦"
-        :value="stats.repositories"
-        label="Repositories"
-        variant="info"
-      />
-    </template>
-
     <template #filters>
-      <div class="filters">
+      <div v-if="filtersOpen" id="pr-filters-panel" class="filters">
         <div class="filter-group">
           <label for="state-select" class="filter-label">State</label>
           <Select
@@ -166,13 +154,11 @@ const stats = computed(() => pullRequestsData.value?.stats || {
 
     <template #content>
       <div v-if="filteredPullRequests.length > 0" class="pull-requests-list">
-        <div class="pr-list">
-          <PullRequestCard
-            v-for="pr in filteredPullRequests"
-            :key="pr.id"
-            :pull-request="pr"
-          />
-        </div>
+        <PullRequestCard
+          v-for="pr in filteredPullRequests"
+          :key="pr.id"
+          :pull-request="pr"
+        />
       </div>
 
       <!-- Empty State -->
@@ -208,7 +194,7 @@ const stats = computed(() => pullRequestsData.value?.stats || {
 .filter-label {
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-medium);
-  color: var(--color-gray-700);
+  color: var(--color-text-tertiary);
   margin-bottom: var(--spacing-2);
 }
 
@@ -216,18 +202,20 @@ const stats = computed(() => pullRequestsData.value?.stats || {
   height: fit-content;
 }
 
+/* Parent grid declares the column tracks; every PR row inherits them
+ * via subgrid so icons, titles, signal clusters and timestamps line up
+ * across all rows even when content lengths vary. */
 .pull-requests-list {
-  background: var(--color-white);
+  display: grid;
+  /* state icon · main · check · review · comments · updated time */
+  grid-template-columns: auto 1fr auto auto auto auto;
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-sm);
   overflow: hidden;
 }
 
-.pr-list {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-4);
-  padding: var(--spacing-4);
+.pull-requests-list > :last-child {
+  border-bottom: 0;
 }
 
 @media (max-width: 768px) {

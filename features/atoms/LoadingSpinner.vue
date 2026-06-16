@@ -70,36 +70,36 @@ const spinnerClasses = computed(() => {
 .loading-spinner--sm {
   width: 20px;
   height: 20px;
-  border: 2px solid var(--color-gray-200);
+  border: 2px solid var(--color-border-default);
   border-top: 2px solid transparent;
 }
 
 .loading-spinner--md {
   width: 32px;
   height: 32px;
-  border: 3px solid var(--color-gray-200);
+  border: 3px solid var(--color-border-default);
   border-top: 3px solid transparent;
 }
 
 .loading-spinner--lg {
   width: 40px;
   height: 40px;
-  border: 4px solid var(--color-gray-200);
+  border: 4px solid var(--color-border-default);
   border-top: 4px solid transparent;
 }
 
 /* Color variants */
 .loading-spinner--primary.loading-spinner--sm {
-  border-top-color: var(--color-gray-900);
+  border-top-color: var(--color-text-primary);
 }
 
 .loading-spinner--primary.loading-spinner--md,
 .loading-spinner--primary.loading-spinner--lg {
-  border-top-color: var(--color-blue-500);
+  border-top-color: var(--color-primary);
 }
 
 .loading-spinner--secondary {
-  border-top-color: var(--color-gray-500);
+  border-top-color: var(--color-text-secondary);
 }
 
 @keyframes spin {
@@ -109,7 +109,7 @@ const spinnerClasses = computed(() => {
 }
 
 .loading-message {
-  color: var(--color-gray-500);
+  color: var(--color-text-secondary);
   font-size: var(--font-size-sm);
 }
 

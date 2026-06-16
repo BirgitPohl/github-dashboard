@@ -9,8 +9,16 @@ export default defineNuxtConfig({
     '@nuxt/eslint',
     '@nuxt/test-utils',
     '@nuxt/ui',
-    '@nuxt/scripts'
+    '@nuxt/scripts',
+    '@nuxt/icon',
+    '@pinia/nuxt',
+    'pinia-plugin-persistedstate/nuxt'
   ],
+
+  icon: {
+    // Avoid collision with our existing Icon atom
+    componentName: 'NuxtIcon',
+  },
 
   // Enable auto-imports for components and composables
   components: [
@@ -38,12 +46,13 @@ export default defineNuxtConfig({
   runtimeConfig: {
     // Server-side only (not exposed to client)
     githubToken: process.env.GITHUB_TOKEN,
-    githubOwner: process.env.GITHUB_OWNER || 'Oracommit',
+    githubOwner: process.env.GITHUB_OWNER || 'GitHub',
     githubRepo: process.env.GITHUB_REPO || 'issues',
     
     // Public config (exposed to client)
     public: {
-      // Add any public config here if needed
+      githubOwner: process.env.GITHUB_OWNER || 'GitHub',
+      brandColors: process.env.BRAND_COLORS || '',
     }
   }
 })

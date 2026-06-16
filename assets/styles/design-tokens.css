@@ -5,6 +5,14 @@
  * All components should reference these CSS variables instead of hardcoded values
  */
 
+/* Root font-size sets the rem unit for every token below — bump this to
+ * scale text AND spacing for distance-viewed dashboards. Browser default
+ * is 16px; 20px (1.25×) makes a wall-mounted Game-Boy-panel readable
+ * from across the room without changing any individual component. */
+html {
+  font-size: 26px;
+}
+
 :root {
   /* ========================================
      COLORS
@@ -81,6 +89,64 @@
   --color-border-default: var(--color-gray-200);
   --color-border-hover: var(--color-gray-300);
   --color-border-focus: var(--color-primary-600);
+
+  /* ========================================
+     SEMANTIC COLOR LAYER
+     ========================================
+     Components MUST reference these named roles instead of raw scale tokens
+     or hex literals. The scale tokens above are palette primitives; the
+     names below assign roles. Retheme the app by editing this section. */
+
+  /* Identity — harmonized 10-color palette (teal/cream/amber/red) */
+  --color-primary:           #0a9396;    /* Dark Cyan */
+  --color-primary-bright:    #94d2bd;    /* Pearl Aqua */
+  --color-primary-dark:      #005f73;    /* Dark Teal */
+  --color-on-primary:        #ffffff;
+
+  --color-secondary:         #001219;    /* Ink Black */
+  --color-secondary-bright:  #e9d8a6;    /* Wheat */
+  --color-secondary-dark:    #001219;    /* Ink Black */
+  --color-on-secondary:      #ffffff;
+
+  --color-tertiary:          #ca6702;    /* Burnt Caramel — merged / done */
+  --color-tertiary-bright:   #e9d8a6;    /* Wheat */
+  --color-tertiary-dark:     #bb3e03;    /* Rusty Spice */
+  --color-on-tertiary:       #ffffff;
+
+  /* Neutral — grey scale (palette has no true grey; kept separate) */
+  --color-neutral:           var(--color-gray-500);
+  --color-neutral-bright:    var(--color-gray-100);
+  --color-neutral-dark:      var(--color-gray-800);
+  --color-on-neutral:        #ffffff;
+
+  /* Status */
+  --color-success:           #94d2bd;    /* Pearl Aqua */
+  --color-success-bright:    #e9d8a6;    /* Wheat */
+  --color-success-dark:      #005f73;    /* Dark Teal */
+  --color-on-success:        #001219;    /* Pearl Aqua needs dark text */
+
+  --color-warning:           #ee9b00;    /* Golden Orange */
+  --color-warning-bright:    #e9d8a6;    /* Wheat */
+  --color-warning-dark:      #ca6702;    /* Burnt Caramel */
+  --color-on-warning:        #001219;    /* Golden Orange — dark text */
+
+  --color-error:             #ae2012;    /* Oxidized Iron */
+  --color-error-bright:      #e9d8a6;    /* Wheat */
+  --color-error-dark:        #9b2226;    /* Brown Red */
+  --color-on-error:          #ffffff;
+
+  --color-info:              #005f73;    /* Dark Teal */
+  --color-info-bright:       #94d2bd;    /* Pearl Aqua */
+  --color-info-dark:         #001219;    /* Ink Black */
+  --color-on-info:           #ffffff;
+
+  /* Surface / text roles for inverse (dark glass) surfaces */
+  --color-surface-inverse:    rgba(15, 23, 42, 0.88);
+  --color-on-surface-inverse: #f8fafc;
+
+  /* Text-on-color helpers for dynamically computed contrast */
+  --color-text-on-light:     #000000;
+  --color-text-on-dark:      #ffffff;
 
   /* ========================================
      TYPOGRAPHY

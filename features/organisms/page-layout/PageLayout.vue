@@ -1,39 +1,25 @@
 <script setup lang="ts">
 interface Props {
-  showSkeleton?: boolean
-  showRefreshIndicator?: boolean
   isRefreshing?: boolean
-  lastUpdated?: number
   error?: any
   data?: any
   onRetry?: () => void
   skeletonCount?: number
-  showStats?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  showSkeleton: false,
-  showRefreshIndicator: false,
   isRefreshing: false,
   skeletonCount: 6,
-  showStats: false
 })
+
+const hasData = computed(() => props.data != null)
+const showSkeleton = computed(() => !hasData.value && props.isRefreshing)
 </script>
 
 <template>
   <div class="page-layout">
-    <!-- Refresh Indicator (shown when refreshing with cached data) -->
-    <RefreshIndicator
-      v-if="showRefreshIndicator"
-      :is-refreshing="isRefreshing"
-      :last-updated="lastUpdated"
-    />
-
     <!-- Skeleton Loading (shown on initial load with no cached data) -->
-    <template v-if="showSkeleton">
-      <SkeletonStats v-if="showStats" :count="3" />
-      <SkeletonGrid :count="skeletonCount" />
-    </template>
+    <SkeletonGrid v-if="showSkeleton" :count="skeletonCount" />
 
     <!-- Error State -->
     <div v-else-if="error && !data" class="error-state">
@@ -45,11 +31,6 @@ const props = withDefaults(defineProps<Props>(), {
 
     <!-- Content (shown when we have data, even if refreshing in background) -->
     <div v-else-if="data" class="content">
-      <!-- Stats Section (optional) -->
-      <div v-if="$slots.stats" class="stats-section">
-        <slot name="stats" />
-      </div>
-
       <!-- Filters Section (optional) -->
       <div v-if="$slots.filters" class="filters-section">
         <slot name="filters" />
@@ -65,7 +46,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 <style scoped>
 .page-layout {
-  padding: var(--spacing-8);
+  padding: 0 var(--spacing-2) var(--spacing-2);
   min-height: 100vh;
   background: var(--color-bg-secondary);
 }
@@ -75,7 +56,7 @@ const props = withDefaults(defineProps<Props>(), {
   margin: 0 auto;
   display: flex;
   justify-content: center;
-  padding: var(--spacing-20) 0;
+  padding: var(--spacing-10) 0;
 }
 
 .content {
@@ -83,29 +64,13 @@ const props = withDefaults(defineProps<Props>(), {
   margin: 0 auto;
 }
 
-.stats-section {
-  display: flex;
-  gap: var(--spacing-5);
-  margin-bottom: var(--spacing-8);
-  flex-wrap: wrap;
-  justify-content: center;
-}
-
 .filters-section {
-  margin-bottom: var(--spacing-8);
-}
-
-.main-content {
-  /* Child components define their own layout */
+  margin-bottom: var(--spacing-3);
 }
 
 @media (max-width: 768px) {
   .page-layout {
-    padding: var(--spacing-4);
-  }
-
-  .stats-section {
-    gap: var(--spacing-4);
+    padding: 0 var(--spacing-1) var(--spacing-1);
   }
 }
 </style>

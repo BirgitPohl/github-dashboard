@@ -59,10 +59,10 @@ export const usePullRequestCard = () => {
    * Get icon emoji based on PR state
    */
   const getStateIcon = (pr: PullRequest): string => {
-    if (pr.merged_at) return '✅'
-    if (pr.state === 'open' && pr.draft) return '📝'
-    if (pr.state === 'open') return '🔓'
-    return '❌'
+    if (pr.merged_at) return 'lucide:git-merge'
+    if (pr.state === 'open' && pr.draft) return 'lucide:file-edit'
+    if (pr.state === 'open') return 'lucide:git-pull-request'
+    return 'lucide:git-pull-request-closed'
   }
 
   /**
@@ -76,13 +76,26 @@ export const usePullRequestCard = () => {
   }
 
   /**
-   * Get border color based on PR state
+   * Resolve the semantic background + on-color text for a PR row.
+   * Each branch returns the saturated background and the matching
+   * --color-on-* text token so contrast stays correct when the palette
+   * changes (e.g. light Pearl Aqua needs dark text, dark Oxidized Iron
+   * needs white text).
+   *
+   * draft           → neutral-dark   (muted, parked)
+   * merged          → tertiary       (done)
+   * checks failed   → error          (broken — highest concern)
+   * change requested→ warning        (author owes work)
+   * checks ✓ + ✓ed  → success        (ready to land)
+   * everything else → primary        (in progress / default open)
    */
-  const getStateBorderColor = (pr: PullRequest): string => {
-    if (pr.merged_at) return '#8b5cf6'
-    if (pr.state === 'open' && pr.draft) return '#f59e0b'
-    if (pr.state === 'open') return '#10b981'
-    return '#ef4444'
+  const getStateRowColors = (pr: PullRequest): { bg: string; fg: string } => {
+    if (pr.draft) return { bg: 'var(--color-neutral-dark)', fg: 'var(--color-on-neutral)' }
+    if (pr.merged_at) return { bg: 'var(--color-tertiary)', fg: 'var(--color-on-tertiary)' }
+    if (pr.check_status === 'failure') return { bg: 'var(--color-error)', fg: 'var(--color-on-error)' }
+    if (pr.review_status === 'changes_requested') return { bg: 'var(--color-warning)', fg: 'var(--color-on-warning)' }
+    if (pr.check_status === 'success' && pr.review_status === 'approved') return { bg: 'var(--color-success)', fg: 'var(--color-on-success)' }
+    return { bg: 'var(--color-primary)', fg: 'var(--color-on-primary)' }
   }
 
   /**
@@ -90,10 +103,10 @@ export const usePullRequestCard = () => {
    */
   const getCheckIcon = (status: 'success' | 'failure' | 'pending' | 'neutral'): string => {
     switch (status) {
-      case 'success': return '✅'
-      case 'failure': return '❌'
-      case 'pending': return '⏳'
-      case 'neutral': return '⚪'
+      case 'success': return 'lucide:check-circle-2'
+      case 'failure': return 'lucide:x-circle'
+      case 'pending': return 'lucide:loader-circle'
+      case 'neutral': return 'lucide:circle-minus'
     }
   }
 
@@ -114,10 +127,10 @@ export const usePullRequestCard = () => {
    */
   const getReviewIcon = (status: 'approved' | 'changes_requested' | 'pending' | 'commented'): string => {
     switch (status) {
-      case 'approved': return '👍'
-      case 'changes_requested': return '⚠️'
-      case 'commented': return '💬'
-      case 'pending': return '👀'
+      case 'approved': return 'lucide:thumbs-up'
+      case 'changes_requested': return 'lucide:alert-triangle'
+      case 'commented': return 'lucide:message-square-quote'
+      case 'pending': return 'lucide:eye'
     }
   }
 
@@ -138,7 +151,7 @@ export const usePullRequestCard = () => {
     getStateClass,
     getStateIcon,
     getStateLabel,
-    getStateBorderColor,
+    getStateRowColors,
     getCheckIcon,
     getCheckLabel,
     getReviewIcon,

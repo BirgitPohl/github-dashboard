@@ -1,5 +1,6 @@
 interface StatusConfig {
   color: string
+  onColor: string
   textColor: string
   bgColor: string
   borderColor: string
@@ -12,6 +13,81 @@ interface Workflow {
   status: string
 }
 
+const STATUS_CONFIGS = {
+  failure: {
+    color: 'var(--color-error)',
+    onColor: 'var(--color-on-error)',
+    textColor: 'text-red-700',
+    bgColor: 'var(--color-error-bright)',
+    borderColor: 'var(--color-error)',
+    icon: 'lucide:x',
+    label: 'Failed',
+  },
+  success: {
+    color: 'var(--color-success)',
+    onColor: 'var(--color-on-success)',
+    textColor: 'text-green-700',
+    bgColor: 'var(--color-success-bright)',
+    borderColor: 'var(--color-success)',
+    icon: 'lucide:check',
+    label: 'Success',
+  },
+  cancelled: {
+    color: 'var(--color-warning)',
+    onColor: 'var(--color-on-warning)',
+    textColor: 'text-amber-700',
+    bgColor: 'var(--color-warning-bright)',
+    borderColor: 'var(--color-warning)',
+    icon: 'lucide:ban',
+    label: 'Cancelled',
+  },
+  running: {
+    color: 'var(--color-info)',
+    onColor: 'var(--color-on-info)',
+    textColor: 'text-blue-700',
+    bgColor: 'var(--color-info-bright)',
+    borderColor: 'var(--color-info)',
+    icon: 'lucide:loader-circle',
+    label: 'Running',
+  },
+  skipped: {
+    color: 'var(--color-neutral)',
+    onColor: 'var(--color-on-neutral)',
+    textColor: 'text-gray-700',
+    bgColor: 'var(--color-neutral-bright)',
+    borderColor: 'var(--color-neutral)',
+    icon: 'lucide:skip-forward',
+    label: 'Skipped',
+  },
+  disabled: {
+    color: 'var(--color-neutral)',
+    onColor: 'var(--color-on-neutral)',
+    textColor: 'text-gray-700',
+    bgColor: 'var(--color-neutral-bright)',
+    borderColor: 'var(--color-neutral)',
+    icon: 'lucide:circle-off',
+    label: 'Disabled',
+  },
+  passed: {
+    color: 'var(--color-success)',
+    onColor: 'var(--color-on-success)',
+    textColor: 'text-green-700',
+    bgColor: 'var(--color-success-bright)',
+    borderColor: 'var(--color-success)',
+    icon: 'lucide:check',
+    label: 'Passed',
+  },
+  unknown: {
+    color: 'var(--color-neutral)',
+    onColor: 'var(--color-on-neutral)',
+    textColor: 'text-gray-700',
+    bgColor: 'var(--color-neutral-bright)',
+    borderColor: 'var(--color-neutral)',
+    icon: 'lucide:circle-help',
+    label: 'Unknown',
+  },
+} as const satisfies Record<string, StatusConfig>
+
 /**
  * Composable for workflow status card logic
  * Determines visual configuration based on workflow state and status
@@ -21,83 +97,18 @@ export const useWorkflowStatusCard = () => {
     const state = workflow.state?.toLowerCase() || 'unknown'
     const status = workflow.status?.toLowerCase() || ''
 
-    // Check status/conclusion first (this is the actual run result)
-    if (status.includes('failure') || status.includes('error') || status.includes('failed')) {
-      return {
-        color: '#ef4444', // Red
-        textColor: 'text-red-700',
-        bgColor: '#fef2f2', // Light red background
-        borderColor: '#ef4444',
-        icon: '✗',
-        label: 'Failed'
-      }
-    } else if (status.includes('success')) {
-      return {
-        color: '#10b981', // Green
-        textColor: 'text-green-700',
-        bgColor: '#f0fdf4', // Light green background
-        borderColor: '#10b981',
-        icon: '✓',
-        label: 'Success'
-      }
-    } else if (status.includes('cancelled')) {
-      return {
-        color: '#f59e0b', // Amber
-        textColor: 'text-amber-700',
-        bgColor: '#fffbeb', // Light amber background
-        borderColor: '#f59e0b',
-        icon: '○',
-        label: 'Cancelled'
-      }
-    } else if (status.includes('in_progress') || status.includes('queued')) {
-      return {
-        color: '#3b82f6', // Blue
-        textColor: 'text-blue-700',
-        bgColor: '#eff6ff', // Light blue background
-        borderColor: '#3b82f6',
-        icon: '◐',
-        label: 'Running'
-      }
-    } else if (status.includes('skipped')) {
-      return {
-        color: '#6b7280', // Gray
-        textColor: 'text-gray-700',
-        bgColor: '#f9fafb', // Light gray background
-        borderColor: '#6b7280',
-        icon: '−',
-        label: 'Skipped'
-      }
-    } else if (state === 'disabled') {
-      return {
-        color: '#6b7280', // Gray
-        textColor: 'text-gray-700',
-        bgColor: '#f9fafb', // Light gray background
-        borderColor: '#6b7280',
-        icon: '○',
-        label: 'Disabled'
-      }
-    } else if (state === 'active' && status.includes('completed')) {
-      return {
-        color: '#10b981', // Green
-        textColor: 'text-green-700',
-        bgColor: '#f0fdf4', // Light green background
-        borderColor: '#10b981',
-        icon: '✓',
-        label: 'Passed'
-      }
-    } else {
-      return {
-        color: '#6b7280', // Gray
-        textColor: 'text-gray-700',
-        bgColor: '#f9fafb', // Light gray background
-        borderColor: '#6b7280',
-        icon: '●',
-        label: status || state || 'Unknown'
-      }
-    }
+    if (status.includes('failure') || status.includes('error') || status.includes('failed')) return STATUS_CONFIGS.failure
+    if (status.includes('success')) return STATUS_CONFIGS.success
+    if (status.includes('cancelled')) return STATUS_CONFIGS.cancelled
+    if (status.includes('in_progress') || status.includes('queued')) return STATUS_CONFIGS.running
+    if (status.includes('skipped')) return STATUS_CONFIGS.skipped
+    if (state === 'disabled') return STATUS_CONFIGS.disabled
+    if (state === 'active' && status.includes('completed')) return STATUS_CONFIGS.passed
+
+    return { ...STATUS_CONFIGS.unknown, label: status || state || 'Unknown' }
   }
 
   return {
-    getStatusConfig
+    getStatusConfig,
   }
 }

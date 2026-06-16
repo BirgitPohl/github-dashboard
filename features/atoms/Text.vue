@@ -108,19 +108,19 @@ const textClasses = computed(() => {
 }
 
 .text--success {
-  color: var(--color-success-700);
+  color: var(--color-success-dark);
 }
 
 .text--warning {
-  color: var(--color-warning-700);
+  color: var(--color-warning-dark);
 }
 
 .text--danger {
-  color: var(--color-danger-700);
+  color: var(--color-error-dark);
 }
 
 .text--info {
-  color: var(--color-info-700);
+  color: var(--color-info-dark);
 }
 
 /* Size variants */

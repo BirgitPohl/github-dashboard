@@ -30,118 +30,138 @@ const timeAgo = computed(() => formatTimeAgoSimple(props.workflow.updated_at))
 </script>
 
 <template>
-  <BaseCard
-    width="300px"
-    :border-color="statusConfig.borderColor"
-    :bg-color="statusConfig.bgColor"
+  <a
+    :href="workflow.html_url"
+    target="_blank"
+    rel="noopener"
+    class="wf-row"
+    :style="{ '--row-bg': statusConfig.color, '--row-fg': statusConfig.onColor }"
   >
-    <template #header>
-      <div class="status-row">
-        <div
-          class="status-dot"
-          :style="{ backgroundColor: statusConfig.color }"
-        />
-        <div class="workflow-info">
-          <Header :level="3" size="base" class="workflow-name">
-            {{ workflow.name }}
-          </Header>
-          <div class="repository-name">
-            <Text variant="secondary" size="xs">{{ workflow.repository }}</Text>
-            <Tag v-if="workflow.is_private" label="Private" variant="warning" size="sm" />
-          </div>
-        </div>
-      </div>
-    </template>
+    <Icon :icon="statusConfig.icon" class="wf-row__icon" decorative />
 
-    <template #body>
-      <div class="card-details">
-        <div class="detail-row">
-          <Text variant="secondary" size="sm">Status:</Text>
-          <Text
-            variant="tertiary"
-            size="sm"
-            weight="semibold"
-            :style="{ color: statusConfig.color }"
-          >
-            {{ statusConfig.label }}
-          </Text>
-        </div>
+    <span class="wf-row__main">
+      <span class="wf-row__name">{{ workflow.name }}</span>
+      <span class="wf-row__sub">
+        <span>{{ workflow.repository }}</span>
+        <span class="wf-row__sep">·</span>
+        <span>{{ workflow.branch }}</span>
+        <Icon v-if="workflow.is_private" icon="lucide:lock" size="xs" class="wf-row__lock" aria-label="Private" />
+      </span>
+    </span>
 
-        <div class="detail-row">
-          <Text variant="secondary" size="sm">Last run:</Text>
-          <Text variant="tertiary" size="sm" weight="medium">{{ timeAgo }}</Text>
-        </div>
-
-        <div class="detail-row">
-          <Text variant="secondary" size="sm">Branch:</Text>
-          <Tag :label="workflow.branch" variant="default" size="sm" class="branch-tag" />
-        </div>
-
-        <div class="detail-row">
-          <Text variant="secondary" size="sm">Run #:</Text>
-          <Text variant="tertiary" size="sm" weight="medium">{{ workflow.run_number }}</Text>
-        </div>
-      </div>
-    </template>
-
-    <template #bottom>
-      <Link
-        :href="workflow.html_url"
-        variant="primary"
-        size="sm"
-        external
-      >
-        View Details →
-      </Link>
-    </template>
-  </BaseCard>
+    <span class="wf-row__status">{{ statusConfig.label }}</span>
+    <span class="wf-row__run">#{{ workflow.run_number }}</span>
+    <span class="wf-row__time">{{ timeAgo }}</span>
+  </a>
 </template>
 
 <style scoped>
-/* Layout structure only - typography and colors handled by atoms */
-.status-row {
+.wf-row {
+  display: grid;
+  grid-template-columns: subgrid;
+  grid-column: 1 / -1;
+  align-items: center;
+  column-gap: var(--spacing-3);
+  padding: var(--spacing-2) var(--spacing-4);
+  background: var(--row-bg, var(--color-neutral));
+  color: var(--row-fg, var(--color-text-inverse));
+  text-decoration: none;
+  font-size: var(--font-size-sm);
+  line-height: 1.3;
+  border-bottom: 1px solid color-mix(in srgb, currentColor 15%, transparent);
+  transition: filter var(--transition-fast);
+}
+
+.wf-row:hover {
+  filter: brightness(1.08);
+}
+
+.wf-row__icon {
+  font-size: var(--font-size-base);
+  line-height: 1;
+}
+
+.wf-row__main {
   display: flex;
-  align-items: flex-start;
-  gap: var(--spacing-3);
-}
-
-.status-dot {
-  width: var(--spacing-3);
-  height: var(--spacing-3);
-  border-radius: var(--radius-full);
-  flex-shrink: 0;
-  margin-top: var(--spacing-1);
-}
-
-.workflow-info {
-  flex: 1;
+  flex-direction: column;
+  gap: 2px;
   min-width: 0;
 }
 
-.workflow-name {
-  margin: 0 0 var(--spacing-1) 0;
-  word-break: break-word;
+.wf-row__name {
+  font-weight: var(--font-weight-semibold);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.repository-name {
-  display: flex;
+.wf-row__sub {
+  display: inline-flex;
   align-items: center;
   gap: var(--spacing-2);
-  word-break: break-word;
+  font-size: var(--font-size-xs);
+  opacity: 0.9;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.card-details {
-  margin-bottom: var(--spacing-4);
+.wf-row__sep {
+  opacity: 0.6;
 }
 
-.detail-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: var(--spacing-2);
+.wf-row__lock {
+  font-size: var(--font-size-2xs);
 }
 
-.branch-tag {
-  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+.wf-row__status {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.wf-row__run {
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-xs);
+  opacity: 0.9;
+  white-space: nowrap;
+}
+
+.wf-row__time {
+  font-size: var(--font-size-xs);
+  opacity: 0.85;
+  white-space: nowrap;
+  min-width: 4ch;
+  text-align: right;
+}
+
+@media (max-width: 640px) {
+  .wf-row {
+    grid-template-columns: auto 1fr auto;
+    grid-template-rows: auto auto;
+    row-gap: 2px;
+  }
+
+  .wf-row__status {
+    grid-column: 3;
+    grid-row: 1;
+  }
+
+  .wf-row__run,
+  .wf-row__time {
+    grid-row: 2;
+    font-size: var(--font-size-2xs);
+  }
+
+  .wf-row__run {
+    grid-column: 2;
+    text-align: left;
+  }
+
+  .wf-row__time {
+    grid-column: 3;
+  }
 }
 </style>

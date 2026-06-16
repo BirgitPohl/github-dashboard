@@ -191,7 +191,7 @@ export default defineEventHandler(async (event) => {
   try {
     const headers = getGitHubHeaders()
     const repositories = await fetchRepositories()
-    console.log(`Fetching pull requests from ${repositories.length} repositories`)
+    serverLog(`Fetching pull requests from ${repositories.length} repositories`)
 
     // Fetch pull requests for each repository
     const allPullRequests: PullRequest[] = []
@@ -203,7 +203,7 @@ export default defineEventHandler(async (event) => {
 
       const pullRequestPromises = batch.map(async (repo: GitHubRepository) => {
         try {
-          console.log(`Fetching pull requests for ${repo.full_name}`)
+          serverLog(`Fetching pull requests for ${repo.full_name}`)
 
           const prResponse = await fetch(
             `https://api.github.com/repos/${repo.full_name}/pulls?state=${state}&per_page=100&sort=updated&direction=desc`,
@@ -260,7 +260,7 @@ export default defineEventHandler(async (event) => {
       new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
     )
 
-    console.log(`Found ${allPullRequests.length} pull requests across all repositories`)
+    serverLog(`Found ${allPullRequests.length} pull requests across all repositories`)
 
     // Calculate statistics
     const repositoryNames = new Set(allPullRequests.map(pr => pr.repository.name))
